@@ -1053,6 +1053,15 @@ body[data-tab="wip"] .crumbbar,body[data-tab="wip"] .meta,body[data-tab="wip"] .
  .hm-card{left:16px;bottom:16px;max-width:calc(100% - 32px)}
  .hm-w{right:16px;top:16px}
 }
+
+.cn-edit{border:2px solid var(--accent);box-shadow:0 0 0 4px rgba(20,30,120,.08)}
+.cn-edg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px 28px;margin:10px 0 14px}
+.cn-edg>div{display:flex;flex-direction:column;gap:10px}
+.cn-edg h4{margin:0;font-size:15px;font-weight:800;color:var(--ink)}
+.cn-edit input,.cn-edit textarea,.cn-edit select{font-size:15px;border:1.5px solid #8ea3cf;border-radius:8px;padding:8px 10px}
+.cn-edit .cn-fld.vazio input,.cn-edit .cn-fld.vazio textarea{background:#FFF4DA;border-color:#D69E2E}
+.cn-edit .cn-fld i{color:#EC3237;font-style:normal}
+@media(max-width:900px){.cn-edg{grid-template-columns:minmax(0,1fr)}}
 </style>
 
 <div class="shell">
@@ -2417,7 +2426,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="81",APPD="26/10/2026";
+var APPV="82",APPD="26/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -4165,8 +4174,8 @@ function cnDetail(box,p){
     '<div class="askbox">Aguardando validação. Confira a folha e o programa, simule no CIMCO e só depois valide. O agente nunca envia programa à máquina.</div>')+
    '</div>'+
    '<div class="cn-det"><div class="card"><h3>Desenho</h3><div class="cn-pv" id="cn-dpv"><span class="hint">'+(p.fonte&&p.fonte.url?"Carregando o desenho…":"Desenho não guardado.")+'</span></div></div>'+
-   '<div class="card"><h3>Dados informados</h3><dl class="cn-dl"><dt>Comando</dt><dd>'+esc(c.n||p.comando)+' · '+esc(c.maq||"")+'</dd><dt>Material</dt><dd>'+esc(p.materialInf||p.material||"–")+'</dd><dt>Bruto</dt><dd>'+esc(p.bruto||"–")+'</dd><dt>Fixação</dt><dd>'+esc(p.fixacaoInf||"–")+'</dd><dt>Zero peça</dt><dd>'+esc(p.zeroInf||"–")+'</dd><dt>Sequência</dt><dd>'+esc(p.instrucoes||"–")+'</dd></dl>'+
-   ((p.duvidas||[]).length?'<div class="cn-notes"><b>Dúvidas do agente</b><ul class="plan">'+p.duvidas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+((p.premissas||[]).length?'<div class="cn-notes"><b>Premissas adotadas</b><ul class="plan">'+p.premissas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+'</div></div>'+
+   (CN.edit===p.id?cnEditHtml(p):'<div class="card"><div class="mx-bar"><h3 style="margin:0">Dados informados</h3><span class="sp"></span>'+(busy&&p.status==="gerando"?'':'<button class="btn" type="button" data-cnc="edit" data-id="'+esc(p.id)+'">✎ Editar dados</button>')+'</div><dl class="cn-dl"><dt>Comando</dt><dd>'+esc(c.n||p.comando)+' · '+esc(c.maq||"")+'</dd><dt>Material</dt><dd>'+esc(p.materialInf||p.material||"–")+'</dd><dt>Bruto</dt><dd>'+esc(p.bruto||"–")+'</dd><dt>Fixação</dt><dd>'+esc(p.fixacaoInf||"–")+'</dd><dt>Zero peça</dt><dd>'+esc(p.zeroInf||"–")+'</dd><dt>Sequência</dt><dd>'+esc(p.instrucoes||"–")+'</dd></dl>'+
+   ((p.duvidas||[]).length?'<div class="cn-notes"><b>Dúvidas do agente</b><ul class="plan">'+p.duvidas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+((p.premissas||[]).length?'<div class="cn-notes"><b>Premissas adotadas</b><ul class="plan">'+p.premissas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+'</div>')+'</div>'+
    (ok?'<div class="card"><div class="mx-bar"><h3 style="margin:0">Folha de processo · prévia</h3><span class="hint">Tempo e percurso calculados do próprio programa (simulador M70)</span><span class="sp"></span><button class="btn sm pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'">Baixar PDF</button></div><div class="cn-folhas">'+ops.map(function(o,i){return cnFolhaHtml(p,o,i)}).join("")+'</div></div>':'')+
    ops.map(function(o,i){return'<details class="card cn-progc"'+(i===0?'':'')+'><summary><b>Programa '+esc(o.op||("OP"+(i+1)*10))+'</b> <span class="mono hint">'+esc(cnFileName(p,o))+'</span> <span class="hint">· '+(String(o.nc||"").split("\n").length)+' linhas · abrir para conferir ou corrigir</span></summary>'+
      '<textarea class="cn-nc" data-cncop="'+i+'" spellcheck="false"'+(val?' readonly':'')+'>'+esc(o.nc||"")+'</textarea></details>'}).join("")+
@@ -4287,7 +4296,7 @@ function cnRun(j){
     h.push({at:t,uid:AG.uid||"",txt:"Programa gerado pelo agente em "+cnElapsed(t0)+" min ("+res.ops.length+(res.ops.length===1?" operação).":" operações).")+(r&&r.truncated?" Resposta cortada: conferir o fim do programa.":"")});
     var doc={processo:String(m.processo||""),part_number:String(m.part_number||""),codigo:String(m.codigo||j.f.name.replace(/\.[^.]+$/,"")),rev:String(m.revisao||""),cliente:String(m.cliente||""),descricao:String(m.descricao||""),material:String(m.material||j.draft.mat||""),
       ops:res.ops,premissas:(Array.isArray(m.premissas)?m.premissas:[]).map(String).slice(0,20),duvidas:(Array.isArray(m.duvidas)?m.duvidas:[]).map(String).slice(0,20),
-      truncado:!!(r&&r.truncated),status:"aguardando",erro:"",atualizado:t,hist:h};
+      truncado:!!(r&&r.truncated),status:"aguardando",erro:"",atualizado:t,hist:h};if(old.fixos)for(var fk in old.fixos)doc[fk]=old.fixos[fk];
     if(doc.truncado)doc.duvidas.unshift("A resposta do agente foi cortada: confira se o último programa termina com M30 e %.");
     doc.ops.forEach(function(o){var sm=cnSim(o.nc);o.tempoModelo=o.tempo;o.tempo=fmtT(sm.tempo);o.avisosSim=sm.avisos.slice(0,20)});
     return PR.db.doc("programas_cnc/"+j.docId).update(doc).then(function(){cnJob(j,"ok","Programa gerado.");toast("Programa "+doc.codigo+" gerado. Aguardando validação.")});
@@ -4632,6 +4641,9 @@ $("v-mx").addEventListener("click",function(e){
   if(!p)return;
   if(a==="open"){CN.open=p.id;mxRender();return}
   if(a==="retry"){cnRetry(p);return}
+  if(a==="edit"){CN.edit=p.id;CN.ed=cnEdInit(p);mxRender();setTimeout(function(){var x=document.querySelector(".cn-edit input,.cn-edit textarea");if(x)x.focus()},40);return}
+  if(a==="edcancel"){CN.edit="";CN.ed=null;mxRender();return}
+  if(a==="edsave"||a==="edgen"){cnEdSave(p,a==="edgen");return}
   if(a==="dl"||a==="dlzip"){cnDownload(p);return}
   if(a==="dlfolha"){cnFolhaDl(p);return}
   if(a==="share"){cnShare(p);return}
@@ -4650,12 +4662,14 @@ function askValidate(p,c2){
 $("v-mx").addEventListener("change",function(e){
   if(S.tab!=="m-cnc")return;
   if(e.target.id==="cn-cmd"){CN.cmd=e.target.value;mxRender();return}
+  if(e.target.dataset&&e.target.dataset.ed&&CN.ed){CN.ed[e.target.dataset.ed]=e.target.value;if(e.target.dataset.ed==="comando")mxRender();return}
   if(e.target.id==="cn-file"){cnStage(e.target.files);e.target.value="";return}
 });
 $("v-mx").addEventListener("input",function(e){
   if(S.tab!=="m-cnc")return;
   var id=e.target.id;
   if(id==="cn-bruto")CN.draft.bruto=e.target.value;else if(id==="cn-mat")CN.draft.mat=e.target.value;else if(id==="cn-inst")CN.draft.inst=e.target.value;else if(id==="cn-fix")CN.draft.fix=e.target.value;else if(id==="cn-zero")CN.draft.zero=e.target.value;
+  if(e.target.dataset&&e.target.dataset.ed&&CN.ed){CN.ed[e.target.dataset.ed]=e.target.value;var ck=document.querySelector('.cn-edit [data-edreq="'+e.target.dataset.ed+'"]');if(ck)ck.classList.toggle("vazio",!String(e.target.value||"").trim());return}
   if(/^cn-(bruto|mat|inst|fix|zero)$/.test(id))cnGate();
   else if(id==="cn-q"){CN.q=e.target.value;clearTimeout(CN.qt);CN.qt=setTimeout(mxRender,250)}
 });
@@ -4939,6 +4953,42 @@ function msConta(){var b=$("nacc");if(!b)return;b.title=(MS.nome?MS.nome+" · ":
 (function(){try{claude.use("user").then(function(u){MS.user=u||null;if(u&&u.me)u.me().then(function(m){MS.nome=(m&&m.name)||"";msConta()}).catch(function(){});setTimeout(msPerfil,1500);msPerfil()}).catch(function(){})}catch(e){}})();
 $("nacc").addEventListener("click",function(){toast((MS.nome||"Você")+" · "+(MS.gestor?"perfil gestor (vê o Painel de implantação em Configurações)":"perfil usuário"))});
 msMenu();
+
+
+/* ---- Programas CNC: editar dados depois de gerado (gestor, 26/10/2026) ---- */
+var CN_ED_ID=[["codigo","Código do desenho"],["rev","Revisão"],["cliente","Cliente"],["descricao","Descrição da peça"],["material","Material da peça"],["part_number","Part number"],["processo","Código do processo (MIX)"]];
+var CN_ED_AG=[["comando","Comando da máquina"],["materialInf","Material informado"],["bruto","Bruto"],["fixacaoInf","Fixação"],["zeroInf","Zero peça"],["instrucoes","Sequência e observações"]];
+function cnEdInit(p){var o={};CN_ED_ID.concat(CN_ED_AG).forEach(function(r){o[r[0]]=String(p[r[0]]==null?"":p[r[0]])});return o}
+function cnEditHtml(p){
+  var d=CN.ed||cnEdInit(p),pode=!!(p.fonte&&p.fonte.url);
+  function inp(k,lab,req){return'<label class="f'+(req?' cn-fld':'')+(req&&!String(d[k]||"").trim()?' vazio':'')+'"'+(req?' data-edreq="'+k+'"':'')+'><span class="lb">'+lab+(req?' <i>*</i>':'')+'</span><input data-ed="'+k+'" value="'+esc(d[k]||"")+'"></label>'}
+  function txt(k,lab,rows){return'<label class="f cn-fld'+(!String(d[k]||"").trim()?' vazio':'')+'" data-edreq="'+k+'"><span class="lb">'+lab+' <i>*</i></span><textarea data-ed="'+k+'" rows="'+rows+'">'+esc(d[k]||"")+'</textarea></label>'}
+  return'<div class="card cn-edit"><div class="mx-bar"><h3 style="margin:0">Editar dados</h3><span class="hint">Corrija ou confirme as informações. Tudo fica no histórico.</span></div>'+
+   '<div class="cn-edg"><div><h4>Identificação da peça</h4>'+CN_ED_ID.map(function(r){return inp(r[0],r[1],false)}).join("")+'</div>'+
+   '<div><h4>Dados para o agente</h4><label class="f cn-fld" data-edreq="comando"><span class="lb">Comando da máquina <i>*</i></span><select data-ed="comando">'+CN_CMDS.map(function(x){return'<option value="'+x.k+'"'+(d.comando===x.k?" selected":"")+'>'+esc(x.n)+' · '+esc(x.maq)+'</option>'}).join("")+'</select></label>'+
+   inp("materialInf","Material informado",true)+txt("bruto","Bruto",2)+txt("fixacaoInf","Fixação",2)+txt("zeroInf","Zero peça",2)+txt("instrucoes","Sequência e observações",5)+'</div></div>'+
+   '<div class="acts2"><button class="btn" type="button" data-cnc="edcancel" data-id="'+esc(p.id)+'">Cancelar</button><span class="sp" style="flex:1"></span>'+
+   '<button class="btn" type="button" data-cnc="edsave" data-id="'+esc(p.id)+'">Salvar alterações</button>'+
+   (pode?'<button class="btn pri" type="button" data-cnc="edgen" data-id="'+esc(p.id)+'">Salvar e gerar de novo</button>':'<span class="hint">Desenho não guardado: para refazer o programa, arraste o desenho de novo.</span>')+'</div></div>';
+}
+function cnEdSave(p,gerar){
+  var d=CN.ed||{},patch={},ch=[],fixos=JSON.parse(JSON.stringify(p.fixos||{}));
+  var falta=CN_ED_AG.filter(function(r){return!String(d[r[0]]||"").trim()}).map(function(r){return r[1]});
+  if(falta.length){toast("Preencha: "+falta.join(", ")+".");return}
+  CN_ED_ID.concat(CN_ED_AG).forEach(function(r){var k=r[0],v=String(d[k]==null?"":d[k]).trim(),o=String(p[k]==null?"":p[k]);
+    if(v!==o){patch[k]=v;var nm=function(x){return k==="comando"?((cnCmd(x)||{}).n||x):x};ch.push(r[1]+": "+(nm(o)||"vazio")+" → "+(nm(v)||"vazio"));if(CN_ED_ID.some(function(x){return x[0]===k}))fixos[k]=v}});
+  function fim(){CN.edit="";CN.ed=null;mxRender()}
+  if(!ch.length&&!gerar){toast("Nada mudou.");fim();return}
+  if(ch.length){patch.fixos=fixos}
+  var val=p.status==="validado";
+  if(ch.length&&val){patch.status="aguardando";patch.validadoEm=null;patch.validadoPor=""}
+  function grava(){return ch.length?cnSet(p,patch,"Dados editados"+(val?" (validação desfeita)":"")+": "+ch.join("; ")+"."):Promise.resolve()}
+  if(!gerar){grava().then(function(){toast(val?"Alterações salvas. O programa volta para Aguardando validação.":"Alterações salvas.")});fim();return}
+  askDel("Gerar o programa de novo com os dados corrigidos?","O agente refaz todas as operações do "+(p.codigo||"programa")+". Correções feitas à mão no programa atual serão substituídas. O ID "+cnIdTxt("programas_cnc",p)+" continua o mesmo.",function(){
+    var q=JSON.parse(JSON.stringify(p));for(var k in patch)q[k]=patch[k];
+    grava().then(function(){fim();cnRetry(q)});
+  });
+}
 
 fullRender();
 })();

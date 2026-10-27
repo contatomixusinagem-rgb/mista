@@ -2438,7 +2438,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="84",APPD="27/10/2026";
+var APPV="85",APPD="27/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -4168,7 +4168,7 @@ function cnListHtml(){
    '<div class="tbx"><div class="cn-r fh"><span>ID</span><span>Peça</span><span>Cliente</span><span>Comando</span><span>OPs</span><span>Tempo</span><span>Situação</span><span></span></div>'+
    (L.length?L.map(function(p){var c=cnCmd(p.comando)||{},st=cnState(p),ok=!!(p.ops||[]).length;
      return'<div class="cn-r" data-cnc="open" data-id="'+esc(p.id)+'" title="Abrir"><span class="idtag">'+esc(cnIdTxt("programas_cnc",p))+'</span><span><b>'+esc(p.codigo||(p.fonte&&p.fonte.nome)||"(sem código)")+(p.rev?' R'+esc(p.rev):'')+'</b><small>'+esc(p.descricao||"")+(p.material?' · '+esc(p.material):'')+'</small></span><span>'+esc(p.cliente||"–")+'</span><span>'+esc(c.n||p.comando||"–")+'<small>'+esc(c.maq||"")+'</small></span><span>'+(ok?(p.ops||[]).length:"–")+'</span><span class="mono">'+esc(ok?cnTempo(p):"–")+'</span><span><span class="stp '+st.c+'">'+st.t+'</span><small>'+st.sub+'</small></span>'+
-      '<span class="ra2">'+(st.retry&&p.fonte&&p.fonte.url?'<button class="btn sm" type="button" data-cnc="retry" data-id="'+esc(p.id)+'">Gerar de novo</button>':'')+(ok?'<button class="btn sm" type="button" data-cnc="dlzip" data-id="'+esc(p.id)+'" title="Baixar o programa CNC">CNC</button><button class="btn sm" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'" title="Baixar a folha de processo">Folha</button>'+ibtn("open","Compartilhar",'data-cnc="share" data-id="'+esc(p.id)+'"').replace(IC.open,CN_IC.share):'')+ibtn("trash","Excluir",'data-cnc="del" data-id="'+esc(p.id)+'"',"danger")+'</span></div>'}).join(""):'<div class="mx-empty">'+(CN.list.length?"Nenhum programa com esse filtro.":"Nenhum programa ainda. Escolha o comando ao lado e arraste um desenho acima.")+'</div>')+'</div>';
+      '<span class="ra2">'+(st.retry&&p.fonte&&p.fonte.url?'<button class="btn sm" type="button" data-cnc="retry" data-id="'+esc(p.id)+'">Gerar de novo</button>':'')+(ok?'<button class="btn sm" type="button" data-cnc="dlzip" data-id="'+esc(p.id)+'" title="Baixar o programa CNC">CNC</button><button class="btn sm" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'" title="Baixar a folha de processo"'+(CN_FOLHA?'':' hidden')+'>Folha</button>'+ibtn("open","Compartilhar",'data-cnc="share" data-id="'+esc(p.id)+'"').replace(IC.open,CN_IC.share):'')+ibtn("trash","Excluir",'data-cnc="del" data-id="'+esc(p.id)+'"',"danger")+'</span></div>'}).join(""):'<div class="mx-empty">'+(CN.list.length?"Nenhum programa com esse filtro.":"Nenhum programa ainda. Escolha o comando ao lado e arraste um desenho acima.")+'</div>')+'</div>';
 }
 var CN_IC={
  dl:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
@@ -4178,18 +4178,18 @@ function cnDetail(box,p){
   var c=cnCmd(p.comando)||{},val=p.status==="validado",ops=p.ops||[],ok=!!ops.length;
   var busy=p.status==="gerando"||p.status==="erro";
   box.innerHTML='<div class="mx-bar"><button class="btn sm" type="button" data-cnc="back">‹ Programas CNC</button><span class="sp"></span>'+
-   (ok?'<button class="btn pri" type="button" data-cnc="dlzip" data-id="'+esc(p.id)+'">Baixar CNC</button><button class="btn pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'">Baixar folha de processo</button><button class="btn" type="button" data-cnc="share" data-id="'+esc(p.id)+'">Compartilhar</button>':'')+
+   (ok?'<button class="btn pri" type="button" data-cnc="dlzip" data-id="'+esc(p.id)+'">Baixar CNC</button><button class="btn pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'"'+(CN_FOLHA?'':' hidden')+'>Baixar folha de processo</button><button class="btn" type="button" data-cnc="share" data-id="'+esc(p.id)+'">Compartilhar</button>':'')+
    '<button class="btn danger" type="button" data-cnc="del" data-id="'+esc(p.id)+'">Excluir</button></div>'+
    '<div class="card"><div class="dh2"><span class="idtag big">'+esc(cnIdTxt("programas_cnc",p))+'</span><h2>'+esc(p.codigo||"Programa")+(p.rev?' R'+esc(p.rev):'')+'</h2><span class="sub">'+esc([p.cliente,p.descricao,p.material].filter(Boolean).join(" · "))+'</span></div>'+
    ((p.duvidas||[]).length&&/EXCEDE/i.test(p.duvidas[0])?'<div class="cn-env-x big"><b>⚠ '+esc(p.duvidas[0])+'</b></div>':'')+
    (busy?'<div class="askbox"'+(p.status==="erro"?' style="background:var(--bad-bg);color:var(--bad)"':'')+'>'+(p.status==="erro"?'A geração falhou: '+esc(p.erro||"")+(p.fonte&&p.fonte.url?' <button class="btn sm" type="button" data-cnc="retry" data-id="'+esc(p.id)+'">Gerar de novo</button>':''):'O agente está programando este desenho ('+cnElapsed(p.inicio||p.criado)+' min). O resultado aparece aqui sozinho.')+'</div>':
     val?'<div class="askbox" style="background:var(--good-bg);color:var(--good)">Validado'+(p.validadoEm?' em '+esc(nowStr(p.validadoEm)):'')+'. Simule no CIMCO antes de levar à máquina.</div>':
-    '<div class="askbox">Aguardando validação. Confira a folha e o programa, simule no CIMCO e só depois valide. O agente nunca envia programa à máquina.</div>')+
+    '<div class="askbox">Aguardando validação. Confira o programa, simule no CIMCO e só depois valide. O agente nunca envia programa à máquina.</div>')+
    '</div>'+
    '<div class="cn-det"><div class="card"><h3>Desenho</h3><div class="cn-pv" id="cn-dpv"><span class="hint">'+(p.fonte&&p.fonte.url?"Carregando o desenho…":"Desenho não guardado.")+'</span></div></div>'+
    (CN.edit===p.id?cnEditHtml(p):'<div class="card"><div class="mx-bar"><h3 style="margin:0">Dados informados</h3><span class="sp"></span>'+(busy&&p.status==="gerando"?'':'<button class="btn" type="button" data-cnc="edit" data-id="'+esc(p.id)+'">✎ Editar dados</button>')+'</div><dl class="cn-dl"><dt>Comando</dt><dd>'+esc(c.n||p.comando)+' · '+esc(c.maq||"")+'</dd><dt>Material</dt><dd>'+esc(p.materialInf||p.material||"–")+'</dd><dt>Bruto</dt><dd>'+esc(p.bruto||"–")+'</dd><dt>Fixação</dt><dd>'+esc(p.fixacaoInf||"–")+'</dd><dt>Zero peça</dt><dd>'+esc(p.zeroInf||"–")+'</dd><dt>Sequência</dt><dd>'+esc(p.instrucoes||"–")+'</dd></dl>'+
    ((p.duvidas||[]).length?'<div class="cn-notes"><b>Dúvidas do agente</b><ul class="plan">'+p.duvidas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+((p.premissas||[]).length?'<div class="cn-notes"><b>Premissas adotadas</b><ul class="plan">'+p.premissas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+'</div>')+'</div>'+
-   (ok?'<div class="card"><div class="mx-bar"><h3 style="margin:0">Folha de processo · prévia</h3><span class="hint">Tempo e percurso calculados do próprio programa (simulador M70)</span><span class="sp"></span><button class="btn sm pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'">Baixar PDF</button></div><div class="cn-folhas">'+ops.map(function(o,i){return cnFolhaHtml(p,o,i)}).join("")+'</div></div>':'')+
+   (ok&&CN_FOLHA?'<div class="card"><div class="mx-bar"><h3 style="margin:0">Folha de processo · prévia</h3><span class="hint">Tempo e percurso calculados do próprio programa (simulador M70)</span><span class="sp"></span><button class="btn sm pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'">Baixar PDF</button></div><div class="cn-folhas">'+ops.map(function(o,i){return cnFolhaHtml(p,o,i)}).join("")+'</div></div>':'')+
    ops.map(function(o,i){return'<details class="card cn-progc"'+(i===0?'':'')+'><summary><b>Programa '+esc(o.op||("OP"+(i+1)*10))+'</b> <span class="mono hint">'+esc(cnFileName(p,o))+'</span> <span class="hint">· '+(String(o.nc||"").split("\n").length)+' linhas · abrir para conferir ou corrigir</span></summary>'+
      '<textarea class="cn-nc" data-cncop="'+i+'" spellcheck="false"'+(val?' readonly':'')+'>'+esc(o.nc||"")+'</textarea></details>'}).join("")+
    cbRefsHtml(p)+(busy?'':cbFbHtml(p))+
@@ -4235,12 +4235,10 @@ function cnPrompt(c,nome,prep){
   "DADOS DO PROGRAMADOR:\n- Bruto: "+(CN.draft.bruto||"NÃO INFORMADO (não invente: adote uma premissa explícita e registre em duvidas)")+"\n- Material: "+(CN.draft.mat||"ler do desenho")+"\n- Fixação: "+(CN.draft.fix||"")+"\n- Zero peça: "+(CN.draft.zero||"")+"\n- Sequência e observações: "+(CN.draft.inst||"nenhuma")+"\nSiga a fixação, o zero e a sequência do programador; se algo for inviável, diga em duvidas.\n\n"+
   "REGRAS DE SEGURANÇA: o programa nasce aguardando validação (inclua (AGUARDANDO-VALIDACAO) no cabeçalho); nunca envie à máquina; se a peça exigir 3D, 4º/5º eixo ou torneamento, não gere o programa: explique em duvidas. Seja conservador em dados de corte quando houver dúvida.\n\n"+
   (prep.texto?"TEXTO EXTRAÍDO DO DESENHO:\n"+String(prep.texto).slice(0,12000)+"\n\n":"")+
-  "FORMATO DA RESPOSTA (obrigatório):\n1) Primeiro um bloco ```json com: {\"processo\":\"código MIX da peça, ex.: MIX-GCT-12.00.08\",\"part_number\":\"part number/código do cliente\",\"codigo\":\"nº do desenho\",\"revisao\":\"\",\"cliente\":\"\",\"descricao\":\"\",\"material\":\"\",\"operacoes\":[{\"op\":\"OP10\",\"descricao\":\"o que esta operação usina, em uma ou duas frases\",\"fixacao\":\"\",\"zero\":\"\",\"nota\":\"cuidados para o operador\",\"dispositivo\":\"morsa, placa, calços…\",\"contorno\":[[x,y],…],\"circulos\":[[cx,cy,r],…],\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"classe\":\"\",\"suporte\":\"\",\"balanco\":\"\",\"s\":0,\"f\":0,\"uso\":\"\"}]}],\"premissas\":[\"...\"],\"duvidas\":[\"...\"]}\n"+
-  "   contorno = contorno externo da peça vista de cima, em mm, nas coordenadas do zero peça desta operação; circulos = furos/rebaixos vistos de cima. Servem de fundo para o percurso.\n"+
-  "2) Para cada operação, um bloco com o desenho de MONTAGEM em SVG:\n```svg OP10\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"...\">…</svg>\n```\n"+
-  "   Guia da montagem (desenhado para esta peça): 2 ou 3 vistas lado a lado (vista principal de cima ou frontal + corte mostrando apoio e folga embaixo; se houver tombos, uma tira com a sequência 1-2-3 com o lado usinado em vermelho). Peça: preenchimento #E8EAF2 e contorno #010066; furos em branco com centro marcado. Morsa/castanhas/placa: #C9CCD8 com hachura (linhas diagonais). Paralelos e calços: retângulos tracejados vermelhos #EC3237 na vista de cima ou rosa claro #FFE3E4 no corte. Zero peça: cruz vermelha com rótulo (X0 Y0, Z0). Face a usinar: faixa vermelha translúcida. Textos curtos em vermelho apontando o que importa (ex.: folga ≥ 10). Sem cotas completas. Só elementos SVG básicos (rect, line, path, circle, polygon, text, g); sem imagens, scripts ou fontes externas; viewBox proporcional a 184x63.\n"+
-  "3) Depois, um bloco por operação com o programa, na mesma ordem:\n```nc OP10\n%\n(...programa completo...)\n%\n```\nNada fora desses blocos.";
+  "FORMATO DA RESPOSTA (obrigatório):\n1) Primeiro um bloco ```json com: {\"processo\":\"código MIX da peça, ex.: MIX-GCT-12.00.08\",\"part_number\":\"part number/código do cliente\",\"codigo\":\"nº do desenho\",\"revisao\":\"\",\"cliente\":\"\",\"descricao\":\"\",\"material\":\"\",\"operacoes\":[{\"op\":\"OP10\",\"descricao\":\"o que esta operação usina, em uma ou duas frases\",\"fixacao\":\"\",\"zero\":\"\",\"nota\":\"cuidados para o operador\",\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"s\":0,\"f\":0,\"uso\":\"\"}]}],\"premissas\":[\"...\"],\"duvidas\":[\"...\"]}\n"+
+  "2) Depois, um bloco por operação com o programa, na mesma ordem (sem desenho de montagem, sem SVG: só o programa):\n```nc OP10\n%\n(...programa completo...)\n%\n```\nNada fora desses blocos.";
 }
+var CN_FOLHA=false; /* folha de processo desligada pelo gestor em 27/10/2026: foco só no programa NC, para reduzir o tempo do agente */
 function cnParse(t){
   t=String(t||"");var meta={},ncs=[],svgs={},re=/```([A-Za-z]*)[ \t]*([A-Za-z]*-?\d*)?[ \t]*\n([\s\S]*?)```/g,x,ord=0;
   while((x=re.exec(t))){var lang=(x[1]||"").toLowerCase(),tag=(x[2]||"").toUpperCase().replace("-",""),body=x[3].trim();if(!body)continue;
@@ -4285,7 +4283,7 @@ function cnRun(j){
   }).then(function(){
     var base={comando:j.c.k,bruto:j.draft.bruto,instrucoes:j.draft.inst,materialInf:j.draft.mat,fixacaoInf:j.draft.fix,zeroInf:j.draft.zero,status:"gerando",erro:"",inicio:t0,atualizado:t0,
       fonte:{nome:j.f.name,tipo:prep.kind,id:asset?asset.id:"",url:asset?asset.url:""}};
-    if(j.docId){var old=CN.list.filter(function(x){return x.id===j.docId})[0]||{},h=(old.hist||[]).slice(-199);h.push({at:t0,uid:AG.uid||"",txt:"Nova geração iniciada ("+j.c.n+")."});base.hist=h;base.erroCod="";if(j.enxuto)h.push({at:t0,uid:AG.uid||"",txt:"Modo enxuto: sem desenho de montagem, para o agente conseguir terminar."});
+    if(j.docId){var old=CN.list.filter(function(x){return x.id===j.docId})[0]||{},h=(old.hist||[]).slice(-199);h.push({at:t0,uid:AG.uid||"",txt:"Nova geração iniciada ("+j.c.n+")."});base.hist=h;base.erroCod="";if(j.enxuto)h.push({at:t0,uid:AG.uid||"",txt:"Modo enxuto: pedido mais objetivo, para o agente conseguir terminar."});
       return PR.db.doc("programas_cnc/"+j.docId).update(base)}
     j.docId="cnc-"+t0.toString(36)+"-"+rid().slice(0,4);
     base.codigo=j.f.name.replace(/\.[^.]+$/,"");base.rev="";base.cliente="";base.descricao="";base.material=j.draft.mat;base.ops=[];base.premissas=[];base.duvidas=[];
@@ -4306,7 +4304,7 @@ function cnRun(j){
       if(n&&Date.now()-lastW>15000){lastW=Date.now();PR.db.doc("programas_cnc/"+j.docId).update({progresso:n,atualizado:lastW}).catch(function(){})}};
     j.to=setTimeout(function(){j.tempo=1;try{j.ctl.abort()}catch(er){}},10*60000);
     var sv=CN.draft;CN.draft=j.draft;var pr=cnPrompt(j.c,j.f.name,prep);CN.draft=sv;if(j.refs&&j.refs.txt)pr=pr.replace("FORMATO DA RESPOSTA (obrigatório):",j.refs.txt+"FORMATO DA RESPOSTA (obrigatório):");
-    if(j.enxuto)pr+="\n\nMODO ENXUTO (a tentativa anterior pensou demais e não escreveu nada): NÃO gere os blocos ```svg de montagem (pule o item 2); \"contorno\" com no máximo 40 pontos e \"circulos\" só os principais; decida a estratégia de forma objetiva, sem rever cada coordenada várias vezes, e escreva logo os blocos json e nc; use ciclos fixos e sub-rotinas para o que se repete. Se a peça for grande demais para um pedido, gere só a primeira operação e explique o resto em duvidas.";
+    if(j.enxuto)pr+="\n\nMODO ENXUTO (a tentativa anterior pensou demais e não escreveu nada): decida a estratégia de forma objetiva, sem rever cada coordenada várias vezes, e escreva logo os blocos json e nc; use ciclos fixos e sub-rotinas para o que se repete. Se a peça for grande demais para um pedido, gere só a primeira operação e explique o resto em duvidas.";
     return AG.sample(pr,o).then(function(r){clearTimeout(j.to);return r},function(e){clearTimeout(j.to);var er=new Error(j.tempo?"O agente passou de 10 minutos sem terminar. Tente de novo; se repetir, divida a peça em operações nas instruções.":e&&(e.name==="AbortError"||e.code==="aborted")?"Cancelado pelo usuário.":agErr(e));er.code=e&&e.code;throw er});
   }).then(function(r){
     var res=cnParse(r&&r.text);
@@ -4626,7 +4624,7 @@ function cnShare(p){
    '<a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(big?txt+"\n(arquivo NC enviado à parte)":body)+'">WhatsApp</a>'+
    '<a class="btn" target="_blank" rel="noopener" href="mailto:?subject='+encodeURIComponent(txt)+'&body='+encodeURIComponent(big?txt+"\n\nArquivo NC em anexo.":body)+'">E-mail</a>'+
    '<button class="btn" type="button" data-cs="copy">Copiar programa</button>'+
-   '<button class="btn" type="button" data-cs="dl">Baixar CNC para anexar</button><button class="btn" type="button" data-cs="folha">Baixar folha (PDF)</button>'+
+   '<button class="btn" type="button" data-cs="dl">Baixar CNC para anexar</button><button class="btn" type="button" data-cs="folha"'+(CN_FOLHA?'':' hidden')+'>Baixar folha (PDF)</button>'+
    '</div>'+(big?'<p class="hint">O programa é longo para ir no corpo da mensagem: baixe o arquivo e anexe no WhatsApp ou no e-mail.</p>':'')+
    '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-x="cfx">Fechar</button></div></div>';
   m.hidden=false;

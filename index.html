@@ -2444,7 +2444,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="88",APPD="27/10/2026";
+var APPV="89",APPD="27/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -4333,7 +4333,7 @@ function cnRun(j){
       ops:res.ops,premissas:(Array.isArray(m.premissas)?m.premissas:[]).map(String).slice(0,5),duvidas:(Array.isArray(m.duvidas)?m.duvidas:[]).map(String).slice(0,5),
       truncado:!!(r&&r.truncated),status:"aguardando",erro:"",atualizado:t,hist:h};if(old.fixos)for(var fk in old.fixos)doc[fk]=old.fixos[fk];
     if(doc.truncado)doc.duvidas.unshift("A resposta do agente foi cortada: confira se o último programa termina com M30 e %.");
-    doc.ops.forEach(function(o){var sm=cnSim(o.nc);o.tempoModelo=o.tempo;o.tempo=fmtT(sm.tempo);o.avisosSim=sm.avisos.slice(0,20)});
+    doc.ops.forEach(function(o){var sm=cnSim(o.nc);o.tempoModelo=o.tempo;o.tempo=fmtT(sm.tempo);o.avisosSim=sm.avisos.slice(0,20);o.nc=cnTempoNc(o.nc)});
     return PR.db.doc("programas_cnc/"+j.docId).update(doc).then(function(){cnJob(j,"ok","Programa gerado.");toast("Programa "+doc.codigo+" gerado. Aguardando validação.")});
   }).catch(function(e){
     var msg=(e&&e.message)||"Não consegui gerar o programa.";cnJob(j,"erro",msg);
@@ -4342,7 +4342,7 @@ function cnRun(j){
   });
 }
 /* ---- baixar, compartilhar, excluir, validar ---- */
-function cnBlob(p,o){return new Blob([String(o.nc||"").replace(/\r?\n/g,"\r\n")+"\r\n"],{type:"text/plain"})}
+function cnBlob(p,o){return new Blob([cnTempoNc(o.nc).replace(/\r?\n/g,"\r\n")+"\r\n"],{type:"text/plain"})}
 function cnSave(name,blob){
   if(DLC&&DLC.save)return DLC.save({filename:name,data:blob}).then(function(){toast(name+" salvo.")}).catch(function(){toast("Download cancelado.")});
   var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500);return Promise.resolve();
@@ -4362,7 +4362,7 @@ function zipStore(files){
   return new Blob(parts.concat(cen,[end]),{type:"application/zip"});
 }
 function cnBase(p){return (cnIdTxt("programas_cnc",p)+"_"+String(p.codigo||"PROGRAMA")+(p.rev?"-R"+p.rev:"")).toUpperCase().replace(/[^A-Z0-9.\-_]+/g,"-").replace(/^-+|-+$/g,"")}
-function cnZip(p,o){var ops=o?[o]:(p.ops||[]);return zipStore(ops.map(function(x){return{name:cnFileName(p,x),data:String(x.nc||"").replace(/\r?\n/g,"\r\n")+"\r\n"}}))}
+function cnZip(p,o){var ops=o?[o]:(p.ops||[]);return zipStore(ops.map(function(x){return{name:cnFileName(p,x),data:cnTempoNc(x.nc).replace(/\r?\n/g,"\r\n")+"\r\n"}}))}
 function cnDownload(p,i){
   var ops=p.ops||[];if(!ops.length){toast("Este registro não tem programa.");return}
   var o=i==null?null:ops[i];cnSave(cnBase(p)+(o?"-"+o.op:"")+"_CNC.zip",cnZip(p,o));
@@ -4512,7 +4512,7 @@ function simM70(text){
 var SIMC={};
 function cnSim(nc){var k=String(nc||"");var key=k.length+":"+k.slice(0,80)+":"+k.slice(-80);if(SIMC[key])return SIMC[key];var r;try{r=simM70(k)}catch(e){r={tempo:0,porFerr:{},avisos:["simulador falhou: "+(e&&e.message)],caminho:[]}}SIMC[key]=r;return r}
 function fmtT(s){s=Math.round(s||0);return("0"+Math.floor(s/3600)).slice(-2)+":"+("0"+Math.floor(s%3600/60)).slice(-2)+":"+("0"+s%60).slice(-2)}
-function cnTempo(p){var t=0;(p.ops||[]).forEach(function(o){t+=cnSim(o.nc).tempo});if(!t)return"–";var m=Math.round(t/60);return m>=60?Math.floor(m/60)+"h"+("0"+m%60).slice(-2):m+" min"}
+function cnTempo(p){var t=0;(p.ops||[]).forEach(function(o){t+=cnSim(o.nc).tempo});if(!t)return"–";t=Math.round(t);if(t<3600)return Math.floor(t/60)+" min "+("0"+t%60).slice(-2)+" s";var m=Math.round(t/60);return m>=60?Math.floor(m/60)+"h"+("0"+m%60).slice(-2):m+" min"}
 function cnToolTime(sim,t){var tot=0,key=String(t||"").toUpperCase().replace(/^T(\d)$/,"T0$1");for(var k in sim.porFerr){if(k==="inicio")continue;if(k.split(" ")[0]===key)tot+=sim.porFerr[k]}return tot}
 
 /* --- SVG da folha (A4 retrato, mm) --- */
@@ -4634,7 +4634,7 @@ function cnShare(p){
   var files=[new File([cnZip(p)],cnBase(p)+"_CNC.zip",{type:"application/zip"})];
   var txt="Programa CNC "+(p.codigo||"")+(p.rev?" R"+p.rev:"")+(p.cliente?" · "+p.cliente:"")+" · "+((cnCmd(p.comando)||{}).n||"")+(p.status==="validado"?"":" · AGUARDANDO VALIDAÇÃO");
   var canFiles=false;try{canFiles=!!(navigator.canShare&&navigator.canShare({files:files}))}catch(e){}
-  var body=txt+"\n\n"+ops.map(function(o){return"=== "+cnFileName(p,o)+" ===\n"+o.nc}).join("\n\n");
+  var body=txt+"\n\n"+ops.map(function(o){return"=== "+cnFileName(p,o)+" ===\n"+cnTempoNc(o.nc)}).join("\n\n");
   var big=body.length>6000;
   m.innerHTML='<div class="card" role="dialog" aria-modal="true" aria-label="Compartilhar"><h3>Compartilhar '+esc(p.codigo||"programa")+'</h3>'+
    '<p class="hint">Programas e desenhos de cliente são confidenciais. Envie só para quem vai usar.'+(p.status!=="validado"?' Este programa ainda <b>não foi validado</b>.':'')+'</p>'+
@@ -4659,7 +4659,7 @@ function cnShare(p){
 function cnSet(p,patch,txt){patch.atualizado=Date.now();if(txt){var h=(p.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:txt});patch.hist=h}
   return PR.db.doc("programas_cnc/"+p.id).update(patch).catch(function(){toast("Não consegui gravar.")})}
 function cnCollectNc(p){var ops=JSON.parse(JSON.stringify(p.ops||[])),ch=[];
-  Array.prototype.forEach.call(document.querySelectorAll("textarea[data-cncop]"),function(t){var i=+t.dataset.cncop;if(ops[i]&&ops[i].nc!==t.value){ops[i].nc=t.value;ch.push(ops[i].op)}});return{ops:ops,ch:ch}}
+  Array.prototype.forEach.call(document.querySelectorAll("textarea[data-cncop]"),function(t){var i=+t.dataset.cncop;var v=cnTempoNc(t.value);if(ops[i]&&ops[i].nc!==v){ops[i].nc=v;ch.push(ops[i].op)}});return{ops:ops,ch:ch}}
 
 $("v-mx").addEventListener("click",function(e){
   if(S.tab!=="m-cnc")return;
@@ -5190,31 +5190,53 @@ function cnCircs(a){return(Array.isArray(a)?a:[]).map(function(q){return Array.i
 function cnFmtN(v){var r=Math.round(v*100)/100;return String(r).replace(".",",")}
 /* desenho de montagem automático, em mm do papel, dentro da caixa (x,y,w,h) */
 function cnMontAuto(p,o,x,y,w,h){
-  var pts=cnPts(o.contorno),cs=cnCircs(o.circulos),disp=(String(o.dispositivo||"")+" "+String(o.fixacao||p.fixacaoInf||"")).toUpperCase(),s="";
-  if(!pts.length&&!cs.length)return ftext(x+w/2,y+h/2-2,"Montagem automática: o agente não mandou o contorno da peça",8,{c:FV.rot,a:"middle"})+ftext(x+w/2,y+h/2+4,(o.fixacao||p.fixacaoInf||""),8,{c:FV.azul,a:"middle"});
-  var X0=0,X1=0,Y0=0,Y1=0;pts.forEach(function(q){X0=Math.min(X0,q[0]);X1=Math.max(X1,q[0]);Y0=Math.min(Y0,q[1]);Y1=Math.max(Y1,q[1])});
-  cs.forEach(function(c){X0=Math.min(X0,c[0]-c[2]);X1=Math.max(X1,c[0]+c[2]);Y0=Math.min(Y0,c[1]-c[2]);Y1=Math.max(Y1,c[1]+c[2])});
-  var pw=Math.max(X1-X0,1),ph=Math.max(Y1-Y0,1),mx=28,my=12,sc=Math.min((w-2*mx)/pw,(h-2*my)/ph);
-  var ox=x+mx+((w-2*mx)-pw*sc)/2,oy=y+my+((h-2*my)-ph*sc)/2;
+  var pts=cnPts(o.contorno),cs=cnCircs(o.circulos),disp=String(o.dispositivo||"").toUpperCase(),fix=String(o.fixacao||""),s="";
+  if(!pts.length&&!cs.length)return ftext(x+w/2,y+h/2-2,"Montagem automática: o agente não mandou o contorno da peça",8,{c:FV.rot,a:"middle"})+ftext(x+w/2,y+h/2+4,String(o.fixacao||p.fixacaoInf||"").split("\n")[0].slice(0,90),8,{c:FV.azul,a:"middle"});
+  var X0=1e9,X1=-1e9,Y0=1e9,Y1=-1e9;function inc(a,b){X0=Math.min(X0,a);X1=Math.max(X1,a);Y0=Math.min(Y0,b);Y1=Math.max(Y1,b)}
+  pts.forEach(function(q){inc(q[0],q[1])});cs.forEach(function(c){inc(c[0]-c[2],c[1]-c[2]);inc(c[0]+c[2],c[1]+c[2])});
+  var PX0=X0,PX1=X1,PY0=Y0,PY1=Y1,pw=Math.max(PX1-PX0,1),ph=Math.max(PY1-PY0,1);
+  /* dispositivo: só o campo "dispositivo"; MORSA vence PLACA */
+  var tipo=/MORSA/.test(disp)?"morsa":/PLACA/.test(disp)?"placa":"";
+  var nm=tipo==="morsa"?(/DUAS|2\s*MORSAS|DUPLA/.test(disp)?2:1):0,faixas=[],jt=Math.max(6,Math.min(18,ph*0.25)),jgap=Math.max(0.8,ph*0.02);
+  if(tipo==="morsa"){
+    var re=/X\s*(-?\d+(?:[.,]\d+)?)\s*(?:a|até|ate|ao|-|–|→)\s*X\s*(-?\d+(?:[.,]\d+)?)/gi,m,rg=[];
+    while((m=re.exec(fix))){var a=cnNum(m[1]),b=cnNum(m[2]);if(a!=null&&b!=null&&Math.abs(b-a)>1)rg.push([Math.min(a,b),Math.max(a,b)])}
+    var nomes=(fix.match(/SF\s?\d{3}/gi)||[]).map(function(z){return z.toUpperCase().replace(/\s/,"")});
+    for(var k=0;k<nm;k++){var r=rg[k];if(!r){var cw=nm===2?pw*0.3:Math.min(pw*0.8,Math.max(pw*0.5,150));var cx=nm===2?PX0+pw*(k?0.75:0.25):(PX0+PX1)/2;r=[cx-cw/2,cx+cw/2]}faixas.push({x0:r[0],x1:r[1],nome:nomes[k]||""})}
+    faixas.forEach(function(fx){inc(fx.x0,PY0-jgap-jt);inc(fx.x1,PY1+jgap+jt)});
+  }
+  var rc=0,ccx=(PX0+PX1)/2,ccy=(PY0+PY1)/2;
+  if(tipo==="placa"){rc=Math.max(pw,ph)/2*1.12+2;inc(ccx-rc,ccy-rc);inc(ccx+rc,ccy+rc)}
+  inc(0,0);
+  var bw=Math.max(X1-X0,1),bh=Math.max(Y1-Y0,1),mx=6,myT=6,myB=9,sc=Math.min((w-2*mx-34)/bw,(h-myT-myB)/bh);
+  var ox=x+mx+((w-2*mx)-bw*sc)/2,oy=y+myT+((h-myT-myB)-bh*sc)/2;
   function px(v){return(ox+(v-X0)*sc).toFixed(2)}function py(v){return(oy+(Y1-v)*sc).toFixed(2)}
-  var bx0=+px(X0),bx1=+px(X1),by0=+py(Y1),by1=+py(Y0),hat='fill="#C9CCD8" stroke="#8E93A8" stroke-width="0.25"';
-  /* dispositivo (sem posição exata) */
-  if(/PLACA|CASTANHA/.test(disp)){var cx=(bx0+bx1)/2,cy=(by0+by1)/2,rr=Math.max(bx1-bx0,by1-by0)/2+4;s+='<circle cx="'+cx.toFixed(2)+'" cy="'+cy.toFixed(2)+'" r="'+rr.toFixed(2)+'" fill="none" stroke="#8E93A8" stroke-width="3.2" opacity="0.6"/>';
-    [0,120,240].forEach(function(a){var r2=a*Math.PI/180;s+='<rect x="'+(cx+Math.cos(r2)*(rr+1)-2.5).toFixed(2)+'" y="'+(cy+Math.sin(r2)*(rr+1)-2.5).toFixed(2)+'" width="5" height="5" '+hat+'/>'});s+=ftext(cx,by1+(rr-(by1-by0)/2)+7,"PLACA",6.5,{c:FV.rot,a:"middle"})}
-  else if(/DUAS|2 MORSAS|DUAS-MORSAS/.test(disp)){var mw=Math.min(14,(bx1-bx0)/4);[0.25,0.75].forEach(function(f){var cxm=bx0+(bx1-bx0)*f;s+='<rect x="'+(cxm-mw/2).toFixed(2)+'" y="'+(by0-4).toFixed(2)+'" width="'+mw.toFixed(2)+'" height="3.2" '+hat+'/><rect x="'+(cxm-mw/2).toFixed(2)+'" y="'+(by1+0.8).toFixed(2)+'" width="'+mw.toFixed(2)+'" height="3.2" '+hat+'/>'});s+=ftext((bx0+bx1)/2,by1+9,"DUAS MORSAS",6.5,{c:FV.rot,a:"middle"})}
-  else if(/MORSA|SF1|SF2/.test(disp)||!disp.trim()){var jw=Math.min(bx1-bx0+8,w-8);s+='<rect x="'+((bx0+bx1)/2-jw/2).toFixed(2)+'" y="'+(by0-4).toFixed(2)+'" width="'+jw.toFixed(2)+'" height="3.2" '+hat+'/><rect x="'+((bx0+bx1)/2-jw/2).toFixed(2)+'" y="'+(by1+0.8).toFixed(2)+'" width="'+jw.toFixed(2)+'" height="3.2" '+hat+'/>'+ftext((bx0+bx1)/2,by1+9,"MORSA",6.5,{c:FV.rot,a:"middle"})}
-  else s+=ftext((bx0+bx1)/2,by1+9,String(o.dispositivo||"").slice(0,40),6.5,{c:FV.rot,a:"middle"});
-  /* peça */
+  var hat='fill="#C9CCD8" stroke="#8E93A8" stroke-width="0.25"';
+  if(tipo==="morsa"){faixas.forEach(function(fx){
+      [[PY1+jgap+jt],[PY0-jgap]].forEach(function(yy){s+='<rect x="'+px(fx.x0)+'" y="'+py(yy[0])+'" width="'+((fx.x1-fx.x0)*sc).toFixed(2)+'" height="'+(jt*sc).toFixed(2)+'" '+hat+'/>'});
+      s+=ftext((+px(fx.x0)+ +px(fx.x1))/2,+py(PY0-jgap-jt)+3.4,"MORSA"+(fx.nome?" "+fx.nome:""),5.6,{c:FV.rot,a:"middle"})})}
+  else if(tipo==="placa"){var cpx=+px(ccx),cpy=+py(ccy),rr=rc*sc;s+='<circle cx="'+cpx.toFixed(2)+'" cy="'+cpy.toFixed(2)+'" r="'+rr.toFixed(2)+'" fill="#EEF0F6" stroke="#8E93A8" stroke-width="0.5"/>';
+    [90,210,330].forEach(function(a){var r2=a*Math.PI/180;s+='<rect x="'+(cpx+Math.cos(r2)*rr*0.86-2).toFixed(2)+'" y="'+(cpy-Math.sin(r2)*rr*0.86-2).toFixed(2)+'" width="4" height="4" '+hat+'/>'});
+    s+=ftext(cpx,Math.min(cpy+rr+3.4,y+h-1.5),"PLACA",5.6,{c:FV.rot,a:"middle"})}
+  else if(disp.trim())s+=ftext(x+w/2,y+h-2,disp.slice(0,40),5.6,{c:FV.rot,a:"middle"});
   if(pts.length>2)s+='<polygon points="'+pts.map(function(q){return px(q[0])+","+py(q[1])}).join(" ")+'" fill="#E8EAF2" stroke="#010066" stroke-width="0.35"/>';
-  else if(pts.length)s+='<rect x="'+bx0+'" y="'+by0+'" width="'+(bx1-bx0).toFixed(2)+'" height="'+(by1-by0).toFixed(2)+'" fill="#E8EAF2" stroke="#010066" stroke-width="0.35"/>';
-  /* furos com cota X/Y a partir do zero */
-  var lab=0;cs.slice(0,60).forEach(function(c){var cx2=+px(c[0]),cy2=+py(c[1]),r=Math.max(c[2]*sc,0.6);
+  else if(pts.length)s+='<rect x="'+px(PX0)+'" y="'+py(PY1)+'" width="'+(pw*sc).toFixed(2)+'" height="'+(ph*sc).toFixed(2)+'" fill="#E8EAF2" stroke="#010066" stroke-width="0.35"/>';
+  var lab=0,vert=cs.length>4&&pw>ph*3;
+  cs.slice(0,60).forEach(function(c){var cx2=+px(c[0]),cy2=+py(c[1]),r=Math.max(c[2]*sc,0.6);
     s+='<circle cx="'+cx2.toFixed(2)+'" cy="'+cy2.toFixed(2)+'" r="'+r.toFixed(2)+'" fill="#fff" stroke="#010066" stroke-width="0.3"/><path d="M'+(cx2-0.9).toFixed(2)+' '+cy2.toFixed(2)+'h1.8M'+cx2.toFixed(2)+' '+(cy2-0.9).toFixed(2)+'v1.8" stroke="#010066" stroke-width="0.15"/>';
     if(Math.abs(c[0])<0.01&&Math.abs(c[1])<0.01){s+=ftext(cx2,cy2+r+2.6,"Ø"+cnFmtN(c[2]*2),4.6,{c:FV.rot,a:"middle"});return}
-    if(lab<24){lab++;s+=ftext(cx2+r+0.8,cy2-0.6,"X"+cnFmtN(c[0])+" Y"+cnFmtN(c[1]),5,{c:FV.azul})+ftext(cx2+r+0.8,cy2+2.2,"Ø"+cnFmtN(c[2]*2),4.6,{c:FV.rot})}});
-  /* zero peça */
+    if(lab<24){lab++;
+      if(vert)s+=ftext(cx2,cy2-r-2.4,"X"+cnFmtN(c[0]),4.6,{c:FV.azul,a:"middle"})+ftext(cx2,cy2-r-0.6,"Y"+cnFmtN(c[1]),4.2,{c:FV.azul,a:"middle"})+ftext(cx2,cy2+r+2.4,"Ø"+cnFmtN(c[2]*2),4.2,{c:FV.rot,a:"middle"});
+      else s+=ftext(cx2+r+0.8,cy2-0.6,"X"+cnFmtN(c[0])+" Y"+cnFmtN(c[1]),5,{c:FV.azul})+ftext(cx2+r+0.8,cy2+2.2,"Ø"+cnFmtN(c[2]*2),4.6,{c:FV.rot})}});
   var zx=+px(0),zy=+py(0);s+='<path d="M'+(zx-3.5).toFixed(2)+' '+zy.toFixed(2)+'h7M'+zx.toFixed(2)+' '+(zy-3.5).toFixed(2)+'v7" stroke="#EC3237" stroke-width="0.5"/><circle cx="'+zx.toFixed(2)+'" cy="'+zy.toFixed(2)+'" r="1.1" fill="none" stroke="#EC3237" stroke-width="0.35"/>'+ftext(zx-1.8,zy-2.2,"X0 Y0",6,{bold:true,c:"#EC3237",a:"end"});
-  return s;
+  /* tudo recortado dentro da caixa */
+  return'<svg x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" viewBox="'+x+' '+y+' '+w+' '+h+'" overflow="hidden">'+s+'</svg>';
+}
+/* tempo simulado no cabeçalho do programa, no formato da casa: (TEMPO-14MIN-12S) */
+function cnTempoNc(nc){
+  nc=String(nc||"");if(!/\(\s*TEMPO[\s\-:][^)]*\)/i.test(nc))return nc;
+  var t=Math.round(cnSim(nc).tempo||0),tag="(TEMPO-"+Math.floor(t/60)+"MIN-"+("0"+t%60).slice(-2)+"S)";
+  return nc.replace(/\(\s*TEMPO[\s\-:][^)]*\)/i,tag);
 }
 /* o que falta na folha desta operação */
 function cnFolhaFalta(o){var f=[];

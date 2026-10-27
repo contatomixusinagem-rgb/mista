@@ -2444,7 +2444,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="89",APPD="27/10/2026";
+var APPV="90",APPD="27/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -4365,7 +4365,11 @@ function cnBase(p){return (cnIdTxt("programas_cnc",p)+"_"+String(p.codigo||"PROG
 function cnZip(p,o){var ops=o?[o]:(p.ops||[]);return zipStore(ops.map(function(x){return{name:cnFileName(p,x),data:cnTempoNc(x.nc).replace(/\r?\n/g,"\r\n")+"\r\n"}}))}
 function cnDownload(p,i){
   var ops=p.ops||[];if(!ops.length){toast("Este registro não tem programa.");return}
-  var o=i==null?null:ops[i];cnSave(cnBase(p)+(o?"-"+o.op:"")+"_CNC.zip",cnZip(p,o));
+  /* sem zip (gestor, 27/10/2026): o claude.ai não aceita a extensão .NC/.MPF, então cada programa sai como um arquivo .txt
+     com o nome do programa (ex.: 016-249-R0-OP10.NC.txt); o conteúdo é o próprio programa, com o tempo do simulador no cabeçalho */
+  var lista=i==null?ops:[ops[i]],pr=Promise.resolve();
+  lista.forEach(function(o){pr=pr.then(function(){return cnSave(cnFileName(p,o)+".txt",cnBlob(p,o))})});
+  return pr;
 }
 function cnSave(name,blob){
   if(DLC&&DLC.save)return DLC.save({filename:name,data:blob}).then(function(){toast(name+" salvo.")}).catch(function(e){var c=e&&e.code;toast(c==="declined"?"Download cancelado.":"Não consegui baixar ("+(c||"erro")+").")});

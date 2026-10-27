@@ -2444,7 +2444,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="87",APPD="27/10/2026";
+var APPV="88",APPD="27/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -4247,8 +4247,9 @@ function cnPrompt(c,nome,prep){
   "DADOS DO PROGRAMADOR:\n- Bruto: "+(CN.draft.bruto||"NÃO INFORMADO (não invente: adote uma premissa explícita e registre em duvidas)")+"\n- Material: "+(CN.draft.mat||"ler do desenho")+"\n- Fixação: "+(CN.draft.fix||"")+"\n- Zero peça: "+(CN.draft.zero||"")+"\n- Sequência e observações: "+(CN.draft.inst||"nenhuma")+"\nSiga a fixação, o zero e a sequência do programador; se algo for inviável, diga em duvidas.\n\n"+
   "REGRAS DE SEGURANÇA: o programa nasce aguardando validação (inclua (AGUARDANDO-VALIDACAO) no cabeçalho); nunca envie à máquina; se a peça exigir 3D, 4º/5º eixo ou torneamento, não gere o programa: explique em duvidas. Seja conservador em dados de corte quando houver dúvida.\n\n"+
   (prep.texto?"TEXTO EXTRAÍDO DO DESENHO:\n"+String(prep.texto).slice(0,12000)+"\n\n":"")+
-  "FORMATO DA RESPOSTA (obrigatório):\n1) Primeiro um bloco ```json com: {\"processo\":\"código MIX da peça, ex.: MIX-GCT-12.00.08\",\"part_number\":\"part number/código do cliente\",\"codigo\":\"nº do desenho\",\"revisao\":\"\",\"cliente\":\"\",\"descricao\":\"\",\"material\":\"\",\"operacoes\":[{\"op\":\"OP10\",\"descricao\":\"o que esta operação usina, em uma ou duas frases\",\"fixacao\":\"\",\"zero\":\"\",\"nota\":\"cuidados para o operador\",\"dispositivo\":\"MORSA | DUAS-MORSAS | PLACA | DISPOSITIVO\",\"contorno\":[[x,y],…],\"circulos\":[[cx,cy,r],…],\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"classe\":\"\",\"suporte\":\"\",\"balanco\":\"\",\"s\":0,\"f\":0,\"uso\":\"\"}]}],\"premissas\":[\"...\"],\"duvidas\":[\"...\"]}\n"+
+  "FORMATO DA RESPOSTA (obrigatório):\n1) Primeiro um bloco ```json com: {\"processo\":\"código MIX da peça, ex.: MIX-GCT-12.00.08\",\"part_number\":\"part number/código do cliente\",\"codigo\":\"nº do desenho\",\"revisao\":\"\",\"cliente\":\"\",\"descricao\":\"\",\"material\":\"\",\"operacoes\":[{\"op\":\"OP10\",\"descricao\":\"o que esta operação usina, em uma ou duas frases\",\"fixacao\":\"\",\"zero\":\"\",\"nota\":\"cuidados para o operador\",\"dispositivo\":\"MORSA | DUAS-MORSAS | PLACA | DISPOSITIVO\",\"contorno\":[[x,y],…],\"circulos\":[[cx,cy,r],…],\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"s\":0,\"f\":0,\"uso\":\"curto\"}]}],\"premissas\":[\"...\"],\"duvidas\":[\"...\"]}\n"+
   "   contorno = contorno externo da peça vista de cima (no máximo 40 pontos), em mm, nas coordenadas do zero peça desta operação; circulos = furos e rebaixos vistos de cima (centro e raio; lista vazia se não houver). A página desenha a montagem com isso: NÃO mande SVG.\n"+
+  "   LIMITES (resposta leve): fixacao, zero e nota com no máximo 2 linhas cada; premissas e duvidas com no máximo 5 itens cada; ferramentas só com t, nome, s, f e uso curto (classe, suporte e balanço vêm do cadastro de ferramentas da página). O tempo, o ciclo por ferramenta e o percurso são calculados pela página: não os escreva.\n"+
   "2) Depois, um bloco por operação com o programa, na mesma ordem:\n```nc OP10\n%\n(...programa completo...)\n%\n```\nNada fora desses blocos.";
 }
 var CN_FOLHA=true; /* 27/10/2026: folha LEVE — o agente manda só contorno, círculos, dispositivo e ferramentas; a montagem é desenhada pela página (pedidos 4 e 5). Para desligar a folha: false */
@@ -4261,7 +4262,8 @@ function cnParse(t){
     ncs.push({op:tag,nc:body})}
   var svgList=Object.keys(svgs).map(function(k){return svgs[k]});
   var ops=(Array.isArray(meta.operacoes)?meta.operacoes:[]).map(function(o,i){var key=String(o.op||"").toUpperCase().replace("-",""),n=ncs.filter(function(z){return z.op&&key===z.op})[0]||ncs[i]||{};
-    return{op:String(o.op||n.op||"OP"+(i+1)*10).toUpperCase(),descricao:String(o.descricao||""),zero:String(o.zero||""),fixacao:String(o.fixacao||""),nota:String(o.nota||""),dispositivo:String(o.dispositivo||""),tempo:String(o.tempo||""),
+    function l2(v){return String(v||"").split(/\r?\n/).slice(0,2).join("\n").slice(0,240)}
+    return{op:String(o.op||n.op||"OP"+(i+1)*10).toUpperCase(),descricao:String(o.descricao||""),zero:l2(o.zero),fixacao:l2(o.fixacao),nota:l2(o.nota),dispositivo:String(o.dispositivo||""),tempo:String(o.tempo||""),
       contorno:Array.isArray(o.contorno)?o.contorno.slice(0,400):[],circulos:Array.isArray(o.circulos)?o.circulos.slice(0,80):null,montagem_svg:(svgs[key]||svgList[i]||"").slice(0,60000),
       ferramentas:(Array.isArray(o.ferramentas)?o.ferramentas:[]).slice(0,25).map(function(f){return{t:String(f.t||""),nome:String(f.nome||""),classe:String(f.classe||""),suporte:String(f.suporte||""),balanco:String(f.balanco==null?"":f.balanco),s:f.s==null?"":f.s,f:f.f==null?"":f.f,uso:String(f.uso||"")}}),nc:n.nc||""}});
   if(!ops.length)ops=ncs.map(function(n,i){return{op:n.op||"OP"+(i+1)*10,fixacao:"",tempo:"",ferramentas:[],montagem_svg:svgList[i]||"",nc:n.nc}});
@@ -4328,7 +4330,7 @@ function cnRun(j){
     var m=res.meta||{},t=Date.now(),old=CN.list.filter(function(x){return x.id===j.docId})[0]||{},h=(old.hist||[]).slice(-199);
     h.push({at:t,uid:AG.uid||"",txt:"Programa gerado pelo agente em "+cnElapsed(t0)+" min ("+res.ops.length+(res.ops.length===1?" operação).":" operações).")+(r&&r.truncated?" Resposta cortada: conferir o fim do programa.":"")});
     var doc={processo:String(m.processo||""),part_number:String(m.part_number||""),codigo:String(m.codigo||j.f.name.replace(/\.[^.]+$/,"")),rev:String(m.revisao||""),cliente:String(m.cliente||""),descricao:String(m.descricao||""),material:String(m.material||j.draft.mat||""),
-      ops:res.ops,premissas:(Array.isArray(m.premissas)?m.premissas:[]).map(String).slice(0,20),duvidas:(Array.isArray(m.duvidas)?m.duvidas:[]).map(String).slice(0,20),
+      ops:res.ops,premissas:(Array.isArray(m.premissas)?m.premissas:[]).map(String).slice(0,5),duvidas:(Array.isArray(m.duvidas)?m.duvidas:[]).map(String).slice(0,5),
       truncado:!!(r&&r.truncated),status:"aguardando",erro:"",atualizado:t,hist:h};if(old.fixos)for(var fk in old.fixos)doc[fk]=old.fixos[fk];
     if(doc.truncado)doc.duvidas.unshift("A resposta do agente foi cortada: confira se o último programa termina com M30 e %.");
     doc.ops.forEach(function(o){var sm=cnSim(o.nc);o.tempoModelo=o.tempo;o.tempo=fmtT(sm.tempo);o.avisosSim=sm.avisos.slice(0,20)});
@@ -4570,7 +4572,7 @@ function cnFolhaSvg(p,o,n,total){
   y+=11;xx=X;[[54,"Material",p.material||p.materialInf||"–"],[90,"Descrição da operação",o.descricao||"–"],[46,"Responsável técnico",p.responsavel||"________________"]].forEach(function(cc){var d=cc[1]==="Descrição da operação";s+=fbox(xx,y,cc[0],11,cc[1],cc[2],8.5,{c:d?FV.azul:"#000",bold:d});xx+=cc[0]});
   y+=11;
   s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="70" fill="none" stroke="'+FV.linha+'" stroke-width="0.18"/>'+ftext(X+1.4,y+2.6,"Montagem / fixação",5.8,{c:FV.rot});
-  var mg=fSanSvg(o.montagem_svg);
+  var mg=null; /* pedido 6: montagem sempre automática */
   if(mg)s+='<svg x="'+(X+3)+'" y="'+(y+5)+'" width="'+(W-6)+'" height="63" viewBox="'+fx(mg.vb)+'" preserveAspectRatio="xMidYMid meet" overflow="hidden" font-family="'+FV.ff+'">'+mg.inner+'</svg>';
   else{try{s+=cnMontAuto(p,o,X,y+3,W,67)}catch(e){s+=ftext(X+W/2,y+35,"Montagem: "+(o.fixacao||p.fixacaoInf||""),8,{c:FV.azul,a:"middle"})}}
   y+=70;
@@ -4587,7 +4589,7 @@ function cnFolhaSvg(p,o,n,total){
   s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+FV.cinza+'"/>';xx=X;hdr.forEach(function(hh){s+=ftext(xx+hh[1]/2,y+4,hh[0],7,{bold:true,c:FV.azul,a:"middle"});xx+=hh[1]});y+=6;
   var fe=o.ferramentas||[],room=297-10-4-14-11-y,rh=fe.length?Math.max(4.2,Math.min(6,room/fe.length)):6;
   fe.forEach(function(f,i){if(y+rh>297-10-29)return;if(i%2)s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="'+rh+'" fill="'+FV.cinza+'"/>';
-    var vals=[f.t,f.nome,f.classe||"–",f.suporte||"–",f.balanco||"–",f.s,f.f,fmtT(cnToolTime(sim,f.t))];xx=X;
+    var cad=cnFerrCad(f.nome)||{},vals=[f.t,f.nome,cad.classe||"–",cad.suporte||"–",cad.balanco!=null&&cad.balanco!==""?cad.balanco:"–",f.s,f.f,fmtT(cnToolTime(sim,f.t))];xx=X;
     hdr.forEach(function(hh,j){var v=fwrap(vals[j]==null?"":vals[j],hh[1]-2,7,j===0||j===7)[0]||"";s+=ftext(xx+hh[1]/2,y+rh/2+1,v,7,{bold:j===0||j===7,c:j===7?FV.verm:j===0?FV.azul:"#000",a:"middle"});xx+=hh[1]});
     s+='<line x1="'+X+'" y1="'+(y+rh)+'" x2="'+(X+W)+'" y2="'+(y+rh)+'" stroke="'+FV.linha+'" stroke-width="0.1"/>';y+=rh});
   if(!fe.length){s+=ftext(X+2,y+4,"Ferramentas não listadas pelo agente.",7,{c:FV.rot});y+=6}
@@ -5219,7 +5221,6 @@ function cnFolhaFalta(o){var f=[];
   if(!cnPts(o.contorno).length)f.push("contorno");
   if(!Array.isArray(o.circulos))f.push("circulos");
   if(!String(o.dispositivo||"").trim())f.push("dispositivo");
-  if((o.ferramentas||[]).length&&(o.ferramentas||[]).some(function(t){return!String(t.classe||"").trim()&&!String(t.suporte||"").trim()}))f.push("classe/suporte das ferramentas");
   if(!(o.ferramentas||[]).length)f.push("ferramentas");
   return f}
 function cnFaltaHtml(p){
@@ -5236,7 +5237,7 @@ function cnCompletar(p){
   var q="Você é o agente de programação CNC da MIX USINAGEM. O programa abaixo JÁ ESTÁ PRONTO e não deve ser refeito nem alterado. Preciso só dos dados que faltaram para a folha de processo.\n\nComando: "+c.n+" · "+c.maq+"\nPeça: "+(p.codigo||"")+(p.rev?" R"+p.rev:"")+" · "+(p.descricao||"")+" · material "+(p.material||p.materialInf||"")+"\nBruto: "+(p.bruto||"")+"\nFixação: "+(p.fixacaoInf||"")+"\nZero peça: "+(p.zeroInf||"")+"\n\n"+
     ops.map(function(o){return"=== "+o.op+" — "+(o.descricao||"")+"\nFerramentas: "+(o.ferramentas||[]).map(function(t){return t.t+" "+t.nome}).join("; ")+"\nPrograma:\n"+String(o.nc||"").slice(0,30000)}).join("\n\n")+
     "\n\nFALTA (por operação): "+falt.map(function(x){return x.op+": "+x.f.join(", ")}).join(" · ")+
-    "\n\nResponda só com um bloco ```json: {\"operacoes\":[{\"op\":\"OP10\",\"contorno\":[[x,y],…],\"circulos\":[[cx,cy,r],…],\"dispositivo\":\"MORSA | DUAS-MORSAS | PLACA | DISPOSITIVO …\",\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"classe\":\"\",\"suporte\":\"\",\"balanco\":\"\",\"s\":0,\"f\":0}]}]}\n"+
+    "\n\nResponda só com um bloco ```json: {\"operacoes\":[{\"op\":\"OP10\",\"contorno\":[[x,y],…],\"circulos\":[[cx,cy,r],…],\"dispositivo\":\"MORSA | DUAS-MORSAS | PLACA | DISPOSITIVO …\",\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"s\":0,\"f\":0,\"uso\":\"curto\"}]}]}\n"+
     "contorno = contorno externo da peça vista de cima, em mm, nas coordenadas do zero peça da operação (no máximo 40 pontos); circulos = furos e rebaixos vistos de cima (centro e raio, mesmas coordenadas; lista vazia se não houver). Use o programa e o desenho para as posições.";
   var o2={cache:false,modelTier:"default"};
   var go=function(imgs){if(imgs&&imgs.length)o2.images=imgs.slice(0,1);return AG.sample(q,o2)};
@@ -5282,6 +5283,16 @@ function cnOrientar(p){
     });
   });
 }
+
+
+/* ---- Cadastro de ferramentas (coleção "ferramentas"; pedido 6, 27/10/2026) ----
+   documento por ferramenta: {nome, classe, suporte, balanco, apelidos:[...]} — a busca é pelo nome que o agente escreve no programa */
+var FERR={map:{},sub:false};
+function cnFerrKey(s){return normTxt(s).replace(/[^a-z0-9]+/g,"")}
+(function wf(){if(!PR.db){setTimeout(wf,800);return}if(FERR.sub)return;FERR.sub=true;
+  try{PR.db.collection("ferramentas").onSnapshot(function(sn){var m={};sn.docs.forEach(function(x){var d=x.data()||{};[d.nome].concat(Array.isArray(d.apelidos)?d.apelidos:[]).forEach(function(n){var k=cnFerrKey(n);if(k)m[k]=d})});FERR.map=m;if(S.tab==="m-cnc"&&CN.open)mxRender()},function(){})}catch(e){}})();
+function cnFerrCad(nome){var k=cnFerrKey(nome);if(!k)return null;if(FERR.map[k])return FERR.map[k];
+  var best=null,bl=0;for(var kk in FERR.map){if(kk.length>bl&&kk.length>=4&&k.indexOf(kk)===0){best=FERR.map[kk];bl=kk.length}}return best}
 
 fullRender();
 })();

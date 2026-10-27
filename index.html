@@ -1074,6 +1074,7 @@ body[data-tab="wip"] .crumbbar,body[data-tab="wip"] .meta,body[data-tab="wip"] .
 .cb-pior{color:#A3161C}.cb-melhor{color:#14683a}
 .cb-pre{white-space:pre;font:13px/1.45 var(--f-mono);background:var(--surface2);border-radius:10px;padding:12px;max-height:70vh;overflow:auto;margin:10px 0 0}
 @media(max-width:900px){.cb-ref{grid-template-columns:minmax(0,1fr) auto}.cb-ref span{display:none}}
+.cn-falta{margin-bottom:12px;background:#FFF1D6;color:#7D5200;border:1.5px solid #D69E2E;font-size:14.5px}
 </style>
 
 <div class="shell">
@@ -2438,7 +2439,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="85",APPD="27/10/2026";
+var APPV="86",APPD="27/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -4189,7 +4190,7 @@ function cnDetail(box,p){
    '<div class="cn-det"><div class="card"><h3>Desenho</h3><div class="cn-pv" id="cn-dpv"><span class="hint">'+(p.fonte&&p.fonte.url?"Carregando o desenho…":"Desenho não guardado.")+'</span></div></div>'+
    (CN.edit===p.id?cnEditHtml(p):'<div class="card"><div class="mx-bar"><h3 style="margin:0">Dados informados</h3><span class="sp"></span>'+(busy&&p.status==="gerando"?'':'<button class="btn" type="button" data-cnc="edit" data-id="'+esc(p.id)+'">✎ Editar dados</button>')+'</div><dl class="cn-dl"><dt>Comando</dt><dd>'+esc(c.n||p.comando)+' · '+esc(c.maq||"")+'</dd><dt>Material</dt><dd>'+esc(p.materialInf||p.material||"–")+'</dd><dt>Bruto</dt><dd>'+esc(p.bruto||"–")+'</dd><dt>Fixação</dt><dd>'+esc(p.fixacaoInf||"–")+'</dd><dt>Zero peça</dt><dd>'+esc(p.zeroInf||"–")+'</dd><dt>Sequência</dt><dd>'+esc(p.instrucoes||"–")+'</dd></dl>'+
    ((p.duvidas||[]).length?'<div class="cn-notes"><b>Dúvidas do agente</b><ul class="plan">'+p.duvidas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+((p.premissas||[]).length?'<div class="cn-notes"><b>Premissas adotadas</b><ul class="plan">'+p.premissas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+'</div>')+'</div>'+
-   (ok&&CN_FOLHA?'<div class="card"><div class="mx-bar"><h3 style="margin:0">Folha de processo · prévia</h3><span class="hint">Tempo e percurso calculados do próprio programa (simulador M70)</span><span class="sp"></span><button class="btn sm pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'">Baixar PDF</button></div><div class="cn-folhas">'+ops.map(function(o,i){return cnFolhaHtml(p,o,i)}).join("")+'</div></div>':'')+
+   (ok&&CN_FOLHA?'<div class="card">'+cnFaltaHtml(p)+'<div class="mx-bar"><h3 style="margin:0">Folha de processo · prévia</h3><span class="hint">Tempo e percurso calculados do próprio programa (simulador M70)</span><span class="sp"></span><button class="btn sm pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'">Baixar PDF</button></div><div class="cn-folhas">'+ops.map(function(o,i){return cnFolhaHtml(p,o,i)}).join("")+'</div></div>':'')+
    ops.map(function(o,i){return'<details class="card cn-progc"'+(i===0?'':'')+'><summary><b>Programa '+esc(o.op||("OP"+(i+1)*10))+'</b> <span class="mono hint">'+esc(cnFileName(p,o))+'</span> <span class="hint">· '+(String(o.nc||"").split("\n").length)+' linhas · abrir para conferir ou corrigir</span></summary>'+
      '<textarea class="cn-nc" data-cncop="'+i+'" spellcheck="false"'+(val?' readonly':'')+'>'+esc(o.nc||"")+'</textarea></details>'}).join("")+
    cbRefsHtml(p)+(busy?'':cbFbHtml(p))+
@@ -4235,10 +4236,11 @@ function cnPrompt(c,nome,prep){
   "DADOS DO PROGRAMADOR:\n- Bruto: "+(CN.draft.bruto||"NÃO INFORMADO (não invente: adote uma premissa explícita e registre em duvidas)")+"\n- Material: "+(CN.draft.mat||"ler do desenho")+"\n- Fixação: "+(CN.draft.fix||"")+"\n- Zero peça: "+(CN.draft.zero||"")+"\n- Sequência e observações: "+(CN.draft.inst||"nenhuma")+"\nSiga a fixação, o zero e a sequência do programador; se algo for inviável, diga em duvidas.\n\n"+
   "REGRAS DE SEGURANÇA: o programa nasce aguardando validação (inclua (AGUARDANDO-VALIDACAO) no cabeçalho); nunca envie à máquina; se a peça exigir 3D, 4º/5º eixo ou torneamento, não gere o programa: explique em duvidas. Seja conservador em dados de corte quando houver dúvida.\n\n"+
   (prep.texto?"TEXTO EXTRAÍDO DO DESENHO:\n"+String(prep.texto).slice(0,12000)+"\n\n":"")+
-  "FORMATO DA RESPOSTA (obrigatório):\n1) Primeiro um bloco ```json com: {\"processo\":\"código MIX da peça, ex.: MIX-GCT-12.00.08\",\"part_number\":\"part number/código do cliente\",\"codigo\":\"nº do desenho\",\"revisao\":\"\",\"cliente\":\"\",\"descricao\":\"\",\"material\":\"\",\"operacoes\":[{\"op\":\"OP10\",\"descricao\":\"o que esta operação usina, em uma ou duas frases\",\"fixacao\":\"\",\"zero\":\"\",\"nota\":\"cuidados para o operador\",\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"s\":0,\"f\":0,\"uso\":\"\"}]}],\"premissas\":[\"...\"],\"duvidas\":[\"...\"]}\n"+
-  "2) Depois, um bloco por operação com o programa, na mesma ordem (sem desenho de montagem, sem SVG: só o programa):\n```nc OP10\n%\n(...programa completo...)\n%\n```\nNada fora desses blocos.";
+  "FORMATO DA RESPOSTA (obrigatório):\n1) Primeiro um bloco ```json com: {\"processo\":\"código MIX da peça, ex.: MIX-GCT-12.00.08\",\"part_number\":\"part number/código do cliente\",\"codigo\":\"nº do desenho\",\"revisao\":\"\",\"cliente\":\"\",\"descricao\":\"\",\"material\":\"\",\"operacoes\":[{\"op\":\"OP10\",\"descricao\":\"o que esta operação usina, em uma ou duas frases\",\"fixacao\":\"\",\"zero\":\"\",\"nota\":\"cuidados para o operador\",\"dispositivo\":\"MORSA | DUAS-MORSAS | PLACA | DISPOSITIVO\",\"contorno\":[[x,y],…],\"circulos\":[[cx,cy,r],…],\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"classe\":\"\",\"suporte\":\"\",\"balanco\":\"\",\"s\":0,\"f\":0,\"uso\":\"\"}]}],\"premissas\":[\"...\"],\"duvidas\":[\"...\"]}\n"+
+  "   contorno = contorno externo da peça vista de cima (no máximo 40 pontos), em mm, nas coordenadas do zero peça desta operação; circulos = furos e rebaixos vistos de cima (centro e raio; lista vazia se não houver). A página desenha a montagem com isso: NÃO mande SVG.\n"+
+  "2) Depois, um bloco por operação com o programa, na mesma ordem:\n```nc OP10\n%\n(...programa completo...)\n%\n```\nNada fora desses blocos.";
 }
-var CN_FOLHA=false; /* folha de processo desligada pelo gestor em 27/10/2026: foco só no programa NC, para reduzir o tempo do agente */
+var CN_FOLHA=true; /* 27/10/2026: folha LEVE — o agente manda só contorno, círculos, dispositivo e ferramentas; a montagem é desenhada pela página (pedidos 4 e 5). Para desligar a folha: false */
 function cnParse(t){
   t=String(t||"");var meta={},ncs=[],svgs={},re=/```([A-Za-z]*)[ \t]*([A-Za-z]*-?\d*)?[ \t]*\n([\s\S]*?)```/g,x,ord=0;
   while((x=re.exec(t))){var lang=(x[1]||"").toLowerCase(),tag=(x[2]||"").toUpperCase().replace("-",""),body=x[3].trim();if(!body)continue;
@@ -4249,7 +4251,7 @@ function cnParse(t){
   var svgList=Object.keys(svgs).map(function(k){return svgs[k]});
   var ops=(Array.isArray(meta.operacoes)?meta.operacoes:[]).map(function(o,i){var key=String(o.op||"").toUpperCase().replace("-",""),n=ncs.filter(function(z){return z.op&&key===z.op})[0]||ncs[i]||{};
     return{op:String(o.op||n.op||"OP"+(i+1)*10).toUpperCase(),descricao:String(o.descricao||""),zero:String(o.zero||""),fixacao:String(o.fixacao||""),nota:String(o.nota||""),dispositivo:String(o.dispositivo||""),tempo:String(o.tempo||""),
-      contorno:Array.isArray(o.contorno)?o.contorno.slice(0,400):[],circulos:Array.isArray(o.circulos)?o.circulos.slice(0,80):[],montagem_svg:(svgs[key]||svgList[i]||"").slice(0,60000),
+      contorno:Array.isArray(o.contorno)?o.contorno.slice(0,400):[],circulos:Array.isArray(o.circulos)?o.circulos.slice(0,80):null,montagem_svg:(svgs[key]||svgList[i]||"").slice(0,60000),
       ferramentas:(Array.isArray(o.ferramentas)?o.ferramentas:[]).slice(0,25).map(function(f){return{t:String(f.t||""),nome:String(f.nome||""),classe:String(f.classe||""),suporte:String(f.suporte||""),balanco:String(f.balanco==null?"":f.balanco),s:f.s==null?"":f.s,f:f.f==null?"":f.f,uso:String(f.uso||"")}}),nc:n.nc||""}});
   if(!ops.length)ops=ncs.map(function(n,i){return{op:n.op||"OP"+(i+1)*10,fixacao:"",tempo:"",ferramentas:[],montagem_svg:svgList[i]||"",nc:n.nc}});
   return{meta:meta,ops:ops.filter(function(o){return o.nc})};
@@ -4556,7 +4558,7 @@ function cnFolhaSvg(p,o,n,total){
   s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="70" fill="none" stroke="'+FV.linha+'" stroke-width="0.18"/>'+ftext(X+1.4,y+2.6,"Montagem / fixação",5.8,{c:FV.rot});
   var mg=fSanSvg(o.montagem_svg);
   if(mg)s+='<svg x="'+(X+3)+'" y="'+(y+5)+'" width="'+(W-6)+'" height="63" viewBox="'+fx(mg.vb)+'" preserveAspectRatio="xMidYMid meet" overflow="hidden" font-family="'+FV.ff+'">'+mg.inner+'</svg>';
-  else s+=ftext(X+W/2,y+35,"Desenho de montagem não fornecido pelo agente",8,{c:FV.rot,a:"middle"})+ftext(X+W/2,y+40,(o.fixacao||p.fixacaoInf||""),8,{c:FV.azul,a:"middle"});
+  else{try{s+=cnMontAuto(p,o,X,y+3,W,67)}catch(e){s+=ftext(X+W/2,y+35,"Montagem: "+(o.fixacao||p.fixacaoInf||""),8,{c:FV.azul,a:"middle"})}}
   y+=70;
   var wl=W*0.52,wr=W-wl,yy=y;
   [["Fixação",o.fixacao||p.fixacaoInf||"–",13],["Zero peça / Obs.",o.zero||p.zeroInf||"–",13],["Nota",o.nota||(p.duvidas||[]).join(" · ")||"–",17]].forEach(function(b){s+=fbox(X,yy,wl,b[2],b[0],b[1],7.6);yy+=b[2]});
@@ -4585,7 +4587,8 @@ function cnFolhaSvg(p,o,n,total){
 }
 function cnFolhaHtml(p,o,i){
   var ops=p.ops||[],sim=cnSim(o.nc);
-  return'<div class="cn-folha-svg">'+cnFolhaSvg(p,o,i+1,ops.length)+'</div>'+(sim.avisos.length?'<div class="askbox" style="margin-top:6px">Simulador ('+esc(o.op||"")+'): '+sim.avisos.slice(0,6).map(esc).join(" · ")+(sim.avisos.length>6?" …":"")+'</div>':'');
+  var fs;try{fs=cnFolhaSvg(p,o,i+1,ops.length)}catch(e){fs='<div class="hint" style="padding:20px">Não consegui montar a folha desta operação ('+esc(e&&e.message||"")+'). O programa está salvo normalmente.</div>'}
+  return'<div class="cn-folha-svg">'+fs+'</div>'+(sim.avisos.length?'<div class="askbox" style="margin-top:6px">Simulador ('+esc(o.op||"")+'): '+sim.avisos.slice(0,6).map(esc).join(" · ")+(sim.avisos.length>6?" …":"")+'</div>':'');
 }
 /* --- PDF retrato a partir das páginas SVG --- */
 function svgToJpeg(svg,pxW){return new Promise(function(ok,no){var im=new Image();im.onload=function(){var w=pxW,h=Math.round(pxW*297/210),cv=document.createElement("canvas");cv.width=w;cv.height=h;var cx=cv.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,w,h);cx.drawImage(im,0,0,w,h);try{ok({b:atob(cv.toDataURL("image/jpeg",0.9).split(",")[1]),w:w,h:h})}catch(e){no(e)}};im.onerror=function(){no(new Error("svg"))};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
@@ -4661,6 +4664,7 @@ $("v-mx").addEventListener("click",function(e){
   if(a==="refver"){var rr=(p.referencias||[]).filter(function(x){return x.id===b.dataset.ref})[0];if(!rr)return;toast("Buscando o programa "+rr.id+"…");cbText(rr).then(function(t){cbShowText(rr.id+" · "+(rr.cliente||"")+" · "+(rr.arq||""),t)});return}
   if(a==="realver"){var oo=(p.ops||[])[+b.dataset.op];if(oo&&oo.ncReal)cbShowText("Programa real · "+(oo.ncReal.nome||""),oo.ncReal.nc);return}
   if(a==="fbsave"){cbFbSave(p,+b.dataset.op);return}
+  if(a==="completar"){cnCompletar(p);return}
   if(a==="edit"){CN.edit=p.id;CN.ed=cnEdInit(p);mxRender();setTimeout(function(){var x=document.querySelector(".cn-edit input,.cn-edit textarea");if(x)x.focus()},40);return}
   if(a==="edcancel"){CN.edit="";CN.ed=null;mxRender();return}
   if(a==="edsave"||a==="edgen"){cnEdSave(p,a==="edgen");return}
@@ -5158,6 +5162,83 @@ function cbFbSave(p,i){
   }).then(function(){if(CN.fb)delete CN.fb[key];toast("Feedback salvo. O agente CNC vai ler esta comparação.");
     var q=JSON.parse(JSON.stringify(p));q.ops=ops;return cbAdd(q,[ops[i]],true);
   }).catch(function(){toast("Não consegui salvar o feedback.")});
+}
+
+
+/* ===== Folha leve: montagem automática, folha nunca dá erro, completar folha (pedidos 4 e 5 do agente CNC, 27/10/2026) ===== */
+function cnNum(v){var n=parseFloat(String(v).replace(",","."));return isFinite(n)?n:null}
+function cnPts(a){return(Array.isArray(a)?a:[]).map(function(q){return Array.isArray(q)?[cnNum(q[0]),cnNum(q[1])]:q&&typeof q==="object"?[cnNum(q.x),cnNum(q.y)]:null}).filter(function(q){return q&&q[0]!=null&&q[1]!=null})}
+function cnCircs(a){return(Array.isArray(a)?a:[]).map(function(q){return Array.isArray(q)?[cnNum(q[0]),cnNum(q[1]),cnNum(q[2])]:q&&typeof q==="object"?[cnNum(q.cx!=null?q.cx:q.x),cnNum(q.cy!=null?q.cy:q.y),cnNum(q.r!=null?q.r:(q.d!=null?q.d/2:null))]:null}).filter(function(q){return q&&q[0]!=null&&q[1]!=null&&q[2]!=null&&q[2]>0})}
+function cnFmtN(v){var r=Math.round(v*100)/100;return String(r).replace(".",",")}
+/* desenho de montagem automático, em mm do papel, dentro da caixa (x,y,w,h) */
+function cnMontAuto(p,o,x,y,w,h){
+  var pts=cnPts(o.contorno),cs=cnCircs(o.circulos),disp=(String(o.dispositivo||"")+" "+String(o.fixacao||p.fixacaoInf||"")).toUpperCase(),s="";
+  if(!pts.length&&!cs.length)return ftext(x+w/2,y+h/2-2,"Montagem automática: o agente não mandou o contorno da peça",8,{c:FV.rot,a:"middle"})+ftext(x+w/2,y+h/2+4,(o.fixacao||p.fixacaoInf||""),8,{c:FV.azul,a:"middle"});
+  var X0=0,X1=0,Y0=0,Y1=0;pts.forEach(function(q){X0=Math.min(X0,q[0]);X1=Math.max(X1,q[0]);Y0=Math.min(Y0,q[1]);Y1=Math.max(Y1,q[1])});
+  cs.forEach(function(c){X0=Math.min(X0,c[0]-c[2]);X1=Math.max(X1,c[0]+c[2]);Y0=Math.min(Y0,c[1]-c[2]);Y1=Math.max(Y1,c[1]+c[2])});
+  var pw=Math.max(X1-X0,1),ph=Math.max(Y1-Y0,1),mx=28,my=12,sc=Math.min((w-2*mx)/pw,(h-2*my)/ph);
+  var ox=x+mx+((w-2*mx)-pw*sc)/2,oy=y+my+((h-2*my)-ph*sc)/2;
+  function px(v){return(ox+(v-X0)*sc).toFixed(2)}function py(v){return(oy+(Y1-v)*sc).toFixed(2)}
+  var bx0=+px(X0),bx1=+px(X1),by0=+py(Y1),by1=+py(Y0),hat='fill="#C9CCD8" stroke="#8E93A8" stroke-width="0.25"';
+  /* dispositivo (sem posição exata) */
+  if(/PLACA|CASTANHA/.test(disp)){var cx=(bx0+bx1)/2,cy=(by0+by1)/2,rr=Math.max(bx1-bx0,by1-by0)/2+4;s+='<circle cx="'+cx.toFixed(2)+'" cy="'+cy.toFixed(2)+'" r="'+rr.toFixed(2)+'" fill="none" stroke="#8E93A8" stroke-width="3.2" opacity="0.6"/>';
+    [0,120,240].forEach(function(a){var r2=a*Math.PI/180;s+='<rect x="'+(cx+Math.cos(r2)*(rr+1)-2.5).toFixed(2)+'" y="'+(cy+Math.sin(r2)*(rr+1)-2.5).toFixed(2)+'" width="5" height="5" '+hat+'/>'});s+=ftext(cx,by1+(rr-(by1-by0)/2)+7,"PLACA",6.5,{c:FV.rot,a:"middle"})}
+  else if(/DUAS|2 MORSAS|DUAS-MORSAS/.test(disp)){var mw=Math.min(14,(bx1-bx0)/4);[0.25,0.75].forEach(function(f){var cxm=bx0+(bx1-bx0)*f;s+='<rect x="'+(cxm-mw/2).toFixed(2)+'" y="'+(by0-4).toFixed(2)+'" width="'+mw.toFixed(2)+'" height="3.2" '+hat+'/><rect x="'+(cxm-mw/2).toFixed(2)+'" y="'+(by1+0.8).toFixed(2)+'" width="'+mw.toFixed(2)+'" height="3.2" '+hat+'/>'});s+=ftext((bx0+bx1)/2,by1+9,"DUAS MORSAS",6.5,{c:FV.rot,a:"middle"})}
+  else if(/MORSA|SF1|SF2/.test(disp)||!disp.trim()){var jw=Math.min(bx1-bx0+8,w-8);s+='<rect x="'+((bx0+bx1)/2-jw/2).toFixed(2)+'" y="'+(by0-4).toFixed(2)+'" width="'+jw.toFixed(2)+'" height="3.2" '+hat+'/><rect x="'+((bx0+bx1)/2-jw/2).toFixed(2)+'" y="'+(by1+0.8).toFixed(2)+'" width="'+jw.toFixed(2)+'" height="3.2" '+hat+'/>'+ftext((bx0+bx1)/2,by1+9,"MORSA",6.5,{c:FV.rot,a:"middle"})}
+  else s+=ftext((bx0+bx1)/2,by1+9,String(o.dispositivo||"").slice(0,40),6.5,{c:FV.rot,a:"middle"});
+  /* peça */
+  if(pts.length>2)s+='<polygon points="'+pts.map(function(q){return px(q[0])+","+py(q[1])}).join(" ")+'" fill="#E8EAF2" stroke="#010066" stroke-width="0.35"/>';
+  else if(pts.length)s+='<rect x="'+bx0+'" y="'+by0+'" width="'+(bx1-bx0).toFixed(2)+'" height="'+(by1-by0).toFixed(2)+'" fill="#E8EAF2" stroke="#010066" stroke-width="0.35"/>';
+  /* furos com cota X/Y a partir do zero */
+  var lab=0;cs.slice(0,60).forEach(function(c){var cx2=+px(c[0]),cy2=+py(c[1]),r=Math.max(c[2]*sc,0.6);
+    s+='<circle cx="'+cx2.toFixed(2)+'" cy="'+cy2.toFixed(2)+'" r="'+r.toFixed(2)+'" fill="#fff" stroke="#010066" stroke-width="0.3"/><path d="M'+(cx2-0.9).toFixed(2)+' '+cy2.toFixed(2)+'h1.8M'+cx2.toFixed(2)+' '+(cy2-0.9).toFixed(2)+'v1.8" stroke="#010066" stroke-width="0.15"/>';
+    if(Math.abs(c[0])<0.01&&Math.abs(c[1])<0.01){s+=ftext(cx2,cy2+r+2.6,"Ø"+cnFmtN(c[2]*2),4.6,{c:FV.rot,a:"middle"});return}
+    if(lab<24){lab++;s+=ftext(cx2+r+0.8,cy2-0.6,"X"+cnFmtN(c[0])+" Y"+cnFmtN(c[1]),5,{c:FV.azul})+ftext(cx2+r+0.8,cy2+2.2,"Ø"+cnFmtN(c[2]*2),4.6,{c:FV.rot})}});
+  /* zero peça */
+  var zx=+px(0),zy=+py(0);s+='<path d="M'+(zx-3.5).toFixed(2)+' '+zy.toFixed(2)+'h7M'+zx.toFixed(2)+' '+(zy-3.5).toFixed(2)+'v7" stroke="#EC3237" stroke-width="0.5"/><circle cx="'+zx.toFixed(2)+'" cy="'+zy.toFixed(2)+'" r="1.1" fill="none" stroke="#EC3237" stroke-width="0.35"/>'+ftext(zx-1.8,zy-2.2,"X0 Y0",6,{bold:true,c:"#EC3237",a:"end"});
+  return s;
+}
+/* o que falta na folha desta operação */
+function cnFolhaFalta(o){var f=[];
+  if(!cnPts(o.contorno).length)f.push("contorno");
+  if(!Array.isArray(o.circulos))f.push("circulos");
+  if(!String(o.dispositivo||"").trim())f.push("dispositivo");
+  if((o.ferramentas||[]).length&&(o.ferramentas||[]).some(function(t){return!String(t.classe||"").trim()&&!String(t.suporte||"").trim()}))f.push("classe/suporte das ferramentas");
+  if(!(o.ferramentas||[]).length)f.push("ferramentas");
+  return f}
+function cnFaltaHtml(p){
+  var ops=p.ops||[],l=[];ops.forEach(function(o){var f=cnFolhaFalta(o);if(f.length)l.push((o.op||"")+": "+f.join(", "))});
+  if(!l.length)return"";
+  var busy=CN.compl&&CN.compl[p.id];
+  return'<div class="askbox cn-falta"><span><b>Folha incompleta.</b> O programa está salvo e liberado para download. Faltou: '+esc(l.join(" · "))+'.</span><span class="sp" style="flex:1"></span><button class="btn pri sm" type="button" data-cnc="completar" data-id="'+esc(p.id)+'"'+(busy||!AG.sample?' disabled':'')+'>'+(busy?"Completando…":"Completar folha")+'</button></div>';
+}
+function cnCompletar(p){
+  if(!AG.sample){toast("O agente não está disponível nesta visualização.");return}
+  CN.compl=CN.compl||{};if(CN.compl[p.id])return;CN.compl[p.id]=1;mxRender();
+  var c=cnCmd(p.comando)||{},ops=p.ops||[];
+  var falt=ops.map(function(o){return{op:o.op,f:cnFolhaFalta(o)}}).filter(function(x){return x.f.length});
+  var q="Você é o agente de programação CNC da MIX USINAGEM. O programa abaixo JÁ ESTÁ PRONTO e não deve ser refeito nem alterado. Preciso só dos dados que faltaram para a folha de processo.\n\nComando: "+c.n+" · "+c.maq+"\nPeça: "+(p.codigo||"")+(p.rev?" R"+p.rev:"")+" · "+(p.descricao||"")+" · material "+(p.material||p.materialInf||"")+"\nBruto: "+(p.bruto||"")+"\nFixação: "+(p.fixacaoInf||"")+"\nZero peça: "+(p.zeroInf||"")+"\n\n"+
+    ops.map(function(o){return"=== "+o.op+" — "+(o.descricao||"")+"\nFerramentas: "+(o.ferramentas||[]).map(function(t){return t.t+" "+t.nome}).join("; ")+"\nPrograma:\n"+String(o.nc||"").slice(0,30000)}).join("\n\n")+
+    "\n\nFALTA (por operação): "+falt.map(function(x){return x.op+": "+x.f.join(", ")}).join(" · ")+
+    "\n\nResponda só com um bloco ```json: {\"operacoes\":[{\"op\":\"OP10\",\"contorno\":[[x,y],…],\"circulos\":[[cx,cy,r],…],\"dispositivo\":\"MORSA | DUAS-MORSAS | PLACA | DISPOSITIVO …\",\"ferramentas\":[{\"t\":\"T01\",\"nome\":\"\",\"classe\":\"\",\"suporte\":\"\",\"balanco\":\"\",\"s\":0,\"f\":0}]}]}\n"+
+    "contorno = contorno externo da peça vista de cima, em mm, nas coordenadas do zero peça da operação (no máximo 40 pontos); circulos = furos e rebaixos vistos de cima (centro e raio, mesmas coordenadas; lista vazia se não houver). Use o programa e o desenho para as posições.";
+  var o2={cache:false,modelTier:"default"};
+  var go=function(imgs){if(imgs&&imgs.length)o2.images=imgs.slice(0,1);return AG.sample(q,o2)};
+  var pre=p.fonte&&p.fonte.url?fetch(p.fonte.url).then(function(r){return r.ok?r.blob():null}).then(function(b){if(!b)return[];var f=new File([b],p.fonte.nome||"desenho",{type:b.type||(p.fonte.tipo==="pdf"?"application/pdf":"image/png")});return agPrep(f).then(function(pp){return pp.imgs||[]}).catch(function(){return[]})}).catch(function(){return[]}):Promise.resolve([]);
+  toast("Pedindo ao agente só os dados da folha…");
+  pre.then(go).then(function(r){
+    var m={};var t=String(r&&r.text||""),mm=t.match(/```json\s*([\s\S]*?)```/)||[null,t.slice(t.indexOf("{"),t.lastIndexOf("}")+1)];try{m=JSON.parse(mm[1])}catch(e){m={}}
+    var add=Array.isArray(m.operacoes)?m.operacoes:[];if(!add.length)throw new Error("O agente não devolveu os dados da folha.");
+    var novo=JSON.parse(JSON.stringify(ops)),feitos=[];
+    novo.forEach(function(o,i){var a=add.filter(function(x){return String(x.op||"").toUpperCase().replace("-","")===String(o.op||"").toUpperCase().replace("-","")})[0]||add[i];if(!a)return;var antes=cnFolhaFalta(o);
+      if(antes.indexOf("contorno")>-1&&cnPts(a.contorno).length)o.contorno=a.contorno.slice(0,400);
+      if(antes.indexOf("circulos")>-1&&Array.isArray(a.circulos))o.circulos=a.circulos.slice(0,80);
+      if(!String(o.dispositivo||"").trim()&&a.dispositivo)o.dispositivo=String(a.dispositivo);
+      if(!(o.ferramentas||[]).length&&Array.isArray(a.ferramentas))o.ferramentas=a.ferramentas.slice(0,25).map(function(t){return{t:String(t.t||""),nome:String(t.nome||""),classe:String(t.classe||""),suporte:String(t.suporte||""),balanco:String(t.balanco==null?"":t.balanco),s:t.s==null?"":t.s,f:t.f==null?"":t.f,uso:""}});
+      (a.ferramentas||[]).forEach(function(af){var t=(o.ferramentas||[]).filter(function(x){return String(x.t).toUpperCase()===String(af.t||"").toUpperCase()})[0];if(t){if(!t.classe&&af.classe)t.classe=String(af.classe);if(!t.suporte&&af.suporte)t.suporte=String(af.suporte);if(!t.balanco&&af.balanco!=null)t.balanco=String(af.balanco)}});
+      if(cnFolhaFalta(o).length<antes.length)feitos.push(o.op)});
+    return cnSet(p,{ops:novo},feitos.length?"Folha completada pelo agente ("+feitos.join(", ")+"); programa não alterado.":"Completar folha: o agente não trouxe dados novos.").then(function(){toast(feitos.length?"Folha completada.":"O agente não trouxe dados novos para a folha.")});
+  }).catch(function(e){toast("Não consegui completar a folha: "+((e&&e.code)?agErr(e):(e&&e.message)||""))}).then(function(){delete CN.compl[p.id];mxRender()});
 }
 
 fullRender();

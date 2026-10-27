@@ -2438,7 +2438,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="83",APPD="26/10/2026";
+var APPV="84",APPD="27/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -3827,6 +3827,7 @@ function agErr(e){var c=e&&e.code;
   if(c==="invalid_json")return"A resposta veio fora do formato. Tente de novo.";
   if(c==="cancelled")return"Leitura interrompida.";
   if(c==="refused")return"O Claude não processou este documento.";
+  if(c==="empty_completion")return"O agente pensou por muito tempo e não chegou a escrever o programa (peça grande ou pedido longo). Clique em Gerar de novo: a próxima tentativa usa um formato mais enxuto.";
   return(e&&e.message)||"Falha na leitura. Tente de novo."}
 function agRun(j){
   var col=j.col,f=j.f,prep,asset=null;
@@ -4272,7 +4273,7 @@ function cnRetry(p){
   toast("Buscando o desenho guardado…");
   fetch(p.fonte.url).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){
     var f=new File([b],p.fonte.nome||"desenho",{type:b.type||(p.fonte.tipo==="pdf"?"application/pdf":"image/png")});
-    var j={id:rid(),nome:f.name,st:"ler",ms:"Abrindo o desenho…",f:f,c:c,docId:p.id,asset:{id:p.fonte.id,url:p.fonte.url},draft:{bruto:p.bruto||"",mat:p.materialInf||"",inst:p.instrucoes||"",fix:p.fixacaoInf||"",zero:p.zeroInf||""}};
+    var j={id:rid(),nome:f.name,st:"ler",ms:"Abrindo o desenho…",f:f,c:c,docId:p.id,asset:{id:p.fonte.id,url:p.fonte.url},enxuto:p.erroCod==="empty_completion"||/no text|não chegou a escrever/i.test(p.erro||""),draft:{bruto:p.bruto||"",mat:p.materialInf||"",inst:p.instrucoes||"",fix:p.fixacaoInf||"",zero:p.zeroInf||""}};
     CN.jobs.unshift(j);cnRun(j);
   }).catch(function(){toast("Não consegui buscar o desenho guardado. Arraste de novo.")});
 }
@@ -4284,7 +4285,7 @@ function cnRun(j){
   }).then(function(){
     var base={comando:j.c.k,bruto:j.draft.bruto,instrucoes:j.draft.inst,materialInf:j.draft.mat,fixacaoInf:j.draft.fix,zeroInf:j.draft.zero,status:"gerando",erro:"",inicio:t0,atualizado:t0,
       fonte:{nome:j.f.name,tipo:prep.kind,id:asset?asset.id:"",url:asset?asset.url:""}};
-    if(j.docId){var old=CN.list.filter(function(x){return x.id===j.docId})[0]||{},h=(old.hist||[]).slice(-199);h.push({at:t0,uid:AG.uid||"",txt:"Nova geração iniciada ("+j.c.n+")."});base.hist=h;
+    if(j.docId){var old=CN.list.filter(function(x){return x.id===j.docId})[0]||{},h=(old.hist||[]).slice(-199);h.push({at:t0,uid:AG.uid||"",txt:"Nova geração iniciada ("+j.c.n+")."});base.hist=h;base.erroCod="";if(j.enxuto)h.push({at:t0,uid:AG.uid||"",txt:"Modo enxuto: sem desenho de montagem, para o agente conseguir terminar."});
       return PR.db.doc("programas_cnc/"+j.docId).update(base)}
     j.docId="cnc-"+t0.toString(36)+"-"+rid().slice(0,4);
     base.codigo=j.f.name.replace(/\.[^.]+$/,"");base.rev="";base.cliente="";base.descricao="";base.material=j.draft.mat;base.ops=[];base.premissas=[];base.duvidas=[];
@@ -4305,7 +4306,8 @@ function cnRun(j){
       if(n&&Date.now()-lastW>15000){lastW=Date.now();PR.db.doc("programas_cnc/"+j.docId).update({progresso:n,atualizado:lastW}).catch(function(){})}};
     j.to=setTimeout(function(){j.tempo=1;try{j.ctl.abort()}catch(er){}},10*60000);
     var sv=CN.draft;CN.draft=j.draft;var pr=cnPrompt(j.c,j.f.name,prep);CN.draft=sv;if(j.refs&&j.refs.txt)pr=pr.replace("FORMATO DA RESPOSTA (obrigatório):",j.refs.txt+"FORMATO DA RESPOSTA (obrigatório):");
-    return AG.sample(pr,o).then(function(r){clearTimeout(j.to);return r},function(e){clearTimeout(j.to);throw new Error(j.tempo?"O agente passou de 10 minutos sem terminar. Tente de novo; se repetir, divida a peça em operações nas instruções.":e&&(e.name==="AbortError"||e.code==="aborted")?"Cancelado pelo usuário.":agErr(e))});
+    if(j.enxuto)pr+="\n\nMODO ENXUTO (a tentativa anterior pensou demais e não escreveu nada): NÃO gere os blocos ```svg de montagem (pule o item 2); \"contorno\" com no máximo 40 pontos e \"circulos\" só os principais; decida a estratégia de forma objetiva, sem rever cada coordenada várias vezes, e escreva logo os blocos json e nc; use ciclos fixos e sub-rotinas para o que se repete. Se a peça for grande demais para um pedido, gere só a primeira operação e explique o resto em duvidas.";
+    return AG.sample(pr,o).then(function(r){clearTimeout(j.to);return r},function(e){clearTimeout(j.to);var er=new Error(j.tempo?"O agente passou de 10 minutos sem terminar. Tente de novo; se repetir, divida a peça em operações nas instruções.":e&&(e.name==="AbortError"||e.code==="aborted")?"Cancelado pelo usuário.":agErr(e));er.code=e&&e.code;throw er});
   }).then(function(r){
     var res=cnParse(r&&r.text);
     if(!res.ops.length){var dv=(res.meta&&res.meta.duvidas)||[];throw new Error(dv.length?"O agente não gerou programa: "+dv.join(" · "):"O agente não devolveu um programa. Tente de novo.")}
@@ -4320,7 +4322,7 @@ function cnRun(j){
   }).catch(function(e){
     var msg=(e&&e.message)||"Não consegui gerar o programa.";cnJob(j,"erro",msg);
     if(j.docId&&PR.db){var old=CN.list.filter(function(x){return x.id===j.docId})[0]||{},h=(old.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"Geração falhou: "+msg});
-      PR.db.doc("programas_cnc/"+j.docId).update({status:"erro",erro:msg,atualizado:Date.now(),hist:h}).catch(function(){})}
+      PR.db.doc("programas_cnc/"+j.docId).update({status:"erro",erro:msg,erroCod:(e&&e.code)||"",atualizado:Date.now(),hist:h}).catch(function(){})}
   });
 }
 /* ---- baixar, compartilhar, excluir, validar ---- */

@@ -1075,6 +1075,11 @@ body[data-tab="wip"] .crumbbar,body[data-tab="wip"] .meta,body[data-tab="wip"] .
 .cb-pre{white-space:pre;font:13px/1.45 var(--f-mono);background:var(--surface2);border-radius:10px;padding:12px;max-height:70vh;overflow:auto;margin:10px 0 0}
 @media(max-width:900px){.cb-ref{grid-template-columns:minmax(0,1fr) auto}.cb-ref span{display:none}}
 .cn-falta{margin-bottom:12px;background:#FFF1D6;color:#7D5200;border:1.5px solid #D69E2E;font-size:14.5px}
+.cn-or{border:2px solid #EC3237}
+.cn-or textarea{width:100%;font-size:15px;border:1.5px solid #8ea3cf;border-radius:8px;padding:10px;margin:8px 0}
+.cn-or-l{list-style:none;margin:8px 0 2px;padding:0;display:flex;flex-direction:column;gap:6px}
+.cn-or-l li{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;background:var(--surface2);border-radius:8px;padding:8px 10px;font-size:14.5px}
+.cn-or-l time{color:var(--muted);font-size:13px}
 </style>
 
 <div class="shell">
@@ -2439,7 +2444,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="86",APPD="27/10/2026";
+var APPV="87",APPD="27/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -4190,6 +4195,7 @@ function cnDetail(box,p){
    '<div class="cn-det"><div class="card"><h3>Desenho</h3><div class="cn-pv" id="cn-dpv"><span class="hint">'+(p.fonte&&p.fonte.url?"Carregando o desenho…":"Desenho não guardado.")+'</span></div></div>'+
    (CN.edit===p.id?cnEditHtml(p):'<div class="card"><div class="mx-bar"><h3 style="margin:0">Dados informados</h3><span class="sp"></span>'+(busy&&p.status==="gerando"?'':'<button class="btn" type="button" data-cnc="edit" data-id="'+esc(p.id)+'">✎ Editar dados</button>')+'</div><dl class="cn-dl"><dt>Comando</dt><dd>'+esc(c.n||p.comando)+' · '+esc(c.maq||"")+'</dd><dt>Material</dt><dd>'+esc(p.materialInf||p.material||"–")+'</dd><dt>Bruto</dt><dd>'+esc(p.bruto||"–")+'</dd><dt>Fixação</dt><dd>'+esc(p.fixacaoInf||"–")+'</dd><dt>Zero peça</dt><dd>'+esc(p.zeroInf||"–")+'</dd><dt>Sequência</dt><dd>'+esc(p.instrucoes||"–")+'</dd></dl>'+
    ((p.duvidas||[]).length?'<div class="cn-notes"><b>Dúvidas do agente</b><ul class="plan">'+p.duvidas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+((p.premissas||[]).length?'<div class="cn-notes"><b>Premissas adotadas</b><ul class="plan">'+p.premissas.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':'')+'</div>')+'</div>'+
+   cnOrientHtml(p,busy)+
    (ok&&CN_FOLHA?'<div class="card">'+cnFaltaHtml(p)+'<div class="mx-bar"><h3 style="margin:0">Folha de processo · prévia</h3><span class="hint">Tempo e percurso calculados do próprio programa (simulador M70)</span><span class="sp"></span><button class="btn sm pri" type="button" data-cnc="dlfolha" data-id="'+esc(p.id)+'">Baixar PDF</button></div><div class="cn-folhas">'+ops.map(function(o,i){return cnFolhaHtml(p,o,i)}).join("")+'</div></div>':'')+
    ops.map(function(o,i){return'<details class="card cn-progc"'+(i===0?'':'')+'><summary><b>Programa '+esc(o.op||("OP"+(i+1)*10))+'</b> <span class="mono hint">'+esc(cnFileName(p,o))+'</span> <span class="hint">· '+(String(o.nc||"").split("\n").length)+' linhas · abrir para conferir ou corrigir</span></summary>'+
      '<textarea class="cn-nc" data-cncop="'+i+'" spellcheck="false"'+(val?' readonly':'')+'>'+esc(o.nc||"")+'</textarea></details>'}).join("")+
@@ -4219,7 +4225,12 @@ function cnFolhaHtml(p,o,i){
 }
 function renderCnc(box){
   cnSub();
-  if(CN.open){var p=CN.list.filter(function(x){return x.id===CN.open})[0];if(p){cnDetail(box,p);return}CN.open=""}
+  if(CN.open){var p=CN.list.filter(function(x){return x.id===CN.open})[0];if(p){
+    /* mantém o foco e o cursor de quem está digitando quando a tela se atualiza sozinha */
+    var ae=document.activeElement,keep=null;if(ae&&box.contains(ae)&&/^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName)){var at=["data-cnor","data-ed","data-cbtxt","data-cncop"].filter(function(k){return ae.hasAttribute(k)})[0];if(at)keep={sel:"["+at+'="'+ae.getAttribute(at)+'"]',s:ae.selectionStart,e:ae.selectionEnd,top:ae.scrollTop}}
+    cnDetail(box,p);
+    if(keep){var ne=box.querySelector(keep.sel);if(ne){try{ne.focus({preventScroll:true});if(keep.s!=null&&ne.setSelectionRange)ne.setSelectionRange(keep.s,keep.e);ne.scrollTop=keep.top}catch(er){}}}
+    return}CN.open=""}
   var ae=document.activeElement,keep=ae&&ae.id&&/^cn-/.test(ae.id)?ae.id:"",pos=keep&&ae.selectionStart!=null?ae.selectionStart:null,sc=keep&&ae.scrollTop||0;
   box.innerHTML='<div class="mh"><div><h2>Programas CNC</h2><p>1. Arraste o desenho · 2. Preencha os dados ao lado · 3. Gerar programa. O agente devolve o programa CNC e a folha de processo. Fase 1: fresamento 2,5D.</p></div><span class="fase">Engenharia · F4</span></div>'+
    '<div class="cn-wrap"><div class="cn-main">'+cnDropHtml()+'</div>'+cnSideHtml()+'</div><div class="cn-list">'+cnListHtml()+'</div>';
@@ -4273,9 +4284,10 @@ function cnRetry(p){
   toast("Buscando o desenho guardado…");
   fetch(p.fonte.url).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){
     var f=new File([b],p.fonte.nome||"desenho",{type:b.type||(p.fonte.tipo==="pdf"?"application/pdf":"image/png")});
-    var j={id:rid(),nome:f.name,st:"ler",ms:"Abrindo o desenho…",f:f,c:c,docId:p.id,asset:{id:p.fonte.id,url:p.fonte.url},enxuto:p.erroCod==="empty_completion"||/no text|não chegou a escrever/i.test(p.erro||""),draft:{bruto:p.bruto||"",mat:p.materialInf||"",inst:p.instrucoes||"",fix:p.fixacaoInf||"",zero:p.zeroInf||""}};
+    var j={id:rid(),nome:f.name,st:"ler",ms:"Abrindo o desenho…",f:f,c:c,docId:p.id,asset:{id:p.fonte.id,url:p.fonte.url},enxuto:p.erroCod==="empty_completion"||/no text|não chegou a escrever/i.test(p.erro||""),orients:(p.orientacoes||[]).map(function(x){return x.txt}),draft:{bruto:p.bruto||"",mat:p.materialInf||"",inst:p.instrucoes||"",fix:p.fixacaoInf||"",zero:p.zeroInf||""}};
+    if(cnRetry.extra){for(var k in cnRetry.extra)j[k]=cnRetry.extra[k];cnRetry.extra=null}
     CN.jobs.unshift(j);cnRun(j);
-  }).catch(function(){toast("Não consegui buscar o desenho guardado. Arraste de novo.")});
+  }).catch(function(){cnRetry.extra=null;toast("Não consegui buscar o desenho guardado. Arraste de novo.")});
 }
 function cnRun(j){
   var prep,asset=j.asset||null,t0=Date.now();
@@ -4306,6 +4318,8 @@ function cnRun(j){
       if(n&&Date.now()-lastW>15000){lastW=Date.now();PR.db.doc("programas_cnc/"+j.docId).update({progresso:n,atualizado:lastW}).catch(function(){})}};
     j.to=setTimeout(function(){j.tempo=1;try{j.ctl.abort()}catch(er){}},10*60000);
     var sv=CN.draft;CN.draft=j.draft;var pr=cnPrompt(j.c,j.f.name,prep);CN.draft=sv;if(j.refs&&j.refs.txt)pr=pr.replace("FORMATO DA RESPOSTA (obrigatório):",j.refs.txt+"FORMATO DA RESPOSTA (obrigatório):");
+    if(j.orients&&j.orients.length)pr+="\n\nORIENTAÇÕES DO PROGRAMADOR PARA ESTA PEÇA (valem sempre e têm prioridade sobre premissas suas; siga à risca):\n- "+j.orients.join("\n- ");
+    if(j.orient&&j.ncAntes)pr+="\n\nCORREÇÃO PEDIDA AGORA PELO PROGRAMADOR: "+j.orient+"\nPROGRAMA ATUAL, gerado antes (refaça aplicando a correção; mantenha o que não foi criticado; devolva a resposta completa no mesmo formato):\n"+String(j.ncAntes).slice(0,60000);
     if(j.enxuto)pr+="\n\nMODO ENXUTO (a tentativa anterior pensou demais e não escreveu nada): decida a estratégia de forma objetiva, sem rever cada coordenada várias vezes, e escreva logo os blocos json e nc; use ciclos fixos e sub-rotinas para o que se repete. Se a peça for grande demais para um pedido, gere só a primeira operação e explique o resto em duvidas.";
     return AG.sample(pr,o).then(function(r){clearTimeout(j.to);return r},function(e){clearTimeout(j.to);var er=new Error(j.tempo?"O agente passou de 10 minutos sem terminar. Tente de novo; se repetir, divida a peça em operações nas instruções.":e&&(e.name==="AbortError"||e.code==="aborted")?"Cancelado pelo usuário.":agErr(e));er.code=e&&e.code;throw er});
   }).then(function(r){
@@ -4665,6 +4679,7 @@ $("v-mx").addEventListener("click",function(e){
   if(a==="realver"){var oo=(p.ops||[])[+b.dataset.op];if(oo&&oo.ncReal)cbShowText("Programa real · "+(oo.ncReal.nome||""),oo.ncReal.nc);return}
   if(a==="fbsave"){cbFbSave(p,+b.dataset.op);return}
   if(a==="completar"){cnCompletar(p);return}
+  if(a==="orientar"){cnOrientar(p);return}
   if(a==="edit"){CN.edit=p.id;CN.ed=cnEdInit(p);mxRender();setTimeout(function(){var x=document.querySelector(".cn-edit input,.cn-edit textarea");if(x)x.focus()},40);return}
   if(a==="edcancel"){CN.edit="";CN.ed=null;mxRender();return}
   if(a==="edsave"||a==="edgen"){cnEdSave(p,a==="edgen");return}
@@ -4694,6 +4709,7 @@ $("v-mx").addEventListener("input",function(e){
   if(S.tab!=="m-cnc")return;
   var id=e.target.id;
   if(id==="cn-bruto")CN.draft.bruto=e.target.value;else if(id==="cn-mat")CN.draft.mat=e.target.value;else if(id==="cn-inst")CN.draft.inst=e.target.value;else if(id==="cn-fix")CN.draft.fix=e.target.value;else if(id==="cn-zero")CN.draft.zero=e.target.value;
+  if(e.target.dataset&&e.target.dataset.cnor){CN.or=CN.or||{};CN.or[e.target.dataset.cnor]=e.target.value;var bt=document.querySelector('[data-cnc="orientar"]');if(bt)bt.disabled=!e.target.value.trim();return}
   if(e.target.dataset&&e.target.dataset.cbtxt){CN.fb=CN.fb||{};CN.fb[e.target.dataset.cbtxt]=e.target.value;return}
   if(e.target.dataset&&e.target.dataset.ed&&CN.ed){CN.ed[e.target.dataset.ed]=e.target.value;var ck=document.querySelector('.cn-edit [data-edreq="'+e.target.dataset.ed+'"]');if(ck)ck.classList.toggle("vazio",!String(e.target.value||"").trim());return}
   if(/^cn-(bruto|mat|inst|fix|zero)$/.test(id))cnGate();
@@ -5239,6 +5255,32 @@ function cnCompletar(p){
       if(cnFolhaFalta(o).length<antes.length)feitos.push(o.op)});
     return cnSet(p,{ops:novo},feitos.length?"Folha completada pelo agente ("+feitos.join(", ")+"); programa não alterado.":"Completar folha: o agente não trouxe dados novos.").then(function(){toast(feitos.length?"Folha completada.":"O agente não trouxe dados novos para a folha.")});
   }).catch(function(e){toast("Não consegui completar a folha: "+((e&&e.code)?agErr(e):(e&&e.message)||""))}).then(function(){delete CN.compl[p.id];mxRender()});
+}
+
+
+/* ---- Orientar o agente e mandar corrigir (gestor, 27/10/2026) ---- */
+function cnOrientHtml(p,busy){
+  if(!(p.ops||[]).length&&!p.orientacoes)return"";
+  var d=(CN.or&&CN.or[p.id])||"",pode=!!(p.fonte&&p.fonte.url),ant=p.orientacoes||[];
+  return'<div class="card cn-or"><div class="mx-bar"><h3 style="margin:0">Orientar o agente</h3><span class="hint">Diga o que ficou errado e como deve ser. O agente refaz o programa com a sua orientação.</span></div>'+
+   (ant.length?'<ul class="cn-or-l">'+ant.map(function(x){return'<li><time>'+esc(nowStr(x.em))+'</time><span>'+esc(x.txt)+'</span></li>'}).join("")+'</ul><p class="hint">Estas orientações continuam valendo em toda nova geração desta peça.</p>':'')+
+   '<textarea rows="4" data-cnor="'+esc(p.id)+'" placeholder="ex.: o quadrado interno deve ser feito com rampa nas paredes, MD-2 S5000 F1500, e repasse com MD-2,5; não faça arco de entrada a cada volta"'+(busy?' disabled':'')+'>'+esc(d)+'</textarea>'+
+   '<div class="acts2"><span class="sp" style="flex:1"></span>'+(pode?'<button class="btn pri" type="button" data-cnc="orientar" data-id="'+esc(p.id)+'"'+(busy||!d.trim()?' disabled':'')+'>Mandar corrigir</button>':'<span class="hint">Desenho não guardado: arraste o desenho de novo para refazer.</span>')+'</div></div>';
+}
+function cnOrient(p){return(CN.or&&CN.or[p.id]||"").trim()}
+function cnOrientar(p){
+  var txt=cnOrient(p);if(!txt){toast("Escreva a orientação antes.");return}
+  if(!AG.sample){toast("O agente não está disponível nesta visualização.");return}
+  askDel("Mandar o agente corrigir o programa?","Ele recebe o programa atual e a sua orientação e refaz o "+(p.codigo||"programa")+" no mesmo ID. Correções feitas à mão no programa atual serão substituídas"+(p.status==="validado"?"; a validação será desfeita":"")+".",function(){
+    var t=Date.now(),lista=(p.orientacoes||[]).concat([{txt:txt,em:t,por:AG.uid||""}]);
+    var ncAntes=(p.ops||[]).map(function(o){return"```nc "+(o.op||"")+"\n"+(o.nc||"")+"\n```"}).join("\n");
+    cnSet(p,{orientacoes:lista},"Orientação do programador: "+txt).then(function(){
+      try{PR.db.doc("cnc_feedback/"+p.id+"-orient-"+t.toString(36)).set({tipo:"orientacao",programa:p.id,idSeq:p.idSeq||0,codigo:p.codigo||"",cliente:p.cliente||"",material:p.material||p.materialInf||"",comando:p.comando,texto:txt,nc_antes:ncAntes.slice(0,120000),por:AG.uid||"",em:t})}catch(e){}
+      if(CN.or)delete CN.or[p.id];
+      var q=JSON.parse(JSON.stringify(p));q.orientacoes=lista;
+      cnRetry.extra={orient:txt,ncAntes:ncAntes};cnRetry(q);
+    });
+  });
 }
 
 fullRender();

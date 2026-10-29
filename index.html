@@ -2472,7 +2472,7 @@ $("t-ini").closest(".mods").addEventListener("click",function(e){
 });
 $("s-adm").classList.add("open");$("s-ven").classList.add("open");
 
-var APPV="91",APPD="27/10/2026";
+var APPV="92",APPD="29/10/2026";
 var BOOTCAP=true;
 var BR=(function(){
   var cv=$("brain"),cx=cv.getContext("2d"),raf=0,nodes=[],edges=[],ag=[],parts=[],W=0,H=0,S=1,ox=0,oy=0,dpr=1,hover=-1,built=false,still=false;
@@ -2877,7 +2877,7 @@ $("inbox").addEventListener("click",function(e){
   var id=b.dataset.id,d=IB.docs.filter(function(x){return x.id===id})[0];if(!d)return;
   if(b.dataset.ib==="del"){askDel("Descartar este pedido da caixa de entrada?",(d.cliente||"Cliente")+" · "+ibPrev(d)+".",function(){ibMark(id,"descartado");toast("Pedido descartado.")});return}
   var dp=d.pid&&PR.list.filter(function(x){return x.id===d.pid})[0];
-  if(dp&&dp.inboxId&&dp.inboxId!==id){dp=null;try{PR.db.doc("inbox/"+id).update({pid:"",num:""})}catch(er){}toast("Esta solicitação estava ligada à proposta "+(d.num||d.pid)+", que é de outra solicitação. Abrindo como nova.")}
+  if(dp&&dp.inboxId!==id){dp=null;try{PR.db.doc("inbox/"+id).update({pid:"",num:""})}catch(er){}toast("Esta solicitação estava ligada à proposta "+(d.num||d.pid)+", que é de outra solicitação. Abrindo como nova.")}
   if(dp&&PR.db){ibMark(id,"aberto");pOpen(d.pid);return}
   var p=ibPedido(d);if(!p.items.length){toast("Este pedido não tem itens.");return}
   S.tab="itens";applyPedido(p,"replace");S.inboxId=id;S.origem="E-mail";S.sol=ibSol(d);if(d.proposta&&!S.prop){S.prop=d.proposta}fullRender();ibMark(id,"aberto");toast("Nova proposta aberta com "+p.items.length+(p.items.length===1?" item.":" itens."))

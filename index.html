@@ -4893,59 +4893,59 @@ var MODS_DEF={
   ligacoes_modulos:[["Administrativo","Engenharia"],["Engenharia","PCP"],["PCP","Qualidade"],["PCP","Estoque"],["Administrativo","Estoque"],["Administrativo","Controladoria"],["Configurações","Administrativo"],["Engenharia","Qualidade"]],
   ligacoes_areas:[["Administrativo","Orçamentos","Engenharia","Desenhos"],["Administrativo","Pedidos","PCP","Ordens de produção"],["Engenharia","Programas CNC","PCP","Máquinas"],["Administrativo","Compras","Estoque","Matéria-prima"],["Qualidade","Primeira peça","Engenharia","Programas CNC"],["PCP","Setup","Engenharia","Folhas de operação"],["PCP","Ordens de produção","Estoque","Matéria-prima"],["Qualidade","Inspeções","Estoque","Peças acabadas"],["Controladoria","Custos","Administrativo","Orçamentos"],["Controladoria","Indicadores","Administrativo","Financeiro"],["Configurações","Parâmetros de custo","Controladoria","Custos"],["PCP","Apontamentos","Controladoria","Custos"]]
 };
-var MS={def:MODS_DEF,gestor:false,open:null,cur:"",user:null,nome:""};
+var MSM={def:MODS_DEF,gestor:false,open:null,cur:"",user:null,nome:""};
 function msValid(d){return d&&Array.isArray(d.modulos)&&d.modulos.length&&d.modulos.every(function(m){return m&&m.nome&&Array.isArray(m.areas)})}
-function msAreas(m){return(m.areas||[]).filter(function(a){return!a.gestor||MS.gestor})}
+function msAreas(m){return(m.areas||[]).filter(function(a){return!a.gestor||MSM.gestor})}
 
 /* ---- menu ---- */
 function msMenu(){
   var N=$("nmods");if(!N)return;var h='<button type="button" class="nm-i nm-home'+(S.tab==="home"?' on':'')+'" data-nm="home">Início</button><span class="nm-gap" aria-hidden="true"></span>';
-  MS.def.modulos.forEach(function(m,i){var op=MS.open===m.nome;
-    h+='<button type="button" class="nm-i'+(op?' open':'')+(MS.cur.indexOf(m.nome+"|")===0?' act':'')+'" data-nm="m" data-i="'+i+'" aria-expanded="'+op+'">'+esc(m.nome)+'</button>';
-    if(op)h+='<div class="nm-sub">'+msAreas(m).map(function(a){var k=m.nome+"|"+a.nome;return'<button type="button" class="nm-a'+(MS.cur===k?' on':'')+(a.tela?'':' wip')+'" data-nm="a" data-i="'+i+'" data-a="'+esc(a.nome)+'">'+esc(a.nome)+'</button>'}).join("")+'</div>';
+  MSM.def.modulos.forEach(function(m,i){var op=MSM.open===m.nome;
+    h+='<button type="button" class="nm-i'+(op?' open':'')+(MSM.cur.indexOf(m.nome+"|")===0?' act':'')+'" data-nm="m" data-i="'+i+'" aria-expanded="'+op+'">'+esc(m.nome)+'</button>';
+    if(op)h+='<div class="nm-sub">'+msAreas(m).map(function(a){var k=m.nome+"|"+a.nome;return'<button type="button" class="nm-a'+(MSM.cur===k?' on':'')+(a.tela?'':' wip')+'" data-nm="a" data-i="'+i+'" data-a="'+esc(a.nome)+'">'+esc(a.nome)+'</button>'}).join("")+'</div>';
   });
   N.innerHTML=h;
 }
 function msGo(mi,an){
-  var m=MS.def.modulos[mi];if(!m)return;var a=(m.areas||[]).filter(function(x){return x.nome===an})[0];if(!a)return;
-  MS.open=m.nome;MS.cur=m.nome+"|"+a.nome;
+  var m=MSM.def.modulos[mi];if(!m)return;var a=(m.areas||[]).filter(function(x){return x.nome===an})[0];if(!a)return;
+  MSM.open=m.nome;MSM.cur=m.nome+"|"+a.nome;
   var el=a.tela?document.querySelector(a.tela):null;
-  if(el){MS.going=1;try{el.click()}finally{MS.going=0}}
-  else{MS.wip={m:m.nome,a:a.nome};showTab("wip")}
+  if(el){MSM.going=1;try{el.click()}finally{MSM.going=0}}
+  else{MSM.wip={m:m.nome,a:a.nome};showTab("wip")}
   msMenu();
 }
 function msOpenMod(nome){
-  var i=-1;MS.def.modulos.forEach(function(m,k){if(m.nome===nome)i=k});if(i<0)return;
-  var m=MS.def.modulos[i],first=msAreas(m).filter(function(a){return a.tela})[0]||msAreas(m)[0];
-  MS.open=m.nome;if(first)msGo(i,first.nome);else msMenu();
+  var i=-1;MSM.def.modulos.forEach(function(m,k){if(m.nome===nome)i=k});if(i<0)return;
+  var m=MSM.def.modulos[i],first=msAreas(m).filter(function(a){return a.tela})[0]||msAreas(m)[0];
+  MSM.open=m.nome;if(first)msGo(i,first.nome);else msMenu();
 }
 document.addEventListener("click",function(e){
   var b=e.target.closest("[data-nm]");if(!b||!$("nmods")||!$("nmods").contains(b))return;
   var k=b.dataset.nm;
-  if(k==="home"){MS.cur="";showTab("home");msMenu();return}
-  if(k==="m"){var m=MS.def.modulos[+b.dataset.i];MS.open=MS.open===m.nome?null:m.nome;msMenu();return}
+  if(k==="home"){MSM.cur="";showTab("home");msMenu();return}
+  if(k==="m"){var m=MSM.def.modulos[+b.dataset.i];MSM.open=MSM.open===m.nome?null:m.nome;msMenu();return}
   if(k==="a")msGo(+b.dataset.i,b.dataset.a);
 });
 var _stMs=showTab;showTab=function(t){
   var r=_stMs.apply(this,arguments);
   $("v-home").hidden=t!=="home";$("v-wip").hidden=t!=="wip";
-  if(t==="wip"&&MS.wip){$("wip-k").textContent=MS.wip.m;$("wip-t").textContent=MS.wip.a}
-  if(t==="home"){MS.cur="";HM.start()}else HM.stop();
-  if(!MS.going&&t!=="wip"&&t!=="home"){var k=msFind(t);if(k){MS.cur=k;MS.open=k.split("|")[0]}}
+  if(t==="wip"&&MSM.wip){$("wip-k").textContent=MSM.wip.m;$("wip-t").textContent=MSM.wip.a}
+  if(t==="home"){MSM.cur="";HM.start()}else HM.stop();
+  if(!MSM.going&&t!=="wip"&&t!=="home"){var k=msFind(t);if(k){MSM.cur=k;MSM.open=k.split("|")[0]}}
   msMenu();
   return r;
 };
 function msFind(t){
   var T={ini:"#t-ini",sv:"#t-pc",in:"#t-pc",itens:"#t-pc",prop:"#t-pc",ped:"#t-ped","m-comp":"#t-mcomp","m-fin":"#t-mfin","m-cnc":"#t-cnc","m-eng":"#t-meng",par:"#t-par",cap:".mod[data-cap]","m-prod":'.mod[data-m="prod"]',"m-qual":'.mod[data-m="qual"]'};
   var sel=t==="cad"?({cli:"#t-cli",forn:"#t-forn",emp:"#t-emp"}[PD.cadTab]||""):T[t];if(!sel)return"";
-  var hit="";MS.def.modulos.forEach(function(m){(m.areas||[]).forEach(function(a){if(!hit&&a.tela===sel&&(!a.gestor||MS.gestor))hit=m.nome+"|"+a.nome})});return hit;
+  var hit="";MSM.def.modulos.forEach(function(m){(m.areas||[]).forEach(function(a){if(!hit&&a.tela===sel&&(!a.gestor||MSM.gestor))hit=m.nome+"|"+a.nome})});return hit;
 }
 
 /* ---- Início: grafo de módulos (canvas 2D, forças) ---- */
 var HM=(function(){
   var cv,cx,nodes=[],links=[],nbr=[],view={s:1,cx:0,cy:0},t=0,raf=0,W=1,H=1,dpr=1,hover=null,drag=null,moved=false,sel=null,reduce=false,built=false,on=false,ACC="#EC3237";
   function build(){
-    var D=MS.def,seed=11,rnd=function(){seed=(seed*9301+49297)%233280;return seed/233280},idx={};nodes=[];links=[];
+    var D=MSM.def,seed=11,rnd=function(){seed=(seed*9301+49297)%233280;return seed/233280},idx={};nodes=[];links=[];
     function add(n){n.i=nodes.length;nodes.push(n);idx[n.label+"|"+n.mod]=n;return n}
     var mods=D.modulos;
     mods.forEach(function(m,k){var a=k/mods.length*Math.PI*2,h=add({label:m.nome,mod:m.nome,hub:true,x:Math.cos(a)*260,y:Math.sin(a)*170,vx:0,vy:0,deg:0});
@@ -4990,7 +4990,7 @@ var HM=(function(){
     c.globalAlpha=1;
   }
   function card(){var m=(hover&&hover.mod)||sel,el=$("hm-card");if(!el)return;if(!m){el.hidden=true;return}
-    var md=MS.def.modulos.filter(function(x){return x.nome===m})[0];if(!md){el.hidden=true;return}
+    var md=MSM.def.modulos.filter(function(x){return x.nome===m})[0];if(!md){el.hidden=true;return}
     el.hidden=false;if(el.dataset.m===m)return;el.dataset.m=m;
     el.innerHTML='<span class="hm-cn">'+esc(m)+'</span><span class="hm-ci">'+esc(msAreas(md).filter(function(a){return a.grafo!==false}).map(function(a){return a.nome}).join(", "))+'</span><button type="button" class="hm-go" data-hmgo="'+esc(m)+'">Abrir '+esc(m)+'</button>'}
   function pos(e){var r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
@@ -5024,22 +5024,22 @@ function climaGet(){
 climaGet();setInterval(climaGet,30*60*1000);
 
 /* ---- banco: estrutura de módulos, perfis, clima de reserva ---- */
-(function wms(){if(!PR.db){setTimeout(wms,700);return}if(MS.sub)return;MS.sub=1;
+(function wms(){if(!PR.db){setTimeout(wms,700);return}if(MSM.sub)return;MSM.sub=1;
   try{PR.db.collection("config").onSnapshot(function(sn){
     sn.docs.forEach(function(x){var d=x.data()||{};
-      if(x.id==="modulos"&&msValid(d)&&JSON.stringify(d.modulos)!==JSON.stringify(MS.def.modulos)){MS.def={modulos:d.modulos,ligacoes_modulos:d.ligacoes_modulos||[],ligacoes_areas:d.ligacoes_areas||[]};HM.rebuild();msMenu()}
-      if(x.id==="perfis"){MS.perfis=d;msPerfil()}
+      if(x.id==="modulos"&&msValid(d)&&JSON.stringify(d.modulos)!==JSON.stringify(MSM.def.modulos)){MSM.def={modulos:d.modulos,ligacoes_modulos:d.ligacoes_modulos||[],ligacoes_areas:d.ligacoes_areas||[]};HM.rebuild();msMenu()}
+      if(x.id==="perfis"){MSM.perfis=d;msPerfil()}
       if(x.id==="clima"&&d.c!=null&&(!CLIMA.at||(d.at||0)>CLIMA.at)){CLIMA.c=d.c;CLIMA.at=d.at||1;climaShow()}
     })},function(){})}catch(e){}
 })();
 function msPerfil(){
-  var u=MS.user,ids=(MS.perfis&&MS.perfis.gestores)||[];
+  var u=MSM.user,ids=(MSM.perfis&&MSM.perfis.gestores)||[];
   var p=u?u.isOwner():Promise.resolve(false);
-  p.then(function(own){var g=!!own||(AG.uid&&ids.indexOf(AG.uid)>-1);if(g!==MS.gestor){MS.gestor=g;msMenu()}document.body.dataset.perfil=MS.gestor?"gestor":"usuario";msConta()}).catch(function(){});
+  p.then(function(own){var g=!!own||(AG.uid&&ids.indexOf(AG.uid)>-1);if(g!==MSM.gestor){MSM.gestor=g;msMenu()}document.body.dataset.perfil=MSM.gestor?"gestor":"usuario";msConta()}).catch(function(){});
 }
-function msConta(){var b=$("nacc");if(!b)return;b.title=(MS.nome?MS.nome+" · ":"")+(MS.gestor?"Perfil: gestor":"Perfil: usuário")}
-(function(){try{claude.use("user").then(function(u){MS.user=u||null;if(u&&u.me)u.me().then(function(m){MS.nome=(m&&m.name)||"";msConta()}).catch(function(){});setTimeout(msPerfil,1500);msPerfil()}).catch(function(){})}catch(e){}})();
-$("nacc").addEventListener("click",function(){toast((MS.nome||"Você")+" · "+(MS.gestor?"perfil gestor (vê o Painel de implantação em Configurações)":"perfil usuário"))});
+function msConta(){var b=$("nacc");if(!b)return;b.title=(MSM.nome?MSM.nome+" · ":"")+(MSM.gestor?"Perfil: gestor":"Perfil: usuário")}
+(function(){try{claude.use("user").then(function(u){MSM.user=u||null;if(u&&u.me)u.me().then(function(m){MSM.nome=(m&&m.name)||"";msConta()}).catch(function(){});setTimeout(msPerfil,1500);msPerfil()}).catch(function(){})}catch(e){}})();
+$("nacc").addEventListener("click",function(){toast((MSM.nome||"Você")+" · "+(MSM.gestor?"perfil gestor (vê o Painel de implantação em Configurações)":"perfil usuário"))});
 msMenu();
 
 

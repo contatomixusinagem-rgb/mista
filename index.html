@@ -1497,6 +1497,61 @@ function parseFaturadas(rows){
   });
   return{map:map,lines:lines,codes:Object.keys(map).length,first:first,last:last};
 }
+
+/* ===== v94: histórico do próprio MISTA (propostas fechadas e pedidos) somado ao histórico importado ===== */
+var MXH={dados:{},map:{},sig:"",at:0,cache:null,ck:""};
+function mxhDay(ms){return isFinite(+ms)&&+ms>0?dayStart(new Date(+ms)):NaN}
+function mxhUnit(it){var pv=parse(it.preco);if(isFinite(pv)&&pv>0)return pv;var c=null;try{c=calc(it)}catch(e){}return c&&c.ok&&c.preco>0?c.preco:NaN}
+function mxhBuild(){
+  var map={},ped={};
+  (PD.list||[]).forEach(function(p){if(!p.cancelado&&p.propostaId)ped[p.propostaId]=p});
+  function put(cod,ev,desc){cod=String(cod||"").trim().toUpperCase();if(!cod||!isFinite(ev[0])||!(ev[1]>0))return;
+    var e=map[cod]||(map[cod]={ev:[],desc:"",lastMs:0});e.ev.push(ev);if(ev[0]>=e.lastMs){e.lastMs=ev[0];if(desc)e.desc=desc}}
+  (PR.list||[]).forEach(function(sm){
+    var d=MXH.dados[sm.id];if(!d||!d.items)return;
+    var won=ped[sm.id];if(!won&&sm.status!=="Fechado")return;   /* rascunho não conta como cotação */
+    var ms=mxhDay(won?(won.criado||sm.atualizado):(sm.fechado||sm.atualizado||sm.criado));
+    d.items.forEach(function(it){
+      var cod=String(it.cod||"").trim().toUpperCase();if(!cod)return;
+      var u=mxhUnit(it);
+      if(won){var wi=(won.itens||[]).filter(function(x){return String(x.cod||"").trim().toUpperCase()===cod})[0];if(wi&&wi.unit>0)u=wi.unit}
+      var q=parse(it.qtd);if(!(q>0))q=1;
+      put(cod,[ms,u,q,sm.num||sm.id,"MISTA",String(it.revReq||""),won?2:1,won?"w":"o",0,"mista",sm.id],
+        [it.name||it.desc||"",it.dwg?"DES.:"+it.dwg:""].filter(Boolean).join(" - "));
+    });
+  });
+  (PD.list||[]).forEach(function(p){if(p.cancelado||p.propostaId)return;   /* pedido lançado sem proposta */
+    var ms=mxhDay(p.criado);(p.itens||[]).forEach(function(x){put(x.cod,[ms,+x.unit,+x.qtd||1,p.num||p.id,"MISTA","",2,"w",0,"mista",""],x.desc||"")})});
+  var sig=JSON.stringify(map);
+  if(sig===MXH.sig)return false;
+  MXH.sig=sig;MXH.map=map;MXH.at++;return true;
+}
+/* junta os dois bancos; a proposta aberta não conta como histórico dela mesma */
+function histAll(){
+  var H=S.hist,M=MXH.map,ck=(H&&H.meta?H.meta.at:0)+"|"+(H?Object.keys(H.map).length:0)+"|"+MXH.at+"|"+(S.pid||"");
+  if(MXH.cache&&MXH.ck===ck&&MXH.cache._h===H)return MXH.cache;
+  var has=false;for(var k0 in M){has=true;break}
+  if(!has){MXH.cache=H;MXH.ck=ck;return H}
+  var map={};
+  if(H)for(var k in H.map)map[k]=H.map[k];
+  for(var c in M){
+    var ev=M[c].ev.filter(function(x){return x[10]!==S.pid||!S.pid});if(!ev.length)continue;
+    var b=map[c];
+    if(b)map[c]={ev:b.ev.concat(ev),desc:M[c].lastMs>=b.lastMs&&M[c].desc?M[c].desc:b.desc,lastMs:Math.max(b.lastMs,M[c].lastMs)};
+    else map[c]={ev:ev,desc:M[c].desc,lastMs:M[c].lastMs};
+  }
+  var o={meta:H?H.meta:{file:"MISTA"},map:map};
+  try{Object.defineProperty(o,"_h",{value:H,enumerable:false})}catch(e){}
+  MXH.cache=o;MXH.ck=ck;return o;
+}
+function mxhRefresh(){if(mxhBuild()){try{renderSummary();renderList();refreshEditor();if(S.tab==="prop")renderProposal()}catch(e){}}}
+(function mxhWait(){
+  if(typeof PR==="undefined"||!PR||!PR.db){setTimeout(mxhWait,700);return}
+  PR.db.collection("propostas_dados").onSnapshot(function(sn){
+    var d={};sn.docs.forEach(function(x){d[x.id]=x.data()||{}});MXH.dados=d;mxhRefresh();
+  },function(){});
+  setInterval(mxhRefresh,4000);   /* acompanha propostas fechadas e pedidos novos */
+})();
 /* número do desenho: usado quando o código do cliente não aparece no histórico */
 function dwgKey(s){
   s=String(s||"").trim().replace(/(?:(?<=\d)\s*|\s+)R\s*:?\s*[0-9]+[A-Za-z]?\s*$|\s+R\s*:?\s*[0-9A-Za-z]+\s*$/i,"").replace(/^[^0-9A-Za-z]+/,"").replace(/[^0-9A-Za-z.\-\/]+$/,"");
@@ -1551,7 +1606,7 @@ function matKeys(t){
   return Object.keys(k);
 }
 function hinfo(it){
-  var H=S.hist;if(!H||!it.cod)return null;
+  var H=histAll();if(!H||!it.cod)return null;
   var key=String(it.cod).trim().toUpperCase(),e=H.map[key],via="";
   if(!e&&it.dwg){
     var dk=dwgKey(it.dwg),ix=dwgIndex(H);
@@ -2308,7 +2363,7 @@ function renderHbox(it,c){
   var show=hi.evs.slice(-5).concat((hi.ops||[]).slice(-3)).sort(function(a,b){return b[0]-a[0]});
   var rows=show.map(function(x){
     var op=x[7]==="o";
-    return'<tr'+(op?' class="lost"':'')+'><td>'+fmtD(x[0])+(x[8]?' (estimada)':'')+'</td><td>'+esc(x[3])+'</td><td>'+esc(x[4])+'</td><td class="r">'+x[2]+'</td><td class="r mono">'+brl(x[1])+'</td><td>'+(op?'não fechou':x[6]===2?'vendido':'fechado')+'</td></tr>';
+    return'<tr'+(op?' class="lost"':'')+'><td>'+fmtD(x[0])+(x[8]?' (estimada)':'')+'</td><td>'+esc(x[3])+'</td><td>'+esc(x[4])+'</td><td class="r">'+x[2]+'</td><td class="r mono">'+brl(x[1])+'</td><td>'+(x[9]==="mista"?(op?'cotado no MISTA':'pedido no MISTA'):(op?'não fechou':x[6]===2?'vendido':'fechado'))+'</td></tr>';
   }).join("");
   var w=[],oi=hi.open;
   if(oi){

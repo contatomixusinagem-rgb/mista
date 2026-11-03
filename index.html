@@ -1177,6 +1177,28 @@ body.sd-min .side.peek{width:236px;padding:24px 14px!important;overflow:auto;box
 @media(max-width:700px){.it-g .it-w{grid-column:auto}}
 .it-sug{background:var(--surface2);border-radius:10px;padding:10px 12px;margin:8px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
 .stp.n{background:var(--surface2);color:var(--muted)}
+
+/* ===== v98: roteiro, estrutura e PCP ===== */
+.rt-tab input,.rt-tab select,.es-tab input,.es-tab select{min-height:32px;padding:4px 6px;font-size:13px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);box-sizing:border-box;width:100%}
+.rt-tab input.r,.es-tab input.r{text-align:right}
+.es-kg{margin-top:4px;font-size:11.5px}
+.pp-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:4px 0 12px}
+.pp-kpi div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.pp-kpi b{font-size:22px}.pp-kpi span{font-size:12.5px;color:var(--muted)}
+.pp-r,.op-r,.eg-r{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px}
+.pp-r{grid-template-columns:110px 130px minmax(200px,2fr) 50px 110px 220px 60px 210px;min-width:1120px}
+.op-r{grid-template-columns:110px minmax(200px,2fr) 130px 50px 110px minmax(160px,1.4fr) 60px 170px;min-width:1050px;cursor:pointer}
+.eg-r{grid-template-columns:minmax(240px,2fr) 120px 130px 50px 110px 150px 150px 90px;min-width:1080px}
+.op-r:hover{background:var(--surface2)}
+.pp-r.fh,.op-r.fh,.eg-r.fh{cursor:default;border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.pp-r small,.op-r small,.eg-r small,.pp-r span>small{display:block;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-r b,.op-r b,.eg-r b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-r.ok{background:color-mix(in srgb,var(--good-bg,#E3F4EA) 45%,transparent)}
+.pp-seq{display:flex;align-items:center;gap:6px}.pp-seq b{min-width:22px;text-align:right}
+.pp-eng{display:flex;flex-wrap:wrap;gap:4px}
+.pp-atr{color:var(--bad,#B42318);font-weight:600}.pp-prox{color:#9A6700;font-weight:600}
+.lnk{background:none;border:0;padding:0;color:var(--ink);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+#mx-modal .card.op-det{width:min(1000px,96vw)!important;max-width:min(1000px,96vw)!important;max-height:92vh;overflow:auto}
 </style>
 
 <div class="shell">
@@ -6760,7 +6782,7 @@ $("v-mx").addEventListener("click",function(ev){
   if(a==="desfaz"){IT.ed=null;IT.edId="";mxRender();return}
   if(a==="salvar"){var ch=itDiff(x,e);if(!ch.length){toast("Nada mudou.");return}
     if(e.fiscal.ncm&&!itNcmOk(e.fiscal.ncm)){toast("NCM precisa ter 8 dígitos (0000.00.00).");return}
-    var patch={atualizado:Date.now()};IT_ID.forEach(function(k){patch[k[0]]=e[k[0]]==null?"":e[k[0]]});["unidade","emp","modalidade","tipoSped"].forEach(function(k){patch[k]=e[k]||""});patch.fiscal=e.fiscal;
+    var patch={atualizado:Date.now()};IT_ID.forEach(function(k){patch[k[0]]=e[k[0]]==null?"":e[k[0]]});["unidade","emp","modalidade","tipoSped"].forEach(function(k){patch[k]=e[k]||""});patch.fiscal=e.fiscal;if(e.roteiro)patch.roteiro=e.roteiro;if(e.estrutura)patch.estrutura=e.estrutura;
     var h=(x.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"Cadastro alterado: "+ch.join("; ")+"."});patch.hist=h;
     PR.db.doc("itens/"+x.id).update(patch).then(function(){IT.ed=null;IT.edId="";toast("Item salvo.")}).catch(function(){toast("Não consegui salvar.")});return}
   if(a==="padrao"){var f=e.fiscal,emp=e.emp||"MIX",pd={csosn:f.csosn||"",cstIpi:f.cstIpi||"",cstPis:f.cstPis||"",cstCofins:f.cstCofins||"",atualizado:Date.now()};
@@ -6795,6 +6817,227 @@ var _stIt=showTab;showTab=function(t){var r=_stIt.apply(this,arguments);
   var a=$("t-itens");if(a)a.setAttribute("aria-selected",String(t==="m-itens"));
   if(t==="m-itens"){$("crumb").innerHTML="Engenharia › <b>Cadastro de itens</b>";$("crumb-t").textContent="Cadastro de itens"}
   if(t==="ped"){$("crumb").innerHTML="Vendas › <b>Pedidos internos</b>";$("crumb-t").textContent="Pedidos internos"}
+  return r};
+
+
+/* ===== v98: Engenharia (roteiro de fabricação + estrutura de material no cadastro do item) e PCP (demanda, sequência, ordens de produção) =====
+   Pedido interno → demanda no PCP → engenharia define roteiro e estrutura → PCP sequencia e gera a OP. */
+var RT_OPS=["Serrar","Tornear","Fresar","Furar","Rosquear","Rebarbar","Retificar","Erosão a fio","Tratamento térmico","Tratamento superficial","Soldar","Inspecionar","Embalar"];
+var ES_FORMAS=["Barra redonda","Barra sextavada","Barra quadrada","Barra chata","Chapa","Tubo","Perfil","Peça bruta / fundido","—"];
+var ES_TIPOS=[["mp","Matéria-prima"],["terc","Serviço de terceiro"],["comp","Componente / item comprado"]];
+var ES_UN=["kg","m","mm","pç"];
+var PP={sub:false,ops:[],seq:[],seqV:0,aba:"dem",q:"",open:""};
+IDP.ordens="OP";
+function rtRecursos(){var r=[];try{(S.P.maq||[]).forEach(function(m){r.push(m.n)})}catch(e){}["Bancada (rebarba/montagem)","Terceiro"].forEach(function(x){if(r.indexOf(x)<0)r.push(x)});return r}
+function rtOk(it){var r=it&&it.roteiro;return!!(r&&r.status==="liberado"&&(r.ops||[]).length)}
+function esOk(it){var e=it&&it.estrutura;return!!(e&&e.status==="liberado"&&(e.mats||[]).length)}
+function ppChip(ok,r,nome){if(ok)return'<span class="stp g">'+nome+' liberad'+(nome==="Estrutura"?"a":"o")+'</span>';var st=r&&(r.ops||r.mats||[]).length?"em elaboração":"pendente";return'<span class="stp '+(st==="pendente"?"b":"w")+'">'+nome+' '+st+'</span>'}
+function rtHoras(it,qtd){var r=it&&it.roteiro;if(!r)return 0;var m=0;(r.ops||[]).forEach(function(o){m+=(+parse(o.setup)||0)+(+parse(o.ciclo)||0)*(+qtd||0)});return m/60}
+function fmtH(h){if(!(h>0))return"–";var m=Math.round(h*60);return Math.floor(m/60)+"h"+("0"+m%60).slice(-2)}
+/* kg por peça pela forma e medida do bruto: "Ø55 x 32", "160 x 85 x 22", "sext 24 x 40", "tubo Ø50 x Ø40 x 30" */
+function esKg(mat,forma,med){
+  var d=densDefault(String(mat||""),String(forma||""))||7.85,s=String(med||"").replace(/,/g,".").toLowerCase(),n=(s.match(/\d+(\.\d+)?/g)||[]).map(Number);if(!n.length)return NaN;
+  var v=NaN;
+  if(/tubo/i.test(forma)&&n.length>=3)v=Math.PI/4*(n[0]*n[0]-n[1]*n[1])*n[2];
+  else if(/redonda/i.test(forma)||/ø|diam/.test(s)){if(n.length>=2)v=Math.PI/4*n[0]*n[0]*n[1]}
+  else if(/sext/i.test(forma)&&n.length>=2)v=0.866*n[0]*n[0]*n[1];
+  else if(/quadrada/i.test(forma)&&n.length>=2)v=n[0]*n[0]*n[1];
+  else if(n.length>=3)v=n[0]*n[1]*n[2];
+  return isFinite(v)?Math.round(v*d/1e6*1000)/1000:NaN;
+}
+function esNec(m,qtd){var c=+parse(m.consumo)||0,p=+parse(m.perda)||0;return c*(+qtd||0)*(1+p/100)}
+
+/* ---------- cadastro do item: cartões Roteiro e Estrutura ---------- */
+function rtCardHtml(e){
+  var r=e.roteiro||(e.roteiro={status:"rascunho",ops:[]}),rec=rtRecursos(),lib=r.status==="liberado";
+  var tm=0;(r.ops||[]).forEach(function(o){tm+=(+parse(o.ciclo)||0)});
+  return'<div class="card" id="it-rt"><div class="mx-bar"><h3 style="margin:0">Roteiro de fabricação</h3>'+(lib?'<span class="stp g">Liberado</span><span class="hint">'+esc(nowStr(r.liberadoEm))+'</span>':'<span class="stp '+((r.ops||[]).length?"w":"b")+'">'+((r.ops||[]).length?"Em elaboração":"Pendente")+'</span>')+'<span class="sp"></span><span class="hint">Ciclo total: '+(tm?nf(tm,1)+" min/peça":"–")+'</span></div>'+
+   '<datalist id="rt-ops-l">'+RT_OPS.map(function(x){return'<option value="'+esc(x)+'">'}).join("")+'</datalist>'+
+   '<div class="tbx"><table class="itb rt-tab"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r">Setup (min)</th><th class="r">Ciclo (min/pç)</th><th>Instruções</th><th></th></tr></thead><tbody>'+
+   ((r.ops||[]).length?r.ops.map(function(o,i){return'<tr><td class="mono">'+((i+1)*10)+'</td><td><input data-rt="'+i+':op" list="rt-ops-l" value="'+esc(o.op||"")+'"></td><td><select data-rt="'+i+':rec"><option value="">escolha…</option>'+rec.map(function(x){return'<option'+(o.rec===x?" selected":"")+'>'+esc(x)+'</option>'}).join("")+'</select></td>'+
+     '<td><input data-rt="'+i+':setup" value="'+esc(o.setup||"")+'" inputmode="decimal" class="r" style="width:80px"></td><td><input data-rt="'+i+':ciclo" value="'+esc(o.ciclo||"")+'" inputmode="decimal" class="r" style="width:80px"></td><td><input data-rt="'+i+':obs" value="'+esc(o.obs||"")+'" placeholder="ex.: programa CNC-0008, 2 fixações"></td>'+
+     '<td><span class="qi-mv"><button type="button" class="btn sm" data-rtb="up" data-i="'+i+'"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm" data-rtb="down" data-i="'+i+'"'+(i<r.ops.length-1?'':' disabled')+'>↓</button>'+ibtn("trash","Tirar operação",'data-rtb="rm" data-i="'+i+'"',"danger")+'</span></td></tr>'}).join(""):'<tr><td colspan="7" class="hint">Nenhuma operação. Use os botões abaixo.</td></tr>')+
+   '</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-rtb="add">+ Operação</button><button class="btn sm" type="button" data-rtb="modelo">Modelo: serrar · usinar · rebarbar · inspecionar</button><span class="sp" style="flex:1"></span>'+
+   (lib?'<button class="btn sm" type="button" data-rtb="reabrir">Reabrir roteiro</button>':'<button class="btn sm pri" type="button" data-rtb="liberar"'+((r.ops||[]).length?'':' disabled')+'>Liberar roteiro</button>')+'</div></div>';
+}
+function esCardHtml(e){
+  var s=e.estrutura||(e.estrutura={status:"rascunho",mats:[]}),lib=s.status==="liberado";
+  return'<div class="card" id="it-es"><div class="mx-bar"><h3 style="margin:0">Estrutura (material por peça)</h3>'+(lib?'<span class="stp g">Liberada</span><span class="hint">'+esc(nowStr(s.liberadoEm))+'</span>':'<span class="stp '+((s.mats||[]).length?"w":"b")+'">'+((s.mats||[]).length?"Em elaboração":"Pendente")+'</span>')+'<span class="sp"></span><span class="hint">Base do MRP: necessidade = consumo × quantidade × (1 + perda).</span></div>'+
+   '<div class="tbx"><table class="itb es-tab"><thead><tr><th>Tipo</th><th>Material / descrição</th><th>Forma</th><th>Medida do bruto por peça</th><th class="r">Consumo/pç</th><th>Un.</th><th class="r">Perda %</th><th>Cliente fornece</th><th></th></tr></thead><tbody>'+
+   ((s.mats||[]).length?s.mats.map(function(m,i){var kg=esKg(m.desc,m.forma,m.medida);return'<tr><td><select data-es="'+i+':tipo">'+ES_TIPOS.map(function(t){return'<option value="'+t[0]+'"'+(m.tipo===t[0]?" selected":"")+'>'+t[1]+'</option>'}).join("")+'</select></td>'+
+     '<td><input data-es="'+i+':desc" value="'+esc(m.desc||"")+'" placeholder="ex.: Alumínio 5052"></td><td><select data-es="'+i+':forma">'+ES_FORMAS.map(function(f){return'<option'+(m.forma===f?" selected":"")+'>'+esc(f)+'</option>'}).join("")+'</select></td>'+
+     '<td><input data-es="'+i+':medida" value="'+esc(m.medida||"")+'" placeholder="ex.: Ø55 x 32 ou 160 x 85 x 22"></td><td><input data-es="'+i+':consumo" value="'+esc(m.consumo||"")+'" inputmode="decimal" class="r" style="width:80px">'+(isFinite(kg)&&m.tipo==="mp"?'<button type="button" class="btn sm es-kg" data-esb="kg" data-i="'+i+'" title="Usar o peso calculado pela medida">= '+nf(kg,3)+' kg</button>':'')+'</td>'+
+     '<td><select data-es="'+i+':un">'+ES_UN.map(function(u){return'<option'+(m.un===u?" selected":"")+'>'+u+'</option>'}).join("")+'</select></td><td><input data-es="'+i+':perda" value="'+esc(m.perda==null?"":m.perda)+'" inputmode="decimal" class="r" style="width:60px"></td>'+
+     '<td style="text-align:center"><input type="checkbox" data-es="'+i+':cliente"'+(m.cliente?" checked":"")+' aria-label="Cliente fornece"></td><td>'+ibtn("trash","Tirar",'data-esb="rm" data-i="'+i+'"',"danger")+'</td></tr>'}).join(""):'<tr><td colspan="9" class="hint">Nenhum material. Use os botões abaixo.</td></tr>')+
+   '</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-esb="add">+ Matéria-prima</button><button class="btn sm" type="button" data-esb="addt">+ Serviço de terceiro</button><span class="sp" style="flex:1"></span>'+
+   (lib?'<button class="btn sm" type="button" data-esb="reabrir">Reabrir estrutura</button>':'<button class="btn sm pri" type="button" data-esb="liberar"'+((s.mats||[]).length?'':' disabled')+'>Liberar estrutura</button>')+'</div></div>';
+}
+var _itDetPcp=itDetail;itDetail=function(box,x){
+  _itDetPcp.apply(this,arguments);var e=itEdOf(x);
+  var v=null;Array.prototype.forEach.call(box.querySelectorAll(".card h3"),function(h){if(h.textContent==="Vínculos")v=h.parentNode});
+  if(v){var w=document.createElement("div");w.innerHTML=rtCardHtml(e)+esCardHtml(e);while(w.firstChild)v.parentNode.insertBefore(w.firstChild,v);
+    Array.prototype.forEach.call(v.querySelectorAll("dt"),function(dt){if(dt.textContent==="Roteiro e estrutura"){var dd=dt.nextElementSibling;dt.remove();if(dd)dd.remove()}})}
+  var dem=ppDemanda().filter(function(r){return r.it&&r.it.id===x.id});
+  if(dem.length&&(!rtOk(e)||!esOk(e))){var ab=box.querySelector(".askbox");if(ab)ab.insertAdjacentHTML("afterend",'<div class="askbox" style="margin-top:8px">Este item tem <b>'+dem.reduce(function(s,r){return s+r.qtd},0)+' peças em pedidos internos</b> esperando o roteiro e a estrutura para o PCP abrir a ordem de produção.</div>')}
+  if(IT.foco){var el=$(IT.foco);IT.foco="";if(el)try{el.scrollIntoView({block:"start"})}catch(er){}}
+};
+/* salvar inclui roteiro e estrutura */
+var _itDiffPcp=itDiff;itDiff=function(x,e){var ch=_itDiffPcp.apply(this,arguments);
+  if(JSON.stringify(x.roteiro||{})!==JSON.stringify(e.roteiro||{}))ch.push("Roteiro: "+((e.roteiro&&e.roteiro.ops)||[]).length+" operações"+(e.roteiro&&e.roteiro.status==="liberado"?" (liberado)":""));
+  if(JSON.stringify(x.estrutura||{})!==JSON.stringify(e.estrutura||{}))ch.push("Estrutura: "+((e.estrutura&&e.estrutura.mats)||[]).length+" materiais"+(e.estrutura&&e.estrutura.status==="liberado"?" (liberada)":""));return ch};
+function rtEdit(fn){var x=itById(IT.open);if(!x)return;var e=itEdOf(x);fn(e);itMark(e);mxRender()}
+function rtDesliga(e,k){var o=e[k];if(o&&o.status==="liberado"){o.status="rascunho";o.liberadoEm=0;toast((k==="roteiro"?"Roteiro":"Estrutura")+" voltou para elaboração por causa da mudança. Libere de novo depois de conferir.")}}
+$("v-mx").addEventListener("click",function(ev){
+  if(S.tab!=="m-itens")return;var b=ev.target.closest("[data-rtb],[data-esb]");if(!b)return;ev.stopPropagation();ev.preventDefault();
+  var x=itById(IT.open);if(!x)return;var e=itEdOf(x),i=+b.dataset.i;
+  if(b.dataset.rtb){var r=e.roteiro=e.roteiro||{status:"rascunho",ops:[]},a=b.dataset.rtb;
+    if(a==="add"){rtEdit(function(){rtDesliga(e,"roteiro");r.ops.push({op:"",rec:"",setup:"",ciclo:"",obs:""})});return}
+    if(a==="modelo"){if(r.ops.length){askDel("Trocar as operações pelo modelo?","As "+r.ops.length+" operações atuais saem.",function(){rtEdit(function(){rtDesliga(e,"roteiro");r.ops=rtModelo(e)})});return}rtEdit(function(){r.ops=rtModelo(e)});return}
+    if(a==="rm"){rtEdit(function(){rtDesliga(e,"roteiro");r.ops.splice(i,1)});return}
+    if(a==="up"||a==="down"){var j=a==="up"?i-1:i+1;rtEdit(function(){rtDesliga(e,"roteiro");var t=r.ops[i];r.ops[i]=r.ops[j];r.ops[j]=t});return}
+    if(a==="liberar"){var falta=r.ops.filter(function(o){return!o.op||!o.rec||!(+parse(o.ciclo)>0)&&o.rec!=="Terceiro"&&!/terceiro/i.test(o.rec)}).length;if(falta){toast(falta+(falta===1?" operação sem":" operações sem")+" nome, máquina ou ciclo.");return}
+      rtEdit(function(){r.status="liberado";r.liberadoEm=Date.now();r.liberadoPor=AG.uid||""});toast("Roteiro liberado. Clique em Salvar para gravar.");return}
+    if(a==="reabrir"){rtEdit(function(){r.status="rascunho";r.liberadoEm=0});return}
+  }
+  if(b.dataset.esb){var s=e.estrutura=e.estrutura||{status:"rascunho",mats:[]},c=b.dataset.esb;
+    if(c==="add"){rtEdit(function(){rtDesliga(e,"estrutura");s.mats.push({tipo:"mp",desc:e.material||"",forma:"Barra redonda",medida:"",consumo:"",un:"kg",perda:"5",cliente:e.modalidade==="Industrialização"})});return}
+    if(c==="addt"){rtEdit(function(){rtDesliga(e,"estrutura");s.mats.push({tipo:"terc",desc:"",forma:"—",medida:"",consumo:"1",un:"pç",perda:"0",cliente:false})});return}
+    if(c==="rm"){rtEdit(function(){rtDesliga(e,"estrutura");s.mats.splice(i,1)});return}
+    if(c==="kg"){var m=s.mats[i],kg=esKg(m.desc,m.forma,m.medida);if(isFinite(kg))rtEdit(function(){rtDesliga(e,"estrutura");m.consumo=String(kg).replace(".",",");m.un="kg"});return}
+    if(c==="liberar"){var f2=s.mats.filter(function(m){return!m.desc||!(+parse(m.consumo)>0)}).length;if(f2){toast(f2+(f2===1?" linha sem":" linhas sem")+" material ou consumo.");return}
+      rtEdit(function(){s.status="liberado";s.liberadoEm=Date.now();s.liberadoPor=AG.uid||""});toast("Estrutura liberada. Clique em Salvar para gravar.");return}
+    if(c==="reabrir"){rtEdit(function(){s.status="rascunho";s.liberadoEm=0});return}
+  }
+},true);
+function rtModelo(e){var tor=/torn|eixo|bucha|pino|anel|arruela|haste|parafuso|camisa|sede|embolo|êmbolo|obturador/i.test(e.descricao||"");
+  return[{op:"Serrar",rec:"Serra de fita",setup:"5",ciclo:"2",obs:""},{op:tor?"Tornear":"Fresar",rec:tor?"Torno CNC":"Centro de usinagem",setup:"30",ciclo:"",obs:""},{op:"Rebarbar",rec:"Bancada (rebarba/montagem)",setup:"0",ciclo:"2",obs:""},{op:"Inspecionar",rec:"Inspeção de qualidade",setup:"5",ciclo:"2",obs:"conforme plano de inspeção"}]}
+$("v-mx").addEventListener("input",function(ev){
+  if(S.tab!=="m-itens")return;var t=ev.target,k=t.dataset.rt||t.dataset.es;if(!k)return;ev.stopPropagation();
+  var x=itById(IT.open);if(!x)return;var e=itEdOf(x),p=k.split(":"),i=+p[0],f=p[1],obj=t.dataset.rt?e.roteiro:e.estrutura,arr=t.dataset.rt?obj.ops:obj.mats;if(!arr[i])return;
+  var v=t.type==="checkbox"?t.checked:t.value;if(arr[i][f]===v)return;
+  var era=obj.status==="liberado";arr[i][f]=v;rtDesliga(e,t.dataset.rt?"roteiro":"estrutura");itMark(e);
+  if(era||t.tagName==="SELECT"||t.type==="checkbox"||(t.dataset.es&&/desc|forma|medida/.test(f)))mxRender();
+},true);
+$("v-mx").addEventListener("change",function(ev){if(S.tab==="m-itens"&&(ev.target.dataset.rt||ev.target.dataset.es))ev.stopPropagation()},true);
+/* ---------- demanda: itens dos pedidos internos sem OP ---------- */
+function ppSub(){
+  if(PP.sub||!PR.db)return;PP.sub=true;
+  PR.db.collection("ordens").onSnapshot(function(sn){PP.ops=sn.docs.map(function(x){var o=x.data()||{},c={};for(var k in o)c[k]=o[k];c.id=x.id;return c}).sort(function(a,b){return(a.prio||9999)-(b.prio||9999)||(a.idSeq||0)-(b.idSeq||0)});ppRefresh();if(PP.open&&!$("mx-modal").hidden){var n=PP.ops.filter(function(x){return x.id===PP.open})[0];if(n)$("mx-modal").innerHTML=opDetHtml(n)}},function(){});
+  PR.db.doc("config/pcp-seq").onSnapshot?PR.db.doc("config/pcp-seq").onSnapshot(function(s){var d=s&&s.exists?s.data():{};PP.seq=d.ordem||[];PP.seqV=s&&s.version||0;ppRefresh()},function(){}):
+    PR.db.doc("config/pcp-seq").get().then(function(s){PP.seq=s&&s.exists?(s.data().ordem||[]):[];ppRefresh()}).catch(function(){});
+}
+(function wpp(){if(typeof PR!=="undefined"&&PR&&PR.db){ppSub();return}setTimeout(wpp,700)})();
+function ppRefresh(){if(S.tab==="m-prod"||S.tab==="m-eng")mxRender()}
+function ppDemanda(){
+  var rows=[];
+  (PD.list||[]).forEach(function(p){if(p.cancelado||p.etapa==="concluido")return;
+    (p.itens||[]).forEach(function(x,i){if(x.opId)return;var it=itById(x.itemId)||itFind(p.cliente,x.cod);
+      rows.push({k:p.id+":"+i,p:p,i:i,x:x,it:it,qtd:+x.qtd||0,ent:x.entrega||p.prazo||"",ok:rtOk(it)&&esOk(it)})})});
+  var pos={};PP.seq.forEach(function(k,n){pos[k]=n});
+  rows.sort(function(a,b){var pa=a.k in pos?pos[a.k]:1e6,pb=b.k in pos?pos[b.k]:1e6;if(pa!==pb)return pa-pb;return(a.ent||"9")<(b.ent||"9")?-1:(a.ent||"9")>(b.ent||"9")?1:0});
+  return rows;
+}
+function ppDias(d){if(!d)return null;var t=new Date(d+"T12:00:00").getTime();return Math.round((t-Date.now())/86400000)}
+function ppEnt(d){var n=ppDias(d);if(n==null)return'<span class="hint">–</span>';return'<span class="'+(n<0?"pp-atr":n<=7?"pp-prox":"")+'">'+dStr(d)+'<small>'+(n<0?Math.abs(n)+" d atrasado":n===0?"hoje":"em "+n+" d")+'</small></span>'}
+function ppSalvaSeq(keys){
+  PP.seq=keys;var ref=PR.db.doc("config/pcp-seq");
+  ref.set({ordem:keys,atualizado:Date.now(),por:AG.uid||""}).catch(function(){toast("Não consegui gravar a sequência.")});
+}
+
+/* ---------- PCP › Ordens de produção ---------- */
+function renderProd(box){
+  ppSub();itSub();
+  var dem=ppDemanda(),prontos=dem.filter(function(r){return r.ok}),eng=dem.length-prontos.length,carga=0;dem.forEach(function(r){carga+=rtHoras(r.it,r.qtd)});
+  var opsAb=PP.ops.filter(function(o){return o.status!=="concluida"&&o.status!=="cancelada"}),cargaOp=0;opsAb.forEach(function(o){cargaOp+=+o.horas||0});
+  var h='<div class="mh"><div><h2>Ordens de produção</h2><p>A demanda chega sozinha dos pedidos internos. Defina a sequência (↑ ↓), e gere a OP quando a engenharia liberar o roteiro e a estrutura do item.</p></div><span class="fase">PCP</span></div>'+
+   '<div class="pp-kpi"><div><b>'+dem.length+'</b><span>itens aguardando OP</span></div><div><b>'+prontos.length+'</b><span>prontos para OP</span></div><div><b>'+eng+'</b><span>esperando engenharia</span></div><div><b>'+fmtH(carga)+'</b><span>carga prevista da demanda</span></div><div><b>'+opsAb.length+'</b><span>OPs abertas · '+fmtH(cargaOp)+'</span></div></div>'+
+   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-pp="aba" data-a="dem" aria-selected="'+(PP.aba==="dem")+'">Demanda ('+dem.length+')</button><button type="button" role="tab" data-pp="aba" data-a="ops" aria-selected="'+(PP.aba==="ops")+'">Ordens de produção ('+opsAb.length+')</button></div>';
+  if(PP.aba==="dem"){
+    h+='<div class="mx-bar"><button class="btn sm" type="button" data-pp="porent">Ordenar por entrega</button><span class="sp"></span>'+(prontos.length?'<button class="btn sm pri" type="button" data-pp="optodos">Gerar OP dos '+prontos.length+' prontos</button>':'')+'</div>'+
+     '<div class="tbx"><div class="pp-r fh"><span>Seq.</span><span>Pedido</span><span>Item</span><span class="r">Qtd</span><span>Entrega</span><span>Engenharia</span><span class="r">Horas</span><span></span></div>'+
+     (dem.length?dem.map(function(r,n){var it=r.it;return'<div class="pp-r'+(r.ok?' ok':'')+'"><span class="pp-seq"><b>'+(n+1)+'</b><span class="qi-mv"><button type="button" class="btn sm" data-pp="up" data-k="'+esc(r.k)+'"'+(n?'':' disabled')+' title="Antes">↑</button><button type="button" class="btn sm" data-pp="down" data-k="'+esc(r.k)+'"'+(n<dem.length-1?'':' disabled')+' title="Depois">↓</button></span></span>'+
+       '<span><button type="button" class="lnk" data-pp="ped" data-id="'+esc(r.p.id)+'">'+esc(r.p.num)+'</button><small>'+esc(r.p.cliente||"")+' · '+esc(r.p.emp||"")+'</small></span>'+
+       '<span><b>'+esc(r.x.cod||"(sem código)")+'</b><small>'+esc(r.x.desc||"")+'</small></span><span class="r mono">'+esc(r.qtd)+'</span><span>'+ppEnt(r.ent)+'</span>'+
+       '<span class="pp-eng">'+(it?ppChip(rtOk(it),it.roteiro,"Roteiro")+ppChip(esOk(it),it.estrutura,"Estrutura"):'<span class="stp b">sem cadastro do item</span>')+'</span><span class="r mono">'+fmtH(rtHoras(it,r.qtd))+'</span>'+
+       '<span class="ra2">'+(it?'<button type="button" class="btn sm" data-pp="item" data-it="'+esc(it.id)+'">'+(r.ok?"Ver item":"Abrir na engenharia")+'</button>':'')+(r.ok?'<button type="button" class="btn sm pri" data-pp="op" data-k="'+esc(r.k)+'">Gerar OP</button>':'')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum item aguardando OP. Quando uma proposta for aprovada, os itens do pedido interno aparecem aqui.</div>')+'</div>';
+  }else{
+    var L=PP.ops.filter(function(o){return PP.q==="todas"||(o.status!=="concluida"&&o.status!=="cancelada")});
+    h+='<div class="mx-bar"><label class="mx-chk"><input type="checkbox" id="pp-todas"'+(PP.q==="todas"?" checked":"")+'> Mostrar concluídas e canceladas</label><span class="sp"></span></div>'+
+     '<div class="tbx"><div class="op-r fh"><span>OP</span><span>Item</span><span>Pedido</span><span class="r">Qtd</span><span>Entrega</span><span>Material</span><span class="r">Horas</span><span>Situação</span></div>'+
+     (L.length?L.map(function(o){return'<div class="op-r" data-pp="opopen" data-id="'+esc(o.id)+'" title="Abrir"><span class="idtag">'+esc(o.num||"")+'</span><span><b>'+esc(o.codigo||"")+'</b><small>'+esc(o.descricao||"")+'</small></span><span>'+esc(o.pedidoNum||"")+'<small>'+esc(o.cliente||"")+'</small></span><span class="r mono">'+esc(o.qtd)+'</span><span>'+ppEnt(o.entrega)+'</span><span><small>'+esc((o.materiais||[]).filter(function(m){return m.tipo==="mp"}).map(function(m){return m.desc+" "+nf(m.nec,m.un==="kg"?2:0)+" "+m.un+(m.cliente?" (cliente)":"")}).join(" · ")||"–")+'</small></span><span class="r mono">'+fmtH(+o.horas)+'</span><span><span class="stp '+({planejada:"i",liberada:"w",producao:"w",concluida:"g",cancelada:"b"}[o.status]||"i")+'">'+esc(OP_ST[o.status]||o.status)+'</span></span></div>'}).join(""):'<div class="mx-empty">Nenhuma ordem de produção ainda.</div>')+'</div>';
+  }
+  box.innerHTML=h;
+}
+var OP_ST={planejada:"Planejada",liberada:"Liberada para produção",producao:"Em produção",concluida:"Concluída",cancelada:"Cancelada"};
+function opGerar(rows){
+  rows=rows.filter(function(r){return r.ok});if(!rows.length){toast("Nenhum item pronto para OP.");return Promise.resolve()}
+  var ano=new Date().getFullYear(),t=Date.now();
+  return cnNextIdN("ordens",rows.length).then(function(n0){
+    var porPed={},docs=rows.map(function(r,k){var n=n0+k,id="op-"+t.toString(36)+"-"+k,it=r.it;
+      var ops=(it.roteiro.ops||[]).map(function(o,j){var s=+parse(o.setup)||0,c=+parse(o.ciclo)||0;return{seq:(j+1)*10,op:o.op,rec:o.rec,setup:s,ciclo:c,min:Math.round((s+c*r.qtd)*10)/10,obs:o.obs||"",status:"aguardando"}});
+      var mats=(it.estrutura.mats||[]).map(function(m){return{tipo:m.tipo,desc:m.desc,forma:m.forma,medida:m.medida,consumo:+parse(m.consumo)||0,un:m.un,perda:+parse(m.perda)||0,cliente:!!m.cliente,nec:Math.round(esNec(m,r.qtd)*1000)/1000}});
+      var d={num:"OP-"+pad(n,4)+"/"+pad(ano%100,2),idSeq:n,pedidoId:r.p.id,pedidoNum:r.p.num,itemIdx:r.i,itemId:it.id,codigo:r.x.cod||it.codigo,descricao:it.descricao||r.x.desc||"",desenho:it.desenho||"",rev:it.rev||"",material:it.material||"",
+        cliente:r.p.cliente||"",emp:it.emp||r.p.emp||"MIX",qtd:r.qtd,entrega:r.ent,prio:k+1,status:"planejada",roteiro:ops,materiais:mats,horas:Math.round(rtHoras(it,r.qtd)*100)/100,criado:t,atualizado:t,
+        hist:[{at:t,uid:AG.uid||"",txt:"OP gerada pelo PCP a partir do pedido "+r.p.num+" (sequência "+(k+1)+")."}]};
+      (porPed[r.p.id]=porPed[r.p.id]||[]).push({i:r.i,id:id,num:d.num});return{id:id,d:d}});
+    return Promise.all(docs.map(function(o){return PR.db.doc("ordens/"+o.id).set(o.d)})).then(function(){
+      return Promise.all(Object.keys(porPed).map(function(pid){var p=PD.list.filter(function(x){return x.id===pid})[0];if(!p)return null;var its=JSON.parse(JSON.stringify(p.itens||[]));
+        porPed[pid].forEach(function(o){if(its[o.i]){its[o.i].opId=o.id;its[o.i].opNum=o.num;its[o.i].situacao="em OP "+o.num}});
+        var patch={itens:its},txt="OP gerada: "+porPed[pid].map(function(o){return o.num}).join(", ")+".";if(p.etapa==="pedido"){patch.etapa="os";txt+=" Etapa: Pedido recebido → OS de fabricação."}
+        return pdSet(p,patch,txt)}))}).then(function(){var rest=PP.seq.filter(function(k){return!rows.some(function(r){return r.k===k})});ppSalvaSeq(rest);toast(rows.length===1?"OP "+docs[0].d.num+" gerada.":rows.length+" OPs geradas.")});
+  }).catch(function(){toast("Não consegui gerar a OP. Tente de novo.")});
+}
+function opDetHtml(o){
+  var tm=0;(o.roteiro||[]).forEach(function(x){tm+=x.min||0});
+  return'<div class="card op-det" role="dialog" aria-modal="true" aria-label="Ordem de produção"><div class="mx-bar"><h3 style="margin:0">'+esc(o.num)+' · '+esc(o.codigo)+'</h3><span class="emp-tag" data-e="'+esc(o.emp)+'">'+esc(o.emp)+'</span><span class="sp"></span><button class="btn sm" type="button" data-op2="x">Fechar</button></div>'+
+   '<dl class="cn-dl"><dt>Item</dt><dd>'+esc(o.descricao)+(o.desenho?' · DES. '+esc(o.desenho)+(o.rev?' R'+esc(o.rev):''):'')+'</dd><dt>Pedido</dt><dd>'+esc(o.pedidoNum)+' · '+esc(o.cliente)+'</dd><dt>Quantidade</dt><dd>'+esc(o.qtd)+' pç · entrega '+(o.entrega?dStr(o.entrega):"–")+'</dd><dt>Situação</dt><dd><select id="op-st">'+Object.keys(OP_ST).map(function(k){return'<option value="'+k+'"'+(o.status===k?" selected":"")+'>'+esc(OP_ST[k])+'</option>'}).join("")+'</select></dd></dl>'+
+   '<h3>Roteiro</h3><table class="itb"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r">Setup</th><th class="r">Ciclo/pç</th><th class="r">Total (min)</th><th>Instruções</th></tr></thead><tbody>'+(o.roteiro||[]).map(function(x){return'<tr><td class="mono">'+x.seq+'</td><td>'+esc(x.op)+'</td><td>'+esc(x.rec)+'</td><td class="r">'+nf(x.setup,0)+'</td><td class="r">'+nf(x.ciclo,1)+'</td><td class="r">'+nf(x.min,1)+'</td><td>'+esc(x.obs)+'</td></tr>'}).join("")+'</tbody><tfoot><tr><td colspan="5">Total</td><td class="r">'+fmtH(tm/60)+'</td><td></td></tr></tfoot></table>'+
+   '<h3>Material (necessidade para '+esc(o.qtd)+' pç)</h3><table class="itb"><thead><tr><th>Tipo</th><th>Material</th><th>Forma</th><th>Bruto/pç</th><th class="r">Necessidade</th><th>Origem</th></tr></thead><tbody>'+(o.materiais||[]).map(function(m){return'<tr><td>'+esc(({mp:"Matéria-prima",terc:"Terceiro",comp:"Componente"})[m.tipo]||m.tipo)+'</td><td>'+esc(m.desc)+'</td><td>'+esc(m.forma)+'</td><td>'+esc(m.medida||"–")+'</td><td class="r">'+nf(m.nec,m.un==="kg"?3:m.un==="pç"?0:1)+' '+esc(m.un)+'</td><td>'+(m.cliente?"Cliente fornece":"Comprar / estoque")+'</td></tr>'}).join("")+'</tbody></table>'+
+   '<p class="hint">O MRP (próxima etapa) soma estas necessidades com o estoque e gera as sugestões de compra.</p>'+
+   '<div class="acts2"><span class="sp" style="flex:1"></span>'+(o.status!=="cancelada"&&o.status!=="concluida"?'<button class="btn sm danger" type="button" data-op2="cancel">Cancelar OP</button>':'')+'</div>'+
+   '<h3>Histórico</h3><ul class="hist">'+(o.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+'</span></li>'}).join("")+'</ul></div>';
+}
+function opSet(o,patch,txt){patch.atualizado=Date.now();if(txt){var h=(o.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:txt});patch.hist=h}return PR.db.doc("ordens/"+o.id).update(patch).catch(function(){toast("Não consegui gravar a OP.")})}
+function opAbrir(id){var o=PP.ops.filter(function(x){return x.id===id})[0];if(!o)return;PP.open=id;var m=$("mx-modal");m.innerHTML=opDetHtml(o);m.hidden=false}
+$("mx-modal").addEventListener("click",function(e){if(!PP.open)return;var m=$("mx-modal"),b=e.target.closest("[data-op2]");
+  if(e.target===m||(b&&b.dataset.op2==="x")){e.stopImmediatePropagation();m.hidden=true;PP.open="";return}
+  if(!b)return;e.stopImmediatePropagation();var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(!o)return;
+  if(b.dataset.op2==="cancel"){m.hidden=true;PP.open="";askDel("Cancelar a "+o.num+"?","O item volta para a demanda do PCP para gerar outra OP.",function(){
+    opSet(o,{status:"cancelada"},"OP cancelada.").then(function(){var p=PD.list.filter(function(x){return x.id===o.pedidoId})[0];if(!p)return;var its=JSON.parse(JSON.stringify(p.itens||[]));var x=its[o.itemIdx];if(x&&x.opId===o.id){delete x.opId;delete x.opNum;x.situacao="aguardando OP"}return pdSet(p,{itens:its},o.num+" cancelada; item "+(x&&x.cod||"")+" voltou para a demanda.")})})}
+},true);
+$("mx-modal").addEventListener("change",function(e){if(!PP.open||e.target.id!=="op-st")return;e.stopImmediatePropagation();var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(!o)return;var v=e.target.value;
+  opSet(o,{status:v},"Situação: "+(OP_ST[o.status]||o.status)+" → "+OP_ST[v]+".").then(function(){var n=PP.ops.filter(function(x){return x.id===o.id})[0];if(n&&PP.open===o.id)$("mx-modal").innerHTML=opDetHtml(n)})},true);
+$("v-mx").addEventListener("click",function(ev){
+  if(S.tab!=="m-prod")return;var b=ev.target.closest("[data-pp]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.pp;
+  if(a==="aba"){PP.aba=b.dataset.a;mxRender();return}
+  if(a==="ped"){PD.open=b.dataset.id;showTab("ped");return}
+  if(a==="item"){IT.open=b.dataset.it;IT.ed=null;IT.edId="";IT.foco="it-rt";showTab("m-itens");return}
+  if(a==="opopen"){opAbrir(b.dataset.id);return}
+  var dem=ppDemanda(),keys=dem.map(function(r){return r.k});
+  if(a==="up"||a==="down"){var i=keys.indexOf(b.dataset.k),j=a==="up"?i-1:i+1;if(i<0||j<0||j>=keys.length)return;var t=keys[i];keys[i]=keys[j];keys[j]=t;ppSalvaSeq(keys);mxRender();return}
+  if(a==="porent"){dem.sort(function(x,y){return(x.ent||"9")<(y.ent||"9")?-1:(x.ent||"9")>(y.ent||"9")?1:0});ppSalvaSeq(dem.map(function(r){return r.k}));mxRender();toast("Sequência pela data de entrega.");return}
+  if(a==="op"){var r=dem.filter(function(x){return x.k===b.dataset.k})[0];if(!r)return;askDel("Gerar a OP de "+(r.x.cod||"")+"?",r.qtd+" pç · pedido "+r.p.num+" · entrega "+(r.ent?dStr(r.ent):"–")+". O roteiro e a estrutura liberados vão para a OP.",function(){opGerar([r])});return}
+  if(a==="optodos"){var pr=dem.filter(function(x){return x.ok});askDel("Gerar "+pr.length+" OPs?","Na ordem da sequência: "+pr.map(function(x){return x.x.cod}).slice(0,8).join(", ")+(pr.length>8?"…":"")+".",function(){opGerar(pr)});return}
+},true);
+$("v-mx").addEventListener("change",function(ev){if(S.tab==="m-prod"&&ev.target.id==="pp-todas"){PP.q=ev.target.checked?"todas":"";mxRender()}});
+
+/* ---------- Engenharia › Roteiros e estruturas: fila do que a demanda precisa ---------- */
+function renderEngFila(box){
+  ppSub();itSub();
+  var dem=ppDemanda(),porIt={};
+  dem.forEach(function(r){if(!r.it)return;var o=porIt[r.it.id]||(porIt[r.it.id]={it:r.it,qtd:0,ent:"",peds:{}});o.qtd+=r.qtd;if(r.ent&&(!o.ent||r.ent<o.ent))o.ent=r.ent;o.peds[r.p.num]=1});
+  var fila=Object.keys(porIt).map(function(k){return porIt[k]}).filter(function(o){return!rtOk(o.it)||!esOk(o.it)}).sort(function(a,b){return(a.ent||"9")<(b.ent||"9")?-1:1});
+  var semCad=dem.filter(function(r){return!r.it}).length;
+  box.innerHTML='<div class="mh"><div><h2>Roteiros e estruturas</h2><p>Fila da engenharia: itens de pedidos internos que ainda não têm roteiro de fabricação e estrutura liberados. Sem os dois, o PCP não abre a ordem de produção.</p></div><span class="fase">Engenharia</span></div>'+
+   (semCad?'<div class="askbox">'+semCad+' itens de pedido sem cadastro: abra o pedido interno e clique em "Cadastrar item".</div>':'')+
+   '<div class="tbx"><div class="eg-r fh"><span>Item</span><span>Cliente</span><span>Pedidos</span><span class="r">Qtd</span><span>1ª entrega</span><span>Roteiro</span><span>Estrutura</span><span></span></div>'+
+   (fila.length?fila.map(function(o){var it=o.it;return'<div class="eg-r"><span><span class="idtag">'+esc(cnIdTxt("itens",it))+'</span> <b>'+esc(it.codigo)+'</b><small>'+esc(it.descricao||"")+(it.material?" · "+esc(it.material):"")+'</small></span><span>'+esc(it.cliente||"–")+'</span><span><small>'+esc(Object.keys(o.peds).join(", "))+'</small></span><span class="r mono">'+o.qtd+'</span><span>'+ppEnt(o.ent)+'</span><span>'+ppChip(rtOk(it),it.roteiro,"Roteiro")+'</span><span>'+ppChip(esOk(it),it.estrutura,"Estrutura")+'</span><span class="ra2"><button type="button" class="btn sm pri" data-eg="abrir" data-it="'+esc(it.id)+'">Definir</button></span></div>'}).join(""):'<div class="mx-empty">'+(dem.length?"Tudo liberado: o PCP já pode gerar as OPs.":"Nenhuma demanda esperando a engenharia.")+'</div>')+'</div>';
+}
+$("v-mx").addEventListener("click",function(ev){if(S.tab!=="m-eng")return;var b=ev.target.closest('[data-eg="abrir"]');if(!b)return;ev.stopPropagation();ev.preventDefault();IT.open=b.dataset.it;IT.ed=null;IT.edId="";IT.foco="it-rt";showTab("m-itens")},true);
+var _rmPcp=renderMod;renderMod=function(box,k){if(k==="prod"){renderProd(box);return}if(k==="eng"){renderEngFila(box);return}return _rmPcp.apply(this,arguments)};
+var _stPcp=showTab;showTab=function(t){var r=_stPcp.apply(this,arguments);
+  if(t==="m-eng"){$("crumb").innerHTML="Engenharia › <b>Roteiros e estruturas</b>";$("crumb-t").textContent="Roteiros e estruturas"}
+  if(t==="m-prod"){$("crumb").innerHTML="PCP › <b>Ordens de produção</b>";$("crumb-t").textContent="Ordens de produção"}
   return r};
 
 })();

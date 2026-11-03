@@ -1276,6 +1276,16 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .op-mat select{max-width:300px}
 @media(max-width:640px){.op-cab{grid-template-columns:1fr 1fr}}
 .pd-sit{display:flex;flex-direction:column;gap:3px;align-items:flex-start;min-width:120px}
+
+/* v107 */
+.es-dim{display:flex;gap:6px;flex-wrap:nowrap}.es-dim label{display:flex;flex-direction:column;gap:1px}.es-dim small{font-size:10.5px;color:var(--muted)}.es-dim input{width:72px}
+.op-alerta{background:#FDECEC;color:#8A1C1C;border:1px solid #F3B6B6;border-radius:8px;padding:8px 12px;margin:6px 0 8px;font-size:13px;font-weight:600}
+.op-emp{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:2px 0}.op-ac{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:4px}
+.op-falta{display:block;color:#B42318;font-weight:700}
+.gen-mod .rt-tab input,.gen-mod .rt-tab select{min-height:32px;padding:4px 6px;font-size:13px}
+#mx-modal .card.cm-mod{width:min(1000px,96vw)!important;max-width:min(1000px,96vw)!important;max-height:92vh;overflow:auto}
+.gen-mod .rt-tab input:not(.r){width:100%;min-width:110px}.gen-mod .rt-tab select{min-width:150px}
+.ap-scan{display:flex;flex-direction:column;gap:2px;margin-left:auto;font-size:11px;color:var(--muted)}.ap-scan input{width:190px;min-height:34px;padding:4px 8px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 </style>
 
 <div class="shell">
@@ -5118,7 +5128,7 @@ function pdfJpegPages(pgs,title){
   var objs=[],np=pgs.length,kids=[],raw={},first=4;
   for(var i=0;i<np;i++)kids.push((first+i*3)+" 0 R");
   objs[1]="<< /Type /Catalog /Pages 2 0 R >>";objs[2]="<< /Type /Pages /Kids ["+kids.join(" ")+"] /Count "+np+" >>";objs[3]="<< /Producer (MISTA - MIX USINAGEM) /Title ("+String(title||"").replace(/[()\\]/g,"").replace(/[^\x20-\x7e]/g,"")+") >>";
-  pgs.forEach(function(g,k){var pid=first+k*3,iid=pid+1,cid=pid+2,st="q 595.28 0 0 841.89 0 0 cm /Im0 Do Q";
+  pgs.forEach(function(g,k){var pid=first+k*3,iid=pid+1,cid=pid+2,st="q 595.28 0 0 841.89 0 0 cm /Im0 Do Q"+(g.v?"\n"+g.v:"");
     objs[pid]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 "+iid+" 0 R >> >> /Contents "+cid+" 0 R >>";
     raw[iid]=g.b;objs[iid]="<< /Type /XObject /Subtype /Image /Width "+g.w+" /Height "+g.h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+g.b.length+" >>";
     objs[cid]="<< /Length "+st.length+" >>\nstream\n"+st+"\nendstream"});
@@ -7270,7 +7280,7 @@ function renderApt(box){
   mqSub();ppSub();
   var m=mqById(MQ.posto);
   if(!m){box.innerHTML='<div class="mh"><div><h2>Apontamento</h2><p>Escolha o posto deste tablet. A escolha fica gravada neste aparelho.</p></div></div><div class="ap-postos">'+MQ.list.filter(function(x){return x.tipo!=="Terceiro"}).map(function(x){return'<button type="button" class="ap-big" data-ap="posto" data-id="'+esc(x.id)+'"><b>'+esc(x.nome)+'</b><small>'+esc(x.emp+" · "+x.tipo)+'</small></button>'}).join("")+'</div>';return}
-  var f=mqFila(m.id),at=f[0],prox=f.slice(1,4);
+  var f=apFila(m.id),at=f[0],prox=f.slice(1,4);
   var h='<div class="ap-top"><div><small>Posto</small><b>'+esc(m.nome)+'</b></div><button type="button" class="btn sm" data-ap="trocar">Trocar posto</button></div>';
   if(!at){box.innerHTML=h+'<div class="ap-vazio">Sem operações na fila desta máquina.<br><small>O PCP programa em Programação de máquinas.</small></div>';return}
   var r=at.r,real=at.real,prev=+r.min||0,pct=prev?Math.min(100,Math.round(real/prev*100)):0;
@@ -7291,7 +7301,7 @@ $("v-mx").addEventListener("click",function(ev){
   if(S.tab!=="m-apt")return;var b=ev.target.closest("[data-ap]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.ap;
   if(a==="posto"){MQ.posto=b.dataset.id;try{localStorage.setItem("mista-posto",MQ.posto)}catch(e){}mxRender();return}
   if(a==="trocar"){MQ.posto="";try{localStorage.removeItem("mista-posto")}catch(e){}mxRender();return}
-  var t=mqFila(MQ.posto)[0];if(!t)return;var r=t.r,now=Date.now();
+  var t=apFila(MQ.posto)[0];if(!t)return;var r=t.r,now=Date.now();
   if(a==="iniciar"){var ret=r.status==="pausa";opPatchRot(t.op,t.j,{status:"execucao",ultIni:now,iniciadoEm:r.iniciadoEm||now,motivo:undefined},(ret?"Retomada":"Início")+" da operação "+r.seq+" "+r.op+" no posto "+(mqById(MQ.posto)||{}).nome+".");apEvento(t,ret?"retomada":"inicio");return}
   if(a==="pausar"){apModal('<h3>Pausar a operação</h3><p class="hint">Motivo da parada:</p><div class="ap-mots">'+AP_MOT.map(function(x,i){return'<label class="ap-mot"><input type="radio" name="apmot" value="'+esc(x)+'"'+(i?'':' checked')+'> '+esc(x)+'</label>'}).join("")+'</div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y">Pausar</button></div>',function(m){
       var mot=(m.querySelector('input[name="apmot"]:checked')||{}).value||"Outro",acc=(+r.minReal||0)+(r.ultIni?(Date.now()-r.ultIni)/60000:0);
@@ -7373,13 +7383,62 @@ function cmPar(a,b){var x=normTxt(a).split(" ").filter(function(s){return s.leng
 function ltSaldo(l){return Math.round((+l.saldo||0)*1000)/1000}
 function ltLib(l){return l.status==="liberado"}
 function cmUn(v,un){return nf(+v||0,un==="kg"?3:un==="pç"?0:1)+" "+(un||"")}
-/* necessidades: linhas de material das OPs abertas (matéria-prima que não é do cliente), com o que já foi baixado e o que já tem pedido de compra */
+/* v107: empenho (reserva do lote para a OP) e requisição de compra (a OP pede, Compras compra) */
+IDP.requisicoes="RC";
+function ltEmp(l){return Math.round((+l.empenhado||0)*1000)/1000}
+function ltDisp(l){return Math.max(0,Math.round((ltSaldo(l)-ltEmp(l))*1000)/1000)}
+function mEmps(m){return(m.empenhos||[]).concat((m.baixas||[]).map(function(b){var c={};for(var k in b)c[k]=b[k];c.baixado=true;return c}))}
+function mEmpQ(m){var s=0;mEmps(m).forEach(function(e){s+=+e.qtd||0});return Math.round(s*1000)/1000}
+function mFalta(m){return Math.max(0,Math.round(((+m.nec||0)-mEmpQ(m))*1000)/1000)}
+function esNums(med){return(String(med||"").replace(/,/g,".").match(/\d+(\.\d+)?/g)||[]).map(Number)}
+function esD1(med){var n=esNums(med);return n.length?n[0]:NaN}
+/* bitola de compra (sem o comprimento do bruto) e comprimento do bruto por peça */
+function esBitola(m){var n=esNums(m.medida),f=String(m.forma||""),v=function(x){return nf(x,x%1?2:0)};if(!n.length)return m.medida||"";
+  if(/tubo/i.test(f)&&n.length>=2)return"Ø"+v(n[0])+" x Ø"+v(n[1]);if(/redonda/i.test(f))return"Ø"+v(n[0]);if(/sext/i.test(f))return"Sext. "+v(n[0]);if(/quadrada/i.test(f))return"□"+v(n[0]);
+  if(/chata|chapa/i.test(f)&&n.length>=2)return v(n[0])+" x "+v(n[1]);return m.medida||""}
+function esComp(m){var n=esNums(m.medida),f=String(m.forma||"");if(/tubo|chata|chapa/i.test(f))return n.length>=3?n[2]:NaN;if(/redonda|sext|quadrada/i.test(f))return n.length>=2?n[1]:NaN;return NaN}
+function cmBarra(m,qtd){var c=esComp(m);if(!isFinite(c)||!(qtd>0))return"";var t=qtd*(c+3);return"≈ "+nf(t/1000,2)+" m de barra ("+qtd+" × "+nf(c,c%1?1:0)+" mm + corte)"}
+function ltServe(l,m){
+  if(!ltLib(l)||ltDisp(l)<=0||l.un!==m.un)return false;
+  if(m.pcId&&l.pcId===m.pcId)return true;
+  if(!cmPar(m.desc,l.material))return false;
+  var a=esD1(m.medida),b=esD1(l.medida);if(isFinite(a)&&isFinite(b)&&Math.abs(a-b)>0.05)return false;
+  if(m.forma&&l.forma&&l.forma!=="—"&&m.forma!==l.forma)return false;
+  return true}
+function reqTxt(r){return r?r.num+" · "+({aberta:"aguardando Compras","em compra":"em compra"+(r.pcNum?" (PC "+r.pcNum+")":""),atendida:"atendida",cancelada:"cancelada"}[r.status]||r.status):""}
+/* necessidades: linhas de matéria-prima das OPs abertas que ainda faltam empenhar */
 function cmNecs(){
   var out=[];(PP.ops||[]).forEach(function(o){if(o.status==="cancelada"||o.status==="concluida")return;
-    (o.materiais||[]).forEach(function(m,i){if(m.tipo!=="mp"||m.cliente)return;var bx=0;(m.baixas||[]).forEach(function(b){bx+=+b.qtd||0});
-      var falta=Math.max(0,(+m.nec||0)-bx),pc=m.pcId?CM.pcs.filter(function(p){return p.id===m.pcId})[0]:null;
-      out.push({k:o.id+":"+i,o:o,i:i,m:m,bx:bx,falta:falta,pc:pc})})});
+    (o.materiais||[]).forEach(function(m,i){if(m.tipo!=="mp"||m.cliente)return;var falta=mFalta(m);if(falta<=0)return;
+      var pc=m.pcId?CM.pcs.filter(function(p){return p.id===m.pcId&&p.status!=="cancelado"})[0]:null;
+      out.push({k:o.id+":"+i,o:o,i:i,m:m,bx:mEmpQ(m),falta:falta,pc:pc||null,req:m.req||null})})});
   return out;
+}
+var CM_AUTO=Promise.resolve();
+/* empenha automaticamente (lote mais antigo primeiro; o lote comprado para a OP tem preferência) e, se não houver estoque, abre a requisição de compra */
+function cmAutoEmp(opIds,quieto){
+  var run=function(){var ops=(PP.ops||[]).filter(function(o){return o.status!=="cancelada"&&o.status!=="concluida"&&(!opIds||opIds.indexOf(o.id)>-1)}).sort(function(a,b){return(a.prio||9999)-(b.prio||9999)||String(a.entrega||"9").localeCompare(String(b.entrega||"9"))});
+    var msgs=[],ch=Promise.resolve();ops.forEach(function(o0){ch=ch.then(function(){return opAutoEmp1(o0.id).then(function(t){if(t)msgs.push(t)})})});
+    return ch.then(function(){if(msgs.length&&!quieto)toast(msgs.slice(0,3).join(" "))})};
+  CM_AUTO=CM_AUTO.then(run,run);return CM_AUTO}
+function opAutoEmp1(id){
+  return PR.db.doc("ordens/"+id).get().then(function(sn){if(!sn||!sn.exists)return"";var o=sn.data()||{};o.id=id;if(o.status==="cancelada"||o.status==="concluida")return"";
+    var mats=JSON.parse(JSON.stringify(o.materiais||[]));var cand={};
+    mats.forEach(function(m){if(m.tipo!=="mp"||m.cliente||mFalta(m)<=0)return;CM.lotes.forEach(function(l){if(ltServe(l,m))cand[l.id]=1})});
+    var ids=Object.keys(cand);
+    return Promise.all(ids.map(function(lid){return PR.db.doc("lotes/"+lid).get().then(function(x){if(!x||!x.exists)return null;var l=x.data()||{};l.id=lid;return l}).catch(function(){return null})})).then(function(fr){
+      var lts=fr.filter(Boolean),delta={},txt=[],novas=[],t=Date.now();
+      mats.forEach(function(m,i){if(m.tipo!=="mp"||m.cliente)return;var f=mFalta(m);if(f<=0){if(m.req&&(m.req.status==="aberta"||m.req.status==="em compra")){m.req.status="atendida";m.req.atendidaEm=t}return}
+        lts.filter(function(l){return ltServe(l,m)}).sort(function(a,b){return(a.pcId&&a.pcId===m.pcId?0:1)-(b.pcId&&b.pcId===m.pcId?0:1)||(a.recebidoEm||0)-(b.recebidoEm||0)}).forEach(function(l){
+          if(f<=0.0005)return;var d=ltDisp(l)-(delta[l.id]||0),q=Math.round(Math.min(d,f)*1000)/1000;if(q<=0)return;delta[l.id]=(delta[l.id]||0)+q;
+          (m.empenhos=m.empenhos||[]).push({loteId:l.id,lote:l.lote,corrida:l.corrida||"",nf:l.nf||"",cert:!!l.cert,qtd:q,at:t,uid:AG.uid||"",baixado:false});f=Math.round((f-q)*1000)/1000;txt.push("empenhado "+cmUn(q,m.un)+" do lote "+l.lote)});
+        if(f>0.0005){if(!m.req||m.req.status==="cancelada"||m.req.status==="atendida")novas.push({i:i,qtd:f});else if(m.req.status==="aberta")m.req.qtd=f}
+        else if(m.req&&(m.req.status==="aberta"||m.req.status==="em compra")){m.req.status="atendida";m.req.atendidaEm=t}});
+      var mudou=JSON.stringify(mats)!==JSON.stringify(o.materiais||[]);if(!mudou&&!novas.length)return"";
+      var pReq=novas.length?cnNextIdN("requisicoes",novas.length).then(function(n0){var yy=pad(new Date().getFullYear()%100,2);novas.forEach(function(r,k){var m=mats[r.i];m.req={num:"RC-"+pad(n0+k,4)+"/"+yy,idSeq:n0+k,qtd:r.qtd,un:m.un,status:"aberta",at:t,uid:AG.uid||"",opId:id,opNum:o.num};txt.push("falta matéria-prima: requisição "+m.req.num+" enviada a Compras")})}):Promise.resolve();
+      return pReq.then(function(){return Promise.all(Object.keys(delta).map(function(lid){var l=lts.filter(function(x){return x.id===lid})[0];return PR.db.doc("lotes/"+lid).update({empenhado:Math.round((ltEmp(l)+delta[lid])*1000)/1000})}))})
+       .then(function(){var h=(o.hist||[]).slice(-199);if(txt.length)h.push({at:t,uid:AG.uid||"",txt:"Material: "+txt.join("; ")+"."});return PR.db.doc("ordens/"+id).update({materiais:mats,atualizado:t,hist:h})})
+       .then(function(){return txt.length?o.num+": "+txt.join("; ")+".":""})})}).catch(function(){return""});
 }
 
 /* ---------- pedido de compra ---------- */
@@ -7387,8 +7446,8 @@ function pcNum(p){return p.n+"/"+pad((p.ano||new Date().getFullYear())%100,2)}
 function pcProx(){var ano=new Date().getFullYear(),max=0;CM.pcs.forEach(function(p){if(p.ano===ano&&p.n>max)max=p.n});return PR.db.doc("config/pcseq-"+ano).get().then(function(s){var n=s&&s.exists?+s.data().n||0:0;return Math.max(n,max)+1}).catch(function(){return max+1})}
 function pcNovo(linhas){
   /* agrupa as necessidades iguais (mesmo material, forma e medida) num item do pedido */
-  var g={};linhas.forEach(function(r){var k=cmKey(r.m.desc,r.m.forma,r.m.medida),x=g[k]||(g[k]={desc:r.m.desc,forma:r.m.forma,medida:r.m.medida,un:r.m.un,qtd:0,preco:"",ops:[]});x.qtd+=r.falta;x.ops.push({opId:r.o.id,opNum:r.o.num,i:r.i})});
-  var its=Object.keys(g).map(function(k){var x=g[k];x.qtd=Math.ceil(x.qtd*100)/100;return x});
+  var g={};linhas.forEach(function(r){var bit=esBitola(r.m),k=cmKey(r.m.desc,r.m.forma,bit),x=g[k]||(g[k]={desc:r.m.desc,forma:r.m.forma,medida:bit,un:r.m.un,qtd:0,preco:"",ops:[],mm:0});x.qtd+=r.falta;var c=esComp(r.m);if(isFinite(c))x.mm+=(+r.o.qtd||0)*(c+3);x.ops.push({opId:r.o.id,opNum:r.o.num,i:r.i,req:r.req?r.req.num:""})});
+  var its=Object.keys(g).map(function(k){var x=g[k];x.qtd=Math.ceil(x.qtd*100)/100;if(x.mm)x.barra="≈ "+nf(x.mm/1000,2)+" m de barra";return x});
   CM.novo={n:"",fornecedor:"",emp:(linhas[0]&&linhas[0].o.emp)||"MIX",prazo:"",obs:"",itens:its.length?its:[{desc:"",forma:"Barra redonda",medida:"",un:"kg",qtd:"",preco:"",ops:[]}]};
   pcProx().then(function(n){if(CM.novo&&!CM.novo.n){CM.novo.n=String(n);pcNovoHtml()}});pcNovoHtml();
 }
@@ -7402,7 +7461,7 @@ function pcNovoHtml(){
    '<div class="tbx"><table class="itb cm-it"><thead><tr><th>Material</th><th>Forma</th><th>Medida / bitola</th><th class="r">Qtd</th><th>Un.</th><th class="r">Preço un. (R$)</th><th>Para as OPs</th><th></th></tr></thead><tbody>'+
    p.itens.map(function(x,i){return'<tr><td><input data-pci="'+i+':desc" value="'+esc(x.desc)+'"></td><td><select data-pci="'+i+':forma">'+ES_FORMAS.map(function(f){return'<option'+(x.forma===f?" selected":"")+'>'+esc(f)+'</option>'}).join("")+'</select></td><td><input data-pci="'+i+':medida" value="'+esc(x.medida)+'" placeholder="ex.: Ø25,4 x 3000"></td>'+
      '<td><input data-pci="'+i+':qtd" value="'+esc(x.qtd)+'" class="r" style="width:80px"></td><td><select data-pci="'+i+':un">'+ES_UN.map(function(u){return'<option'+(x.un===u?" selected":"")+'>'+u+'</option>'}).join("")+'</select></td><td><input data-pci="'+i+':preco" value="'+esc(x.preco)+'" class="r" style="width:90px"></td>'+
-     '<td><small>'+esc((x.ops||[]).map(function(o){return o.opNum}).join(", ")||"estoque")+'</small></td><td>'+(p.itens.length>1?ibtn("trash","Tirar",'data-pcx="rm" data-i="'+i+'"',"danger"):'')+'</td></tr>'}).join("")+
+     '<td><small>'+esc((x.ops||[]).map(function(o){return(o.req?o.req+" · ":"")+o.opNum}).join(", ")||"estoque")+(x.barra?'<br>'+esc(x.barra):'')+'</small></td><td>'+(p.itens.length>1?ibtn("trash","Tirar",'data-pcx="rm" data-i="'+i+'"',"danger"):'')+'</td></tr>'}).join("")+
    '</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-pcx="add">+ Item</button></div>'+
    '<label class="f"><span class="lb">Observações para o fornecedor</span><textarea id="pc-obs" rows="2" placeholder="ex.: enviar certificado de material com a NF">'+esc(p.obs)+'</textarea></label>'+
    '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-pcx="n">Cancelar</button><button class="btn pri" type="button" data-pcx="y">Gravar pedido de compra</button></div></div>';
@@ -7421,12 +7480,12 @@ $("mx-modal").addEventListener("click",function(e){var p=CM.novo;if(!p)return;va
     var its=p.itens.filter(function(x){return String(x.desc).trim()&&+parse(x.qtd)>0});if(!its.length){toast("Informe material e quantidade.");return}
     var id="pc-"+pad(ano%100,2)+"-"+pad(n,4),t=Date.now(),num=n+"/"+pad(ano%100,2);
     var doc={n:n,ano:ano,num:num,fornecedor:String(p.fornecedor).trim(),emp:p.emp,prazo:p.prazo,obs:p.obs,status:"aberto",criado:t,atualizado:t,
-      itens:its.map(function(x){return{desc:String(x.desc).trim(),forma:x.forma,medida:x.medida,qtd:+parse(x.qtd),un:x.un,preco:+parse(x.preco)||0,ops:x.ops||[],recebido:0}}),hist:[{at:t,uid:AG.uid||"",txt:"Pedido de compra "+num+" emitido."}]};
+      itens:its.map(function(x){return{desc:String(x.desc).trim(),forma:x.forma,medida:x.medida,qtd:+parse(x.qtd),un:x.un,preco:+parse(x.preco)||0,ops:x.ops||[],barra:x.barra||"",recebido:0}}),hist:[{at:t,uid:AG.uid||"",txt:"Pedido de compra "+num+" emitido."}]};
     b.disabled=true;
     PR.db.doc("pedidos_compra/"+id).set(doc).then(function(){PR.db.doc("config/pcseq-"+ano).set({n:Math.max(n,0)}).catch(function(){});
       /* liga o pedido às linhas de material das OPs */
       var porOp={};doc.itens.forEach(function(x){(x.ops||[]).forEach(function(r){(porOp[r.opId]=porOp[r.opId]||[]).push(r.i)})});
-      return Promise.all(Object.keys(porOp).map(function(oid){var o=PP.ops.filter(function(x){return x.id===oid})[0];if(!o)return null;var mats=JSON.parse(JSON.stringify(o.materiais||[]));porOp[oid].forEach(function(i){if(mats[i]){mats[i].pcId=id;mats[i].pcNum=num}});return opSet(o,{materiais:mats},"Material comprado no pedido de compra "+num+" (lote).")}));
+      return Promise.all(Object.keys(porOp).map(function(oid){var o=PP.ops.filter(function(x){return x.id===oid})[0];if(!o)return null;var mats=JSON.parse(JSON.stringify(o.materiais||[]));porOp[oid].forEach(function(i){if(mats[i]){mats[i].pcId=id;mats[i].pcNum=num;if(mats[i].req&&mats[i].req.status==="aberta"){mats[i].req.status="em compra";mats[i].req.pcNum=num;mats[i].req.pcId=id}}});return opSet(o,{materiais:mats},"Compras emitiu o pedido de compra "+num+" para o material (lote "+num+").")}));
     }).then(function(){m.hidden=true;CM.novo=null;CM.aba="pcs";toast("Pedido de compra "+num+" gravado. O lote do material é "+num+".");mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gravar o pedido.")});}
 },true);
 
@@ -7452,26 +7511,26 @@ $("mx-modal").addEventListener("click",function(e){var r=CM.rec;if(!r)return;var
   if(!String(r.nf).trim()){toast("Informe a NF do fornecedor.");return}if(!(q>0)){toast("Informe a quantidade recebida.");return}
   b.disabled=true;var t=Date.now(),multi=p.itens.length>1,lote=p.num+(multi?" #"+(r.i+1):""),lid="lt-"+p.id.slice(3)+"-"+(r.i+1)+(x.recebido?"-"+t.toString(36):"");
   var st=r.insp==="reprovado"?"reprovado":r.insp==="pendente"?"aguardando inspeção":"liberado";
-  var lt={lote:lote,pcId:p.id,pcNum:p.num,itemIdx:r.i,material:x.desc,forma:x.forma,medida:x.medida,un:x.un,qtdRec:q,saldo:q,fornecedor:p.fornecedor,emp:p.emp,nf:String(r.nf).trim(),corrida:String(r.corrida).trim(),cert:r.cert||null,
+  var lt={lote:lote,pcId:p.id,pcNum:p.num,itemIdx:r.i,material:x.desc,forma:x.forma,medida:x.medida,un:x.un,qtdRec:q,saldo:q,empenhado:0,fornecedor:p.fornecedor,emp:p.emp,nf:String(r.nf).trim(),corrida:String(r.corrida).trim(),cert:r.cert||null,
     inspecao:{status:r.insp,obs:r.iobs,em:r.insp==="aprovado"||r.insp==="reprovado"?t:0,por:AG.uid||""},status:st,recebidoEm:r.data?new Date(r.data+"T12:00:00").getTime():t,criado:t,ops:x.ops||[]};
   var its=JSON.parse(JSON.stringify(p.itens));its[r.i].recebido=(+its[r.i].recebido||0)+q;var tudo=its.every(function(y){return(+y.recebido||0)>=(+y.qtd||0)*0.98});
   var h=(p.hist||[]).slice(-199);h.push({at:t,uid:AG.uid||"",txt:"Recebido "+cmUn(q,x.un)+" de "+x.desc+" (NF "+lt.nf+(lt.corrida?", corrida "+lt.corrida:"")+(lt.cert?", com certificado":"")+"); lote "+lote+" "+st+"."});
   Promise.all([PR.db.doc("lotes/"+lid).set(lt),PR.db.doc("movimentos/mv-"+t.toString(36)+"-"+rid().slice(0,3)).set({tipo:"entrada",loteId:lid,lote:lote,material:x.desc,qtd:q,un:x.un,doc:"NF "+lt.nf,pcId:p.id,at:t,uid:AG.uid||""}),
     PR.db.doc("pedidos_compra/"+p.id).update({itens:its,status:tudo?"recebido":"parcial",atualizado:t,hist:h})])
-   .then(function(){m.hidden=true;CM.rec=null;toast("Lote "+lote+" no estoque: "+cmUn(q,x.un)+(st==="liberado"?", liberado para as OPs.":st==="reprovado"?", REPROVADO.":", aguardando inspeção."));mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gravar o recebimento.")});
+   .then(function(){m.hidden=true;CM.rec=null;toast("Lote "+lote+" no estoque: "+cmUn(q,x.un)+(st==="liberado"?", liberado; empenhando nas OPs…":st==="reprovado"?", REPROVADO.":", aguardando inspeção."));mxRender();if(st==="liberado")setTimeout(function(){cmAutoEmp()},900)}).catch(function(){b.disabled=false;toast("Não consegui gravar o recebimento.")});
 },true);
 
 /* ---------- Administrativo › Compras ---------- */
 function renderComp(box){
   cmSub();ppSub();
-  var nec=cmNecs(),semPc=nec.filter(function(r){return r.falta>0&&!r.pc}),abertos=CM.pcs.filter(function(p){return p.status==="aberto"||p.status==="parcial"});
+  var nec=cmNecs(),semPc=nec.filter(function(r){return r.falta>0&&!r.pc&&r.req&&r.req.status==="aberta"}),abertos=CM.pcs.filter(function(p){return p.status==="aberto"||p.status==="parcial"});
   var h='<div class="mh"><div><h2>Compras</h2><p>Compra sob demanda: a necessidade de material nasce da OP. O nº do pedido de compra é o <b>lote</b>; no recebimento você amarra NF, corrida, certificado e a inspeção, e o lote entra no estoque para ser baixado na OP.</p></div><div class="acts2"><button class="btn sm" type="button" data-cm="novo">+ Pedido de compra avulso</button></div></div>'+
-   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-cm="aba" data-a="nec" aria-selected="'+(CM.aba==="nec")+'">Necessidades das OPs ('+semPc.length+')</button><button type="button" role="tab" data-cm="aba" data-a="pcs" aria-selected="'+(CM.aba==="pcs")+'">Pedidos de compra ('+abertos.length+' abertos)</button></div>';
+   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-cm="aba" data-a="nec" aria-selected="'+(CM.aba==="nec")+'">Requisições de material ('+semPc.length+')</button><button type="button" role="tab" data-cm="aba" data-a="pcs" aria-selected="'+(CM.aba==="pcs")+'">Pedidos de compra ('+abertos.length+' abertos)</button></div>';
   if(CM.aba==="nec"){
     var nsel=semPc.filter(function(r){return CM.sel[r.k]}).length;
-    h+='<div class="mx-bar"><span class="hint">Marque as linhas e gere um pedido de compra para o mesmo fornecedor. Linhas iguais (mesmo material, forma e medida) viram um item só.</span><span class="sp"></span><button class="btn sm pri" type="button" data-cm="gerar"'+(nsel?'':' disabled')+'>Gerar pedido de compra ('+nsel+')</button></div>'+
-     '<div class="tbx"><div class="cm-n fh"><span></span><span>OP</span><span>Peça</span><span>Material</span><span>Bruto/pç</span><span class="r">Necessário</span><span class="r">Baixado</span><span>Compra</span></div>'+
-     (nec.length?nec.map(function(r){var ok=r.falta<=0;return'<div class="cm-n'+(ok?' ok':'')+'"><span>'+(!ok&&!r.pc?'<input type="checkbox" data-cmsel="'+esc(r.k)+'"'+(CM.sel[r.k]?" checked":"")+' aria-label="Selecionar">':'')+'</span><span class="idtag">'+esc(r.o.num)+'</span><span><b>'+esc(r.o.codigo)+'</b><small>'+esc(r.o.cliente||"")+' · entrega '+(r.o.entrega?dStr(r.o.entrega):"–")+'</small></span><span>'+esc(r.m.desc)+'<small>'+esc(r.m.forma||"")+'</small></span><span>'+esc(r.m.medida||"–")+'</span><span class="r mono">'+cmUn(r.m.nec,r.m.un)+'</span><span class="r mono">'+cmUn(r.bx,r.m.un)+'</span><span>'+(ok?'<span class="stp g">Baixado</span>':r.pc?'<span class="stp w">PC '+esc(r.pc.num)+' · '+esc(r.pc.status)+'</span>':'<span class="stp b">Sem pedido</span>')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhuma OP aberta precisando de material.</div>')+'</div>';
+    h+='<div class="mx-bar"><span class="hint">Requisições abertas pelas OPs quando falta matéria-prima no estoque. Marque e gere o pedido de compra para o fornecedor: requisições do mesmo material e bitola viram um item só. O nº do pedido será o lote.</span><span class="sp"></span><button class="btn sm pri" type="button" data-cm="gerar"'+(nsel?'':' disabled')+'>Gerar pedido de compra ('+nsel+')</button></div>'+
+     '<div class="tbx"><div class="cm-n fh"><span></span><span>OP</span><span>Peça</span><span>Material</span><span>Bitola · bruto/pç</span><span class="r">Falta</span><span class="r">Empenhado</span><span>Requisição</span></div>'+
+     (nec.length?nec.map(function(r){var ok=r.falta<=0,pode=!ok&&!r.pc&&r.req&&r.req.status==="aberta";return'<div class="cm-n'+(ok?' ok':'')+'"><span>'+(pode?'<input type="checkbox" data-cmsel="'+esc(r.k)+'"'+(CM.sel[r.k]?" checked":"")+' aria-label="Selecionar">':'')+'</span><span class="idtag">'+esc(r.o.num)+'</span><span><b>'+esc(r.o.codigo)+'</b><small>'+esc(r.o.cliente||"")+' · entrega '+(r.o.entrega?dStr(r.o.entrega):"–")+'</small></span><span>'+esc(r.m.desc)+'<small>'+esc(r.m.forma||"")+'</small></span><span><b>'+esc(esBitola(r.m)||"–")+'</b><small>bruto '+esc(r.m.medida||"–")+'</small><small>'+esc(cmBarra(r.m,+r.o.qtd||0))+'</small></span><span class="r mono">'+cmUn(r.falta,r.m.un)+'</span><span class="r mono">'+cmUn(r.bx,r.m.un)+'</span><span>'+(r.pc?'<span class="stp w">PC '+esc(r.pc.num)+' · '+esc(r.pc.status)+'</span>':r.req?'<span class="stp '+(r.req.status==="aberta"?"b":"w")+'">'+esc(reqTxt(r.req))+'</span>':'<span class="stp n">sem requisição</span>')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhuma requisição de material. Quando uma OP não encontra o material no estoque, a requisição aparece aqui.</div>')+'</div>';
   }else{
     h+='<div class="tbx"><div class="cm-p fh"><span>Pedido / lote</span><span>Fornecedor</span><span>Itens</span><span>Prazo</span><span>Situação</span><span></span></div>'+
      (CM.pcs.length?CM.pcs.map(function(p){var tot=0;p.itens.forEach(function(x){tot+=(+x.qtd||0)*(+x.preco||0)});
@@ -7485,12 +7544,12 @@ $("v-mx").addEventListener("click",function(e){
   if(S.tab!=="m-comp")return;var b=e.target.closest("[data-cm]");if(!b)return;e.stopPropagation();e.preventDefault();var a=b.dataset.cm;
   if(a==="aba"){CM.aba=b.dataset.a;mxRender();return}
   if(a==="novo"){pcNovo([]);return}
-  if(a==="gerar"){var ls=cmNecs().filter(function(r){return CM.sel[r.k]&&r.falta>0&&!r.pc});CM.sel={};pcNovo(ls);return}
+  if(a==="gerar"){var ls=cmNecs().filter(function(r){return CM.sel[r.k]&&r.falta>0&&!r.pc&&r.req&&r.req.status==="aberta"});CM.sel={};pcNovo(ls);return}
   if(a==="receber"){recAbrir(b.dataset.id,+b.dataset.i);return}
-  if(a==="cancela"){var p=CM.pcs.filter(function(x){return x.id===b.dataset.id})[0];if(!p)return;askDel("Cancelar o pedido de compra "+p.num+"?",p.fornecedor+". As OPs voltam a mostrar o material sem pedido.",function(){
+  if(a==="cancela"){var p=CM.pcs.filter(function(x){return x.id===b.dataset.id})[0];if(!p)return;askDel("Cancelar o pedido de compra "+p.num+"?",p.fornecedor+". As requisições voltam a ficar abertas.",function(){
     var h=(p.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"Pedido cancelado."});
     PR.db.doc("pedidos_compra/"+p.id).update({status:"cancelado",atualizado:Date.now(),hist:h}).then(function(){
-      return Promise.all(PP.ops.filter(function(o){return(o.materiais||[]).some(function(m){return m.pcId===p.id})}).map(function(o){var mats=JSON.parse(JSON.stringify(o.materiais));mats.forEach(function(m){if(m.pcId===p.id){delete m.pcId;delete m.pcNum}});return opSet(o,{materiais:mats},"Pedido de compra "+p.num+" cancelado.")}))}).then(function(){toast("Pedido cancelado.")})});return}
+      return Promise.all(PP.ops.filter(function(o){return(o.materiais||[]).some(function(m){return m.pcId===p.id})}).map(function(o){var mats=JSON.parse(JSON.stringify(o.materiais));mats.forEach(function(m){if(m.pcId===p.id){delete m.pcId;delete m.pcNum;if(m.req&&m.req.status==="em compra"){m.req.status="aberta";delete m.req.pcNum;delete m.req.pcId}}});return opSet(o,{materiais:mats},"Pedido de compra "+p.num+" cancelado.")}))}).then(function(){toast("Pedido cancelado.")})});return}
 },true);
 
 /* ---------- Estoque › Matéria-prima (lotes) e Movimentações ---------- */
@@ -7498,16 +7557,16 @@ function renderEstMp(box){
   cmSub();
   if(CM.lt){var l=CM.lotes.filter(function(x){return x.id===CM.lt})[0];if(l){ltDet(box,l);return}CM.lt=""}
   var L=CM.lotes.filter(function(l){return CM.ltTodos||ltSaldo(l)>0});
-  box.innerHTML='<div class="mh"><div><h2>Matéria-prima</h2><p>Cada lote é um pedido de compra recebido (ex.: 135/26), com NF, corrida, certificado e inspeção. O saldo baixa quando o material é requisitado na OP. Sobras ficam no lote com o saldo que restou.</p></div><div class="acts2"><button class="btn sm" type="button" data-lt="avulso">+ Entrada avulsa (sobra / sem pedido)</button></div></div>'+
+  box.innerHTML='<div class="mh"><div><h2>Matéria-prima</h2><p>Cada lote é um pedido de compra recebido (ex.: 135/26), com NF, corrida, certificado e inspeção. As OPs <b>empenham</b> (reservam) o lote automaticamente; o saldo baixa quando o material é entregue à fábrica. Sobras ficam no lote com o saldo que restou.</p></div><div class="acts2"><button class="btn sm" type="button" data-lt="avulso">+ Entrada avulsa (sobra / sem pedido)</button></div></div>'+
    '<div class="mx-bar"><label class="mx-chk"><input type="checkbox" id="lt-todos"'+(CM.ltTodos?" checked":"")+'> Mostrar lotes zerados</label><span class="sp"></span><span class="hint">'+L.length+' lotes</span></div>'+
-   '<div class="tbx"><div class="lt-r fh"><span>Lote</span><span>Material</span><span>Fornecedor · NF</span><span>Corrida</span><span>Certificado</span><span>Inspeção</span><span class="r">Saldo</span></div>'+
-   (L.length?L.map(function(l){return'<div class="lt-r" data-lt="abrir" data-id="'+esc(l.id)+'" title="Abrir"><span class="idtag big">'+esc(l.lote)+'</span><span><b>'+esc(l.material)+'</b><small>'+esc((l.forma||"")+" · "+(l.medida||""))+'</small></span><span>'+esc(l.fornecedor||"–")+'<small>NF '+esc(l.nf||"–")+'</small></span><span>'+esc(l.corrida||"–")+'</span><span>'+(l.cert?'<span class="stp g">Anexado</span>':'<span class="stp n">Sem</span>')+'</span><span><span class="stp '+(l.status==="liberado"?"g":l.status==="reprovado"?"b":"w")+'">'+esc(l.status)+'</span></span><span class="r mono">'+cmUn(l.saldo,l.un)+'<small>de '+cmUn(l.qtdRec,l.un)+'</small></span></div>'}).join(""):'<div class="mx-empty">Nenhum lote no estoque. Os lotes entram pelo recebimento do pedido de compra.</div>')+'</div>';
+   '<div class="tbx"><div class="lt-r fh"><span>Lote</span><span>Material</span><span>Fornecedor · NF</span><span>Corrida</span><span>Certificado</span><span>Inspeção</span><span class="r">Saldo · disponível</span></div>'+
+   (L.length?L.map(function(l){return'<div class="lt-r" data-lt="abrir" data-id="'+esc(l.id)+'" title="Abrir"><span class="idtag big">'+esc(l.lote)+'</span><span><b>'+esc(l.material)+'</b><small>'+esc((l.forma||"")+" · "+(l.medida||""))+'</small></span><span>'+esc(l.fornecedor||"–")+'<small>NF '+esc(l.nf||"–")+'</small></span><span>'+esc(l.corrida||"–")+'</span><span>'+(l.cert?'<span class="stp g">Anexado</span>':'<span class="stp n">Sem</span>')+'</span><span><span class="stp '+(l.status==="liberado"?"g":l.status==="reprovado"?"b":"w")+'">'+esc(l.status)+'</span></span><span class="r mono">'+cmUn(l.saldo,l.un)+'<small>'+(ltEmp(l)?"empenhado "+cmUn(ltEmp(l),l.un)+" · livre "+cmUn(ltDisp(l),l.un):"de "+cmUn(l.qtdRec,l.un))+'</small></span></div>'}).join(""):'<div class="mx-empty">Nenhum lote no estoque. Os lotes entram pelo recebimento do pedido de compra.</div>')+'</div>';
 }
 function ltDet(box,l){
   var mv=CM.movs.filter(function(m){return m.loteId===l.id});
   box.innerHTML='<div class="mx-bar"><button class="btn sm" type="button" data-lt="voltar">‹ Matéria-prima</button><span class="sp"></span>'+(l.cert&&l.cert.url?'<button class="btn sm" type="button" data-lt="cert" data-id="'+esc(l.id)+'">Abrir certificado</button>':'')+'</div>'+
    '<div class="card"><div class="dh2"><span class="idtag big">Lote '+esc(l.lote)+'</span><h2>'+esc(l.material)+'</h2><span class="sub">'+esc((l.forma||"")+" · "+(l.medida||"")+" · "+(l.fornecedor||""))+'</span></div>'+
-   '<dl class="cn-dl"><dt>Pedido de compra</dt><dd>'+esc(l.pcNum||"– (entrada avulsa)")+'</dd><dt>NF do fornecedor</dt><dd>'+esc(l.nf||"–")+'</dd><dt>Corrida</dt><dd>'+esc(l.corrida||"–")+'</dd><dt>Recebido</dt><dd>'+cmUn(l.qtdRec,l.un)+' em '+esc(new Date(l.recebidoEm||l.criado).toLocaleDateString("pt-BR"))+'</dd><dt>Saldo</dt><dd><b>'+cmUn(l.saldo,l.un)+'</b></dd><dt>Situação</dt><dd>'+esc(l.status)+'</dd></dl></div>'+
+   '<dl class="cn-dl"><dt>Pedido de compra</dt><dd>'+esc(l.pcNum||"– (entrada avulsa)")+'</dd><dt>NF do fornecedor</dt><dd>'+esc(l.nf||"–")+'</dd><dt>Corrida</dt><dd>'+esc(l.corrida||"–")+'</dd><dt>Recebido</dt><dd>'+cmUn(l.qtdRec,l.un)+' em '+esc(new Date(l.recebidoEm||l.criado).toLocaleDateString("pt-BR"))+'</dd><dt>Saldo</dt><dd><b>'+cmUn(l.saldo,l.un)+'</b></dd><dt>Empenhado</dt><dd>'+cmUn(ltEmp(l),l.un)+(function(){var u=[];(PP.ops||[]).forEach(function(o){(o.materiais||[]).forEach(function(m){(m.empenhos||[]).forEach(function(e){if(e.loteId===l.id&&!e.baixado)u.push(o.num+" ("+cmUn(e.qtd,m.un)+")")})})});return u.length?' — '+esc(u.join(", ")):''})()+'</dd><dt>Disponível</dt><dd>'+cmUn(ltDisp(l),l.un)+'</dd><dt>Situação</dt><dd>'+esc(l.status)+'</dd></dl></div>'+
    '<div class="card"><h3>Inspeção de recebimento</h3><div class="fgrid"><label class="f"><span class="lb">Resultado</span><select id="lt-insp"><option value="dispensada"'+(l.inspecao&&l.inspecao.status==="dispensada"?" selected":"")+'>Não requer</option><option value="pendente"'+(l.inspecao&&l.inspecao.status==="pendente"?" selected":"")+'>Pendente</option><option value="aprovado"'+(l.inspecao&&l.inspecao.status==="aprovado"?" selected":"")+'>Aprovado</option><option value="reprovado"'+(l.inspecao&&l.inspecao.status==="reprovado"?" selected":"")+'>Reprovado</option></select></label><label class="f"><span class="lb">Observação</span><input id="lt-iobs" value="'+esc(l.inspecao&&l.inspecao.obs||"")+'"></label></div>'+
    '<div class="acts2"><button class="btn sm pri" type="button" data-lt="insp" data-id="'+esc(l.id)+'">Gravar inspeção</button><span class="sp" style="flex:1"></span><label class="mx-chk">Ajustar saldo para <input id="lt-aj" style="width:90px" inputmode="decimal" placeholder="'+esc(nf(+l.saldo||0,3))+'"> '+esc(l.un)+'</label><button class="btn sm" type="button" data-lt="ajuste" data-id="'+esc(l.id)+'">Ajustar</button></div></div>'+
    '<div class="card"><h3>Movimentações</h3><table class="itb"><thead><tr><th>Data</th><th>Tipo</th><th class="r">Quantidade</th><th>Documento</th></tr></thead><tbody>'+(mv.map(function(m){return'<tr><td>'+esc(nowStr(m.at))+'</td><td>'+esc({entrada:"Entrada",saida:"Baixa para OP",ajuste:"Ajuste"}[m.tipo]||m.tipo)+'</td><td class="r mono">'+(m.tipo==="saida"?"−":m.tipo==="ajuste"&&m.qtd<0?"−":"+")+cmUn(Math.abs(m.qtd),m.un)+'</td><td>'+esc(m.doc||m.opNum||"")+'</td></tr>'}).join("")||'<tr><td colspan="4" class="hint">Sem movimentos.</td></tr>')+'</tbody></table></div>';
@@ -7524,8 +7583,8 @@ $("v-mx").addEventListener("click",function(e){
   if(a==="avulso"){pcAvulso();return}
   if(!l)return;
   if(a==="cert"){fetch(l.cert.url).then(function(r){return r.blob()}).then(function(bl){cnSave(l.cert.nome||"certificado.pdf",bl)}).catch(function(){toast("Não consegui abrir o certificado.")});return}
-  if(a==="insp"){var st=$("lt-insp").value,ob=$("lt-iobs").value;PR.db.doc("lotes/"+l.id).update({inspecao:{status:st,obs:ob,em:Date.now(),por:AG.uid||""},status:st==="reprovado"?"reprovado":st==="pendente"?"aguardando inspeção":"liberado"}).then(function(){toast("Inspeção gravada.")});return}
-  if(a==="ajuste"){var v=+parse($("lt-aj").value);if(!(v>=0)){toast("Informe o saldo correto.");return}var d=Math.round((v-(+l.saldo||0))*1000)/1000;if(!d){toast("O saldo já é esse.");return}
+  if(a==="insp"){var st=$("lt-insp").value,ob=$("lt-iobs").value;PR.db.doc("lotes/"+l.id).update({inspecao:{status:st,obs:ob,em:Date.now(),por:AG.uid||""},status:st==="reprovado"?"reprovado":st==="pendente"?"aguardando inspeção":"liberado"}).then(function(){toast("Inspeção gravada.");if(st==="aprovado"||st==="dispensada")setTimeout(function(){cmAutoEmp()},900)});return}
+  if(a==="ajuste"){var v=+parse($("lt-aj").value);if(!(v>=0)){toast("Informe o saldo correto.");return}var d=Math.round((v-(+l.saldo||0))*1000)/1000;if(!d){toast("O saldo já é esse.");return}if(v<ltEmp(l)-0.0005){toast("Há "+cmUn(ltEmp(l),l.un)+" empenhados em OPs; estorne o empenho antes de baixar o saldo abaixo disso.");return}
     askDel("Ajustar o saldo do lote "+l.lote+"?",cmUn(l.saldo,l.un)+" → "+cmUn(v,l.un)+" (diferença "+(d>0?"+":"")+nf(d,3)+").",function(){var t=Date.now();
       Promise.all([PR.db.doc("lotes/"+l.id).update({saldo:v}),PR.db.doc("movimentos/mv-"+t.toString(36)+"-"+rid().slice(0,3)).set({tipo:"ajuste",loteId:l.id,lote:l.lote,material:l.material,qtd:d,un:l.un,doc:"Ajuste de inventário",at:t,uid:AG.uid||""})]).then(function(){toast("Saldo ajustado.")})});return}
 },true);
@@ -7542,27 +7601,33 @@ $("mx-modal").addEventListener("click",function(e){var a=CM.av;if(!a)return;var 
   if(e.target===m||(b&&b.dataset.avx==="n")){e.stopImmediatePropagation();m.hidden=true;CM.av=null;mxRender();return}if(!b)return;e.stopImmediatePropagation();
   var q=+parse(a.qtd),lote=String(a.lote).trim();if(!lote){toast("Informe o lote.");return}if(!String(a.material).trim()){toast("Informe o material.");return}if(!(q>0)){toast("Informe a quantidade.");return}
   b.disabled=true;var t=Date.now(),id="lt-av-"+t.toString(36);
-  Promise.all([PR.db.doc("lotes/"+id).set({lote:lote,pcId:"",pcNum:"",material:String(a.material).trim(),forma:a.forma,medida:a.medida,un:a.un,qtdRec:q,saldo:q,fornecedor:"",emp:a.emp,nf:a.nf,corrida:a.corrida,cert:null,inspecao:{status:"dispensada"},status:"liberado",recebidoEm:t,criado:t}),
+  Promise.all([PR.db.doc("lotes/"+id).set({lote:lote,pcId:"",pcNum:"",material:String(a.material).trim(),forma:a.forma,medida:a.medida,un:a.un,qtdRec:q,saldo:q,empenhado:0,fornecedor:"",emp:a.emp,nf:a.nf,corrida:a.corrida,cert:null,inspecao:{status:"dispensada"},status:"liberado",recebidoEm:t,criado:t}),
     PR.db.doc("movimentos/mv-"+t.toString(36)+"-av").set({tipo:"entrada",loteId:id,lote:lote,material:String(a.material).trim(),qtd:q,un:a.un,doc:"Entrada avulsa"+(a.nf?" · NF "+a.nf:""),at:t,uid:AG.uid||""})])
-   .then(function(){m.hidden=true;CM.av=null;toast("Lote "+lote+" incluído no estoque.");mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gravar.")})},true);
+   .then(function(){m.hidden=true;CM.av=null;toast("Lote "+lote+" incluído no estoque.");mxRender();setTimeout(function(){cmAutoEmp()},900)}).catch(function(){b.disabled=false;toast("Não consegui gravar.")})},true);
 
 /* ---------- OP: pedido do cliente, requisição/baixa por lote, plano de inspeção e ficha impressa ---------- */
 function opPedido(o){return PD.list.filter(function(x){return x.id===o.pedidoId})[0]||{}}
 function opPlanos(o){var k=normTxt(o.codigo),d=normTxt(o.desenho);return(typeof QI!=="undefined"?QI.list:[]).filter(function(p){var c=normTxt(p.codigo);return c&&(c===k||(d&&c===d))})}
 function opCncs(o){var k=normTxt(o.codigo),d=normTxt(o.desenho);return(CN.list||[]).filter(function(p){var c=normTxt(p.codigo);return c&&(c===k||(d&&c===d))})}
-function opMatOk(o){return(o.materiais||[]).every(function(m){if(m.tipo!=="mp")return true;if(m.cliente)return!!String(m.nfCliente||"").trim();var bx=0;(m.baixas||[]).forEach(function(b){bx+=+b.qtd||0});return bx>=(+m.nec||0)*0.999})}
+function opMatOk(o){return(o.materiais||[]).every(function(m){if(m.tipo!=="mp")return true;if(m.cliente)return!!String(m.nfCliente||"").trim();return mFalta(m)<=0.0005})}
+function opFaltaMp(o){return(o.materiais||[]).some(function(m){return m.tipo==="mp"&&!m.cliente&&mFalta(m)>0.0005})}
 var _opDetCm=opDetHtml;opDetHtml=function(o){
   var h=_opDetCm.apply(this,arguments),pd=opPedido(o),pis=opPlanos(o),cns=opCncs(o);
   var cab='<div class="op-cab"><div><small>Pedido do cliente</small><b>'+esc(pd.pedidoCliente||"–")+'</b></div><div><small>Pedido interno</small><b>'+esc(o.pedidoNum||"–")+'</b></div><div><small>Cliente</small><b>'+esc(o.cliente||"–")+'</b></div><div><small>Entrega</small><b>'+(o.entrega?dStr(o.entrega):"–")+'</b></div></div>'+
-   '<div class="acts2"><button class="btn pri" type="button" data-op3="ficha">Imprimir ficha da OP (PDF)</button>'+(opMatOk(o)?'<span class="stp g">Material requisitado</span>':'<span class="stp w">Falta requisitar o material</span>')+'</div>';
-  var mat='<h3>Requisição e baixa do material</h3><table class="itb op-mat"><thead><tr><th>Material</th><th>Bruto/pç</th><th class="r">Necessário</th><th>Lote(s) baixado(s)</th><th>Requisitar</th></tr></thead><tbody>'+(o.materiais||[]).map(function(m,i){
+   '<div class="acts2"><button class="btn pri" type="button" data-op3="ficha">Imprimir ficha da OP (PDF)</button>'+(opMatOk(o)?'<span class="stp g">Material empenhado</span>':opFaltaMp(o)?'<span class="stp b">Falta matéria-prima</span>':'<span class="stp w">Falta NF de remessa do cliente</span>')+'</div>';
+  var mat='<h3>Material: empenho, requisição e baixa</h3>'+(opFaltaMp(o)?'<div class="op-alerta">Falta matéria-prima no estoque para esta OP. A requisição foi para Compras; quando o lote chegar e for liberado, ele é empenhado aqui sozinho.</div>':'')+
+   '<table class="itb op-mat"><thead><tr><th>Material</th><th>Bitola · bruto/pç</th><th class="r">Necessário</th><th>Empenho (lote)</th><th>Ação</th></tr></thead><tbody>'+(o.materiais||[]).map(function(m,i){
     if(m.tipo!=="mp")return'<tr><td>'+esc(m.desc)+'<small> ('+esc(({terc:"terceiro",comp:"componente"})[m.tipo]||m.tipo)+')</small></td><td>'+esc(m.medida||"–")+'</td><td class="r">'+cmUn(m.nec,m.un)+'</td><td colspan="2" class="hint">Fora do estoque de matéria-prima.</td></tr>';
     if(m.cliente)return'<tr><td>'+esc(m.desc)+'<small> (cliente fornece)</small></td><td>'+esc(m.medida||"–")+'</td><td class="r">'+cmUn(m.nec,m.un)+'</td><td>'+(m.nfCliente?'NF de remessa '+esc(m.nfCliente):'<span class="hint">–</span>')+'</td><td><input data-opnf="'+i+'" value="'+esc(m.nfCliente||"")+'" placeholder="NF de remessa do cliente" style="width:170px"> <button class="btn sm" type="button" data-op3="nfcli" data-i="'+i+'">Gravar</button></td></tr>';
-    var bx=0;(m.baixas||[]).forEach(function(b){bx+=+b.qtd||0});var falta=Math.max(0,(+m.nec||0)-bx);
-    var lts=CM.lotes.filter(function(l){return ltLib(l)&&ltSaldo(l)>0&&l.un===m.un&&(cmPar(m.desc,l.material)||(m.pcId&&l.pcId===m.pcId))}).sort(function(a,b){return(a.pcId===m.pcId?0:1)-(b.pcId===m.pcId?0:1)});
-    return'<tr><td>'+esc(m.desc)+'<small>'+esc(m.forma||"")+'</small></td><td>'+esc(m.medida||"–")+'</td><td class="r mono">'+cmUn(m.nec,m.un)+'</td><td>'+((m.baixas||[]).map(function(b){return'<span class="idtag">'+esc(b.lote)+'</span> '+cmUn(b.qtd,m.un)}).join("<br>")||'<span class="hint">nenhum</span>')+(m.pcNum&&falta>0?'<br><small>comprado no PC '+esc(m.pcNum)+'</small>':'')+'</td>'+
-     '<td>'+(falta<=0.0005?'<span class="stp g">Baixado</span>':lts.length?'<select data-oplt="'+i+'">'+lts.map(function(l){return'<option value="'+esc(l.id)+'">Lote '+esc(l.lote)+' · '+esc(l.material)+' · saldo '+cmUn(l.saldo,l.un)+'</option>'}).join("")+'</select> <input data-opq="'+i+'" value="'+esc(String(Math.round(falta*1000)/1000).replace(".",","))+'" style="width:80px" class="r"> '+esc(m.un)+' <button class="btn sm pri" type="button" data-op3="baixar" data-i="'+i+'">Baixar</button>':
-       (m.pcId?'<span class="hint">aguardando o recebimento do PC '+esc(m.pcNum||"")+'</span>':'<button class="btn sm" type="button" data-op3="comprar" data-i="'+i+'">Gerar pedido de compra</button>'))+'</td></tr>'}).join("")+'</tbody></table>';
+    var falta=mFalta(m),es=mEmps(m),pend=es.filter(function(e){return!e.baixado});
+    var lts=CM.lotes.filter(function(l){return ltServe(l,m)}).sort(function(a,b){return(a.pcId===m.pcId?0:1)-(b.pcId===m.pcId?0:1)||(a.recebidoEm||0)-(b.recebidoEm||0)});
+    var empH=es.map(function(e,k){return'<div class="op-emp"><span class="idtag">'+esc(e.lote)+'</span> '+cmUn(e.qtd,m.un)+(e.corrida?' <small>corrida '+esc(e.corrida)+'</small>':'')+' '+(e.baixado?'<span class="stp g">baixado</span>':'<span class="stp i">empenhado</span>'+ibtn("trash","Estornar empenho",'data-op3="estorno" data-i="'+i+'" data-k="'+k+'"',"danger"))+'</div>'}).join("")||'<span class="hint">nenhum</span>';
+    var acao="";
+    if(falta>0.0005){acao+=lts.length?'<div class="op-ac"><select data-oplt="'+i+'">'+lts.map(function(l){return'<option value="'+esc(l.id)+'">Lote '+esc(l.lote)+' · '+esc(l.material+" "+(l.medida||""))+' · livre '+cmUn(ltDisp(l),l.un)+'</option>'}).join("")+'</select> <input data-opq="'+i+'" value="'+esc(String(falta).replace(".",","))+'" style="width:80px" class="r"> '+esc(m.un)+' <button class="btn sm pri" type="button" data-op3="empenhar" data-i="'+i+'">Empenhar</button></div>':'';
+      acao+=m.req&&m.req.status!=="cancelada"&&m.req.status!=="atendida"?'<div><span class="stp '+(m.req.status==="aberta"?"b":"w")+'">Requisição '+esc(reqTxt(m.req))+'</span></div>':(lts.length?'':'<button class="btn sm" type="button" data-op3="requisitar" data-i="'+i+'">Requisitar compra</button>');}
+    if(pend.length)acao+='<div><button class="btn sm" type="button" data-op3="baixar" data-i="'+i+'" title="O material saiu do estoque e foi para a fábrica">Entregar à fábrica (baixar '+cmUn(pend.reduce(function(s2,e){return s2+(+e.qtd||0)},0),m.un)+')</button></div>';
+    if(!acao)acao=falta<=0.0005?'<span class="stp g">Baixado</span>':'';
+    return'<tr><td>'+esc(m.desc)+'<small>'+esc(m.forma||"")+'</small></td><td><b>'+esc(esBitola(m)||"–")+'</b><small>bruto '+esc(m.medida||"–")+'</small><small>'+esc(cmBarra(m,+o.qtd||0))+'</small></td><td class="r mono">'+cmUn(m.nec,m.un)+(falta>0.0005?'<small class="op-falta">falta '+cmUn(falta,m.un)+'</small>':'')+'</td><td>'+empH+'</td><td>'+acao+'</td></tr>'}).join("")+'</tbody></table>';
   var pi='<h3>Plano de inspeção</h3><div class="acts2"><label class="mx-chk"><input type="checkbox" id="op-exigepi"'+(o.exigePI!==false?" checked":"")+'> Mencionar plano de inspeção na ficha</label>'+(pis.length?'<select id="op-pi">'+pis.map(function(p){return'<option value="'+esc(p.id)+'"'+(o.piId===p.id?" selected":"")+'>'+esc(cnIdTxt("planos_inspecao",p))+' · '+esc(p.status==="validado"?"validado":"aguardando validação")+'</option>'}).join("")+'</select>':'<span class="hint">Nenhum plano de inspeção com o código '+esc(o.codigo)+' (Qualidade › Planos de inspeção).</span>')+'</div>'+
    (cns.length?'<p class="hint">Programas CNC desta peça: '+cns.map(function(p){return esc(cnIdTxt("programas_cnc",p)+" ("+(p.status||"")+")")}).join(", ")+'</p>':'');
   h=h.replace('<dl class="cn-dl">',cab+'<dl class="cn-dl">');
@@ -7575,23 +7640,29 @@ $("mx-modal").addEventListener("change",function(e){if(!PP.open)return;var t=e.t
 },true);
 document.addEventListener("change",function(e){var t=e.target;if(!PP.open||t.id!=="op-st")return;var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(!o)return;
   if((t.value==="liberada"||t.value==="producao")&&o.status==="planejada"&&!opMatOk(o)){e.stopImmediatePropagation();e.stopPropagation();var v=t.value;t.value=o.status;
-    askDel("Liberar sem o material requisitado?","A "+o.num+" ainda não tem todo o material baixado de um lote (ou a NF de remessa do cliente). Liberar mesmo assim?",function(){opSet(o,{status:v},"Situação: "+(OP_ST[o.status]||o.status)+" → "+OP_ST[v]+" (sem material requisitado).")})}},true);
+    askDel("Liberar sem o material empenhado?","A "+o.num+" ainda não tem todo o material empenhado num lote (ou a NF de remessa do cliente). Liberar mesmo assim?",function(){opSet(o,{status:v},"Situação: "+(OP_ST[o.status]||o.status)+" → "+OP_ST[v]+" (sem material empenhado).")})}},true);
 $("mx-modal").addEventListener("focusin",function(e){if(PP.open&&e.target.closest&&e.target.closest(".op-mat"))CM.focoOp=1},true);
 $("mx-modal").addEventListener("focusout",function(e){if(PP.open)setTimeout(function(){var a=document.activeElement;if(!a||!a.closest||!a.closest(".op-mat"))CM.focoOp=0},50)},true);
+function opMatUpd(id,fn,txt){return PR.db.doc("ordens/"+id).get().then(function(sn){var o=sn.data()||{};var mats=JSON.parse(JSON.stringify(o.materiais||[]));var r=fn(mats);if(r===false)return false;var h=(o.hist||[]).slice(-199);if(txt)h.push({at:Date.now(),uid:AG.uid||"",txt:txt});return PR.db.doc("ordens/"+id).update({materiais:mats,atualizado:Date.now(),hist:h})})}
+function ltAdd(lid,campos){return PR.db.doc("lotes/"+lid).get().then(function(x){var l=x.data()||{},p={};for(var k in campos)p[k]=Math.round(((+l[k]||0)+campos[k])*1000)/1000;return PR.db.doc("lotes/"+lid).update(p)})}
 $("mx-modal").addEventListener("click",function(e){if(!PP.open)return;var b=e.target.closest("[data-op3]");if(!b)return;e.stopImmediatePropagation();var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(!o)return;var a=b.dataset.op3,i=+b.dataset.i,m=(o.materiais||[])[i];
   if(a==="ficha"){opFicha(o);return}
-  if(a==="comprar"){var bx=0;(m.baixas||[]).forEach(function(z){bx+=+z.qtd||0});$("mx-modal").hidden=true;PP.open="";pcNovo([{o:o,i:i,m:m,falta:Math.max(0,(+m.nec||0)-bx)}]);return}
-  if(a==="nfcli"){var v=String(($('[data-opnf="'+i+'"]')||document.querySelector('[data-opnf="'+i+'"]')).value||"").trim();if(!v){toast("Informe a NF de remessa.");return}var mats=JSON.parse(JSON.stringify(o.materiais));mats[i].nfCliente=v;CM.focoOp=0;opSet(o,{materiais:mats},"Material do cliente: NF de remessa "+v+".");return}
-  if(a==="baixar"){var sel=document.querySelector('[data-oplt="'+i+'"]'),qi=document.querySelector('[data-opq="'+i+'"]');var l=CM.lotes.filter(function(x){return x.id===(sel&&sel.value)})[0],q=Math.round((+parse(qi&&qi.value)||0)*1000)/1000;
-    if(!l){toast("Escolha o lote.");return}if(!(q>0)){toast("Informe a quantidade.");return}if(q>ltSaldo(l)+0.0005){toast("O lote "+l.lote+" só tem "+cmUn(l.saldo,l.un)+".");return}
-    b.disabled=true;var t=Date.now(),mats2=JSON.parse(JSON.stringify(o.materiais));(mats2[i].baixas=mats2[i].baixas||[]).push({loteId:l.id,lote:l.lote,corrida:l.corrida||"",nf:l.nf||"",cert:!!l.cert,qtd:q,at:t,uid:AG.uid||""});
-    PR.db.doc("lotes/"+l.id).update({saldo:Math.round((ltSaldo(l)-q)*1000)/1000}).then(function(){return PR.db.doc("movimentos/mv-"+t.toString(36)+"-"+rid().slice(0,3)).set({tipo:"saida",loteId:l.id,lote:l.lote,material:l.material,qtd:q,un:l.un,opId:o.id,opNum:o.num,doc:o.num,at:t,uid:AG.uid||""})})
-     .then(function(){CM.focoOp=0;return opSet(o,{materiais:mats2},"Baixa de "+cmUn(q,l.un)+" do lote "+l.lote+(l.corrida?" (corrida "+l.corrida+")":"")+".")}).then(function(){toast("Baixado do lote "+l.lote+".")}).catch(function(){b.disabled=false;toast("Não consegui baixar.")});return}
+  if(a==="requisitar"){b.disabled=true;cmAutoEmp([o.id]);return}
+  if(a==="nfcli"){var v=String((document.querySelector('[data-opnf="'+i+'"]')||{}).value||"").trim();if(!v){toast("Informe a NF de remessa.");return}var mats=JSON.parse(JSON.stringify(o.materiais));mats[i].nfCliente=v;CM.focoOp=0;opSet(o,{materiais:mats},"Material do cliente: NF de remessa "+v+".");return}
+  if(a==="empenhar"){var sel=document.querySelector('[data-oplt="'+i+'"]'),qi=document.querySelector('[data-opq="'+i+'"]');var l0=CM.lotes.filter(function(x){return x.id===(sel&&sel.value)})[0],q=Math.round((+parse(qi&&qi.value)||0)*1000)/1000;
+    if(!l0){toast("Escolha o lote.");return}if(!(q>0)){toast("Informe a quantidade.");return}b.disabled=true;
+    PR.db.doc("lotes/"+l0.id).get().then(function(x){var l=x.data()||{};l.id=l0.id;if(q>ltDisp(l)+0.0005){toast("O lote "+l.lote+" só tem "+cmUn(ltDisp(l),l.un)+" livre.");b.disabled=false;return}
+      return PR.db.doc("lotes/"+l.id).update({empenhado:Math.round((ltEmp(l)+q)*1000)/1000}).then(function(){CM.focoOp=0;return opMatUpd(o.id,function(ms){var mm=ms[i];(mm.empenhos=mm.empenhos||[]).push({loteId:l.id,lote:l.lote,corrida:l.corrida||"",nf:l.nf||"",cert:!!l.cert,qtd:q,at:Date.now(),uid:AG.uid||"",baixado:false});if(mFalta(mm)<=0.0005&&mm.req&&mm.req.status==="aberta")mm.req.status="atendida"},"Empenhado "+cmUn(q,l.un)+" do lote "+l.lote+(l.corrida?" (corrida "+l.corrida+")":"")+".")}).then(function(){toast("Lote "+l.lote+" empenhado.")})}).catch(function(){b.disabled=false;toast("Não consegui empenhar.")});return}
+  if(a==="estorno"){var es=mEmps(m),em=es[+b.dataset.k];if(!em||em.baixado)return;askDel("Estornar o empenho do lote "+em.lote+"?",cmUn(em.qtd,m.un)+" voltam a ficar livres no lote.",function(){
+    ltAdd(em.loteId,{empenhado:-em.qtd}).then(function(){return opMatUpd(o.id,function(ms){var arr=ms[i].empenhos||[];for(var k=0;k<arr.length;k++){if(arr[k].loteId===em.loteId&&!arr[k].baixado&&arr[k].at===em.at){arr.splice(k,1);return}}return false},"Empenho do lote "+em.lote+" estornado ("+cmUn(em.qtd,m.un)+").")}).then(function(){toast("Empenho estornado.")})});return}
+  if(a==="baixar"){var pend=(m.empenhos||[]).filter(function(x){return!x.baixado});if(!pend.length)return;b.disabled=true;var t=Date.now();
+    var ch=Promise.resolve();pend.forEach(function(x,k){ch=ch.then(function(){return ltAdd(x.loteId,{saldo:-x.qtd,empenhado:-x.qtd})}).then(function(){return PR.db.doc("movimentos/mv-"+(t+k).toString(36)+"-"+rid().slice(0,3)).set({tipo:"saida",loteId:x.loteId,lote:x.lote,material:m.desc,qtd:x.qtd,un:m.un,opId:o.id,opNum:o.num,doc:o.num,at:t,uid:AG.uid||""})})});
+    ch.then(function(){return opMatUpd(o.id,function(ms){(ms[i].empenhos||[]).forEach(function(x){if(!x.baixado){x.baixado=true;x.baixaEm=t}})},"Material entregue à fábrica: baixa de "+pend.map(function(x){return cmUn(x.qtd,m.un)+" do lote "+x.lote}).join(", ")+".")}).then(function(){toast("Baixa feita no estoque.")}).catch(function(){b.disabled=false;toast("Não consegui baixar.")});return}
 },true);
 
 /* ficha da OP: A4 retrato, identidade da empresa, acompanha a peça na fábrica */
 function opFicha(o){
-  var E=empData(o.emp==="STAR"?"STAR":"MIX"),cor=QI_COR[o.emp]||QI_COR.MIX,pd=opPedido(o),pi=o.exigePI===false?null:(opPlanos(o).filter(function(p){return p.id===o.piId})[0]||opPlanos(o)[0]),cns=opCncs(o),X=10,W=190,y=10,s="";
+  var vec=[],E=empData(o.emp==="STAR"?"STAR":"MIX"),cor=QI_COR[o.emp]||QI_COR.MIX,pd=opPedido(o),pi=o.exigePI===false?null:(opPlanos(o).filter(function(p){return p.id===o.piId})[0]||opPlanos(o)[0]),cns=opCncs(o),X=10,W=190,y=10,s="";
   function T(x,yy,t,pt,op){return qiT(x,yy,t,pt,op)}
   function box(x,yy,w,hh,f){return'<rect x="'+x.toFixed(2)+'" y="'+yy.toFixed(2)+'" width="'+w.toFixed(2)+'" height="'+hh.toFixed(2)+'" fill="'+(f||"none")+'" stroke="#9AA0B4" stroke-width="0.2"/>'}
   s+='<rect x="0" y="0" width="210" height="297" fill="#fff"/>'+box(X,y,W,24)+'<image x="'+(X+2)+'" y="'+(y+3)+'" width="40" height="18" preserveAspectRatio="xMinYMid meet" href="'+fx(E.logoPng)+'"/>'+
@@ -7599,19 +7670,21 @@ function opFicha(o){
   y+=27;
   var g=[["Cliente",o.cliente],["Pedido do cliente",pd.pedidoCliente||"–"],["Pedido interno",o.pedidoNum],["Entrega",o.entrega?dStr(o.entrega):"–"],["Peça / código",o.codigo],["Desenho / rev.",(o.desenho||"–")+(o.rev?" · rev. "+o.rev:"")],["Quantidade",o.qtd+" pç"],["Material",o.material||"–"]];
   g.forEach(function(f,k){var cx=X+(k%4)*47.5,cy=y+Math.floor(k/4)*10;s+=box(cx,cy,47.5,10,k%2?"#fff":"#F6F7FA")+T(cx+1.5,cy+3.6,f[0],6,{c:"#555A70"})+T(cx+1.5,cy+8,qiCut(f[1]||"–",44,8.5),8.5,{bold:true})});
-  y+=21;s+=T(X,y+3.5,"Descrição: "+qiCut(o.descricao||"",180,8),8);y+=7;
+  y+=21;s+=T(X,y+4,"Descrição: "+qiCut(o.descricao||"",140,8),8);
+  var cOp=opCodBar(o,null);vec.push(c128Pdf(cOp,X+W-33,y+0.6,29,8.4));s+=T(X+W-18.5,y+11.3,o.num+" · "+cOp,5.5,{c:"#555A70",a:"middle"})+T(X+W-36,y+5.5,"leitor:",6,{c:"#555A70",a:"end"});y+=14;
   /* material */
-  s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>'+T(X+2,y+4.2,"MATERIAL (requisição e baixa por lote)",8,{bold:true,c:"#fff"});y+=6;
-  var mc=[["Material",52],["Bruto/pç",30],["Necessário",22],["Lote",22],["Corrida",24],["NF",20],["Cert.",20]];var x0=X;mc.forEach(function(c){s+=box(x0,y,c[1],5.5,"#EEF0F6")+T(x0+1.2,y+3.8,c[0],6.5,{bold:true});x0+=c[1]});y+=5.5;
-  (o.materiais||[]).forEach(function(m){var bxs=(m.baixas||[]).length?m.baixas:[{}];bxs.forEach(function(bx,j){x0=X;var v=[j?"":m.desc+(m.cliente?" (cliente)":m.tipo!=="mp"?" (terceiro)":""),j?"":m.medida||"",j?"":cmUn(m.nec,m.un),m.cliente?"NF "+(m.nfCliente||"____"):bx.lote||"________",bx.corrida||(m.cliente||m.tipo!=="mp"?"":"________"),bx.nf||"",bx.lote?(bx.cert?"sim":"não"):""];
+  s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>'+T(X+2,y+4.2,"MATERIAL (lote empenhado)",8,{bold:true,c:"#fff"});y+=6;
+  var mc=[["Material",44],["Bitola · bruto/pç",38],["Necessário",20],["Lote empenhado",30],["Corrida",22],["NF",20],["Cert.",16]];var x0=X;mc.forEach(function(c){s+=box(x0,y,c[1],5.5,"#EEF0F6")+T(x0+1.2,y+3.8,c[0],6.5,{bold:true});x0+=c[1]});y+=5.5;
+  (o.materiais||[]).forEach(function(m){var bxs=mEmps(m).slice(),fl=m.tipo==="mp"&&!m.cliente?mFalta(m):0;if(fl>0.0005)bxs.push({falta:fl});if(!bxs.length)bxs=[{}];bxs.forEach(function(bx,j){x0=X;var v=[j?"":m.desc+(m.cliente?" (cliente)":m.tipo!=="mp"?" (terceiro)":""),j?"":(esBitola(m)?esBitola(m)+" · bruto "+(m.medida||""):m.medida||""),j?"":cmUn(m.nec,m.un),m.cliente?"NF "+(m.nfCliente||"____"):bx.falta?"FALTA "+cmUn(bx.falta,m.un):bx.lote?bx.lote+" ("+cmUn(bx.qtd,m.un)+")":"________",bx.falta?(m.req?m.req.num:""):bx.corrida||(m.cliente||m.tipo!=="mp"?"":"________"),bx.nf||"",bx.lote?(bx.cert?"sim":"não"):""];
     mc.forEach(function(c,ci){s+=box(x0,y,c[1],6.5)+T(x0+1.2,y+4.4,qiCut(v[ci],c[1]-2,7.5),7.5,{bold:ci===3});x0+=c[1]});y+=6.5})});
   y+=4;
   /* roteiro com espaço para o apontamento manual */
   s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>'+T(X+2,y+4.2,"ROTEIRO DE FABRICAÇÃO E APONTAMENTO",8,{bold:true,c:"#fff"});y+=6;
-  var rc=[["Seq.",10],["Operação / instruções",50],["Máquina",34],["Prev.",13],["Operador",25],["Data",16],["Início",12],["Fim",12],["Boas",9],["Ref.",9]];x0=X;rc.forEach(function(c){s+=box(x0,y,c[1],5.5,"#EEF0F6")+T(x0+1,y+3.8,c[0],6.3,{bold:true});x0+=c[1]});y+=5.5;
-  (o.roteiro||[]).forEach(function(r){var mq=mqById(r.maq),rh=11;x0=X;var v=[String(r.seq),r.op,mq?(mq.codigo||"")+" "+(mq.nome||""):r.rec,fmtH((+r.min||0)/60),"","","","","",""];
-    rc.forEach(function(c,ci){s+=box(x0,y,c[1],rh);if(v[ci])s+=T(x0+1,y+4.2,qiCut(v[ci],c[1]-2,7.5),7.5,{bold:ci===1});x0+=c[1]});
-    if(r.obs)s+=T(X+11,y+8.6,qiCut(r.obs,48,6.5),6.5,{c:"#555A70"});if(mq)s+=T(X+61,y+8.6,qiCut(r.rec,32,6),6,{c:"#555A70"});y+=rh});
+  var rc=[["Seq.",9],["Operação / instruções",36],["Máquina",27],["Prev.",11],["Código (leitor)",33],["Operador",20],["Data",14],["Início",11],["Fim",11],["Boas",9],["Ref.",9]];x0=X;rc.forEach(function(c){s+=box(x0,y,c[1],5.5,"#EEF0F6")+T(x0+1,y+3.8,c[0],6.3,{bold:true});x0+=c[1]});y+=5.5;
+  (o.roteiro||[]).forEach(function(r,j){var mq=mqById(r.maq),rh=13;x0=X;var v=[String(r.seq),r.op,mq?(mq.codigo||"")+" "+(mq.nome||""):r.rec,fmtH((+r.min||0)/60),"","","","","","",""];
+    rc.forEach(function(c,ci){s+=box(x0,y,c[1],rh);if(v[ci])s+=T(x0+1,y+4.4,qiCut(v[ci],c[1]-2,7.5),7.5,{bold:ci===1});x0+=c[1]});
+    var cx=X+9+36+27+11,cd=opCodBar(o,j);vec.push(c128Pdf(cd,cx+3.5,y+1.4,26,8.6));s+=T(cx+16.5,y+12,cd,5.5,{c:"#555A70",a:"middle"});
+    if(r.obs)s+=T(X+10,y+9.4,qiCut(r.obs,34,6.3),6.3,{c:"#555A70"});if(mq)s+=T(X+46,y+9.4,qiCut(r.rec,25,6),6,{c:"#555A70"});y+=rh});
   y+=4;
   /* inspeção e programas */
   s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>'+T(X+2,y+4.2,"QUALIDADE",8,{bold:true,c:"#fff"});y+=6;s+=box(X,y,W,22);
@@ -7622,7 +7695,7 @@ function opFicha(o){
   s+=T(X,290,E.razao+" · CNPJ "+E.cnpj+" · "+E.tel,6.5,{c:"#555A70"})+T(X+W,290,o.num+" · página 1",6.5,{c:"#555A70",a:"end"});
   toast("Montando a ficha da OP…");
   s='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 210 297" width="210mm" height="297mm">'+s+'</svg>';
-  svgToJpeg(s,1654).then(function(j){var pdf=pdfJpegPages([j],o.num+" - Ordem de producao");var bl=pdf instanceof Blob?pdf:new Blob([pdf],{type:"application/pdf"});
+  svgToJpeg(s,1654).then(function(j){j.v=vec.join("\n");var pdf=pdfJpegPages([j],o.num+" - Ordem de producao");var bl=pdf instanceof Blob?pdf:new Blob([pdf],{type:"application/pdf"});
     cnSave(String(o.num).replace(/\//g,"-")+"_"+String(o.codigo||"").replace(/[^A-Za-z0-9.\-]+/g,"-")+"_ORDEM-PRODUCAO.pdf",bl);
     opSet(o,{fichaEm:Date.now()},"Ficha da OP impressa.")}).catch(function(){toast("Não consegui montar a ficha.")});
 }
@@ -7630,12 +7703,12 @@ function opFicha(o){
 /* ---------- menu ---------- */
 ["estmp","estmv"].forEach(function(k){MODS[k]={n:k==="estmp"?"Matéria-prima":"Movimentações",fase:"",et:[],txt:"",plan:[]};MX_TABS.push("m-"+k)});
 var _rmCm=renderMod;renderMod=function(box,k){if(k==="comp"){renderComp(box);return}if(k==="estmp"){renderEstMp(box);return}if(k==="estmv"){renderEstMv(box);return}return _rmCm.apply(this,arguments)};
-
 var _stCm=showTab;showTab=function(t){var r=_stCm.apply(this,arguments);
   if(t==="m-comp"){$("crumb").innerHTML="Administrativo › <b>Compras</b>";$("crumb-t").textContent="Compras"}
   if(t==="m-estmp"){$("crumb").innerHTML="Estoque › <b>Matéria-prima</b>";$("crumb-t").textContent="Matéria-prima"}
   if(t==="m-estmv"){$("crumb").innerHTML="Estoque › <b>Movimentações</b>";$("crumb-t").textContent="Movimentações"}
   return r};
+
 
 
 /* v106: gerar a OP direto do pedido interno (coluna Situação) e abrir a OP para requisitar o lote */
@@ -7644,12 +7717,15 @@ var _rpOp=renderPed;renderPed=function(box){
   if(!PD.open)return;var p=PD.list.filter(function(x){return x.id===PD.open})[0];if(!p||p.cancelado)return;ppSub();
   var tb=null;Array.prototype.forEach.call(box.querySelectorAll(".card h3"),function(x){if(x.textContent==="Itens")tb=x.closest(".card")});if(!tb)return;
   var trs=tb.querySelectorAll("tbody tr");
-  (p.itens||[]).forEach(function(x,i){var tr=trs[i];if(!tr)return;var td=tr.lastElementChild,c=itById(x.itemId)||itFind(p.cliente,x.cod),h;
-    if(x.opId){var o=(PP.ops||[]).filter(function(y){return y.id===x.opId})[0];h='<button type="button" class="btn sm" data-x="opver" data-id="'+esc(x.opId)+'">'+esc(x.opNum||"OP")+'</button><small class="hint">'+esc(o?(OP_ST[o.status]||o.status):(x.situacao||""))+'</small>'}
-    else if(!c)h='<span class="hint">cadastre o item</span>';
-    else if(rtOk(c)&&esOk(c))h='<button type="button" class="btn sm pri" data-x="opgerar" data-i="'+i+'">Gerar OP</button>';
-    else h='<span class="stp w">Falta liberar '+(!rtOk(c)&&!esOk(c)?"roteiro e estrutura":!rtOk(c)?"o roteiro":"a estrutura")+'</span>';
-    td.innerHTML='<div class="pd-sit">'+h+'</div>'});
+  var dem=ppDemanda();
+  (p.itens||[]).forEach(function(x,i){var tr=trs[i];if(!tr)return;var td=tr.lastElementChild,c=itById(x.itemId)||itFind(p.cliente,x.cod),h="";
+    var ops=ppOpsDe(p.id,i),r=dem.filter(function(y){return y.p.id===p.id&&y.i===i})[0];
+    ops.forEach(function(o){h+='<button type="button" class="btn sm" data-x="opver" data-id="'+esc(o.id)+'">'+esc(o.num)+' · '+o.qtd+' pç</button><small class="hint">'+esc(OP_ST[o.status]||o.status)+(opFaltaMp(o)?' · falta MP':'')+'</small>'});
+    if(!ops.length&&x.opId&&!r)h+='<button type="button" class="btn sm" data-x="opver" data-id="'+esc(x.opId)+'">'+esc(x.opNum||"OP")+'</button>';
+    if(r){if(!c)h+='<span class="hint">cadastre o item</span>';
+      else if(r.ok)h+='<button type="button" class="btn sm pri" data-x="opgerar" data-i="'+i+'">Gerar OP'+(ops.length?' (faltam '+r.qtd+' pç)':'')+'</button>';
+      else h+='<span class="stp w">Falta liberar '+(!rtOk(c)&&!esOk(c)?"roteiro e estrutura":!rtOk(c)?"o roteiro":"a estrutura")+'</span>'}
+    td.innerHTML='<div class="pd-sit">'+(h||'<span class="hint">'+esc(x.situacao||"")+'</span>')+'</div>'});
   var hn=tb.querySelector("p.hint");if(hn)hn.textContent="Gerar OP: o item precisa ter roteiro e estrutura liberados (Engenharia › Cadastro de itens). A OP abre em seguida para você requisitar o lote do material e imprimir a ficha.";
 };
 function pdOpAbrir(id,tent){var o=(PP.ops||[]).filter(function(x){return x.id===id})[0];if(!o){if((tent||0)<20)setTimeout(function(){pdOpAbrir(id,(tent||0)+1)},300);else toast("OP gerada; abra em PCP › Ordens de produção.");return}
@@ -7659,10 +7735,146 @@ $("v-mx").addEventListener("click",function(e){
   if(b.dataset.x==="opver"){pdOpAbrir(b.dataset.id);return}
   var p=PD.list.filter(function(x){return x.id===PD.open})[0];if(!p)return;var i=+b.dataset.i,r=ppDemanda().filter(function(y){return y.p.id===p.id&&y.i===i})[0];
   if(!r||!r.ok){toast("O item ainda não tem roteiro e estrutura liberados.");return}
-  askDel("Gerar a OP de "+(r.x.cod||"")+"?",r.qtd+" pç · pedido "+p.num+" · entrega "+(r.ent?dStr(r.ent):"–")+". Depois a OP abre para você requisitar o lote do material.",function(){
-    opGerar([r]).then(function(){var n=PD.list.filter(function(x){return x.id===p.id})[0],it=n&&n.itens&&n.itens[i];
-      (function w(k){var q=PD.list.filter(function(x){return x.id===p.id})[0],y=q&&q.itens&&q.itens[i];if(y&&y.opId){pdOpAbrir(y.opId);return}if(k<20)setTimeout(function(){w(k+1)},300)})(0)})});
+  genAbrir(r);
 },true);
+
+/* ===== v107: estrutura com bitola e comprimento separados; PCP emite a OP com quantidade e roteiro ajustáveis;
+   empenho automático; código de barras na ficha e leitura no apontamento ===== */
+
+/* ---------- estrutura: campos de medida por forma ---------- */
+var ES_DIM={"Barra redonda":[["d1","Ø"],["comp","Comp."]],"Barra sextavada":[["d1","Sext."],["comp","Comp."]],"Barra quadrada":[["d1","Lado"],["comp","Comp."]],"Barra chata":[["d1","Larg."],["d2","Esp."],["comp","Comp."]],"Chapa":[["d1","Larg."],["d2","Esp."],["comp","Comp."]],"Tubo":[["d1","Ø ext."],["d2","Ø int."],["comp","Comp."]]};
+function esDimInit(m){var d=ES_DIM[m.forma];if(!d)return;if(d.some(function(k){return String(m[k[0]]||"").trim()}))return;var raw=String(m.medida||"").match(/\d+([.,]\d+)?/g)||[];d.forEach(function(k,i){if(raw[i]!=null)m[k[0]]=raw[i]})}
+function esDimSync(m){var d=ES_DIM[m.forma];if(!d)return;var v=function(k){return String(m[k]||"").trim()},f=m.forma,c=v("comp");
+  var b=/redonda/i.test(f)?"Ø"+v("d1"):/sext/i.test(f)?"Sext. "+v("d1"):/quadrada/i.test(f)?"□"+v("d1"):/tubo/i.test(f)?"Ø"+v("d1")+" x Ø"+v("d2"):v("d1")+" x "+v("d2");
+  m.medida=v("d1")?b+(c?" x "+c:""):""}
+var _esCard7=esCardHtml;esCardHtml=function(e){
+  var s=e.estrutura;(s&&s.mats||[]).forEach(function(m){esDimInit(m)});
+  var h=_esCard7.apply(this,arguments);
+  h=h.replace("<th>Medida do bruto por peça</th>","<th>Bitola e comprimento do bruto (mm)</th>");
+  (s&&s.mats||[]).forEach(function(m,i){var d=ES_DIM[m.forma];if(!d)return;
+    var orig='<input data-es="'+i+':medida" value="'+esc(m.medida||"")+'" placeholder="ex.: Ø55 x 32 ou 160 x 85 x 22">';
+    h=h.replace(orig,'<span class="es-dim">'+d.map(function(k){return'<label><small>'+esc(k[1])+'</small><input data-es="'+i+':'+k[0]+'" value="'+esc(m[k[0]]||"")+'" inputmode="decimal"></label>'}).join("")+'</span>')});
+  return h};
+$("v-mx").addEventListener("input",function(ev){
+  if(S.tab!=="m-itens")return;var t=ev.target,k=t.dataset.es;if(!k)return;var p=k.split(":"),i=+p[0],f=p[1];if(!/^(d1|d2|comp|forma)$/.test(f))return;
+  var x=itById(IT.open);if(!x)return;var e=itEdOf(x),m=e.estrutura&&e.estrutura.mats[i];if(!m)return;
+  if(f==="forma"){esDimInit(m);esDimSync(m);mxRender();return}
+  esDimSync(m);esKgBtn(e,i)},true);
+
+/* ---------- demanda: o que ainda falta abrir em OP (o PCP pode abrir menos ou mais que o pedido) ---------- */
+function ppOpsDe(pid,i){return(PP.ops||[]).filter(function(o){return o.pedidoId===pid&&o.itemIdx===i&&o.status!=="cancelada"})}
+ppDemanda=function(){
+  var rows=[];
+  (PD.list||[]).forEach(function(p){if(p.cancelado||p.etapa==="concluido")return;
+    (p.itens||[]).forEach(function(x,i){var ops=ppOpsDe(p.id,i);if(!ops.length&&x.opId)return;var em=0;ops.forEach(function(o){em+=+o.qtd||0});var rest=(+x.qtd||0)-em;if(rest<=0)return;
+      var it=itById(x.itemId)||itFind(p.cliente,x.cod);
+      rows.push({k:p.id+":"+i,p:p,i:i,x:x,it:it,qtd:rest,qtdPed:+x.qtd||0,emOp:em,ent:x.entrega||p.prazo||"",ok:rtOk(it)&&esOk(it)})})});
+  var pos={};PP.seq.forEach(function(k,n){pos[k]=n});
+  rows.sort(function(a,b){var pa=a.k in pos?pos[a.k]:1e6,pb=b.k in pos?pos[b.k]:1e6;if(pa!==pb)return pa-pb;return(a.ent||"9")<(b.ent||"9")?-1:(a.ent||"9")>(b.ent||"9")?1:0});
+  return rows;
+};
+
+/* ---------- emissão e edição da OP pelo PCP: quantidade e roteiro ajustáveis ---------- */
+var GEN=null;
+function genRot(ops){return(ops||[]).map(function(o,j){return{op:o.op||"",rec:o.rec||"",setup:String(o.setup==null?"":o.setup),ciclo:String(o.ciclo==null?"":o.ciclo),obs:o.obs||"",src:j}})}
+function genAbrir(r){if(!r||!r.ok){toast("O item ainda não tem roteiro e estrutura liberados.");return}
+  GEN={r:r,qtd:String(r.qtd),rot:genRot(r.it.roteiro.ops),base:JSON.stringify(genRot(r.it.roteiro.ops))};genHtml()}
+function genEditar(o){var ini=(o.roteiro||[]).some(function(x){return x.status&&x.status!=="aguardando"});if(ini){toast("A OP já tem operação iniciada: só dá para mudar pelo apontamento.");return}
+  PP.open="";GEN={edit:o.id,o:o,qtd:String(o.qtd),rot:genRot(o.roteiro),base:JSON.stringify(genRot(o.roteiro))};genHtml()}
+function genMin(){var q=+parse(GEN.qtd)||0,t=0;GEN.rot.forEach(function(o){t+=(+parse(o.setup)||0)+(+parse(o.ciclo)||0)*q});return t}
+function genHtml(){
+  var g=GEN,m=$("mx-modal"),rec=rtRecursos(),cab;
+  if(g.edit)cab='<h3>Editar '+esc(g.o.num)+' · '+esc(g.o.codigo)+'</h3><p class="hint">Pedido '+esc(g.o.pedidoNum)+' · '+esc(g.o.cliente)+'. Vale só para esta OP; o roteiro padrão do item (Engenharia) não muda.</p>';
+  else cab='<h3>Emitir OP · '+esc(g.r.x.cod||g.r.it.codigo)+'</h3><p class="hint">'+esc(g.r.it.descricao||"")+'<br>Pedido '+esc(g.r.p.num)+' · '+esc(g.r.p.cliente||"")+' · pedido '+g.r.qtdPed+' pç'+(g.r.emOp?' · já em OP '+g.r.emOp+' pç':'')+' · entrega '+(g.r.ent?dStr(g.r.ent):"–")+'</p>';
+  rec.forEach(function(){});g.rot.forEach(function(o){if(o.rec&&rec.indexOf(o.rec)<0)rec.push(o.rec)});
+  m.innerHTML='<div class="card cm-mod gen-mod" role="dialog" aria-modal="true" aria-label="Ordem de produção">'+cab+
+   '<div class="fgrid"><label class="f"><span class="lb">Quantidade desta OP (pç)</span><input id="gx-qtd" value="'+esc(g.qtd)+'" inputmode="numeric" style="max-width:140px"></label><div class="f"><span class="lb" style="display:block">Tempo previsto</span><b id="gx-min" style="display:block;padding-top:8px">'+fmtH(genMin()/60)+'</b></div></div>'+
+   (g.edit?'':'<p class="hint">Se a quantidade for menor que a do pedido, o restante continua na demanda do PCP para outra OP. Se for maior, o excedente fica para estoque.</p>')+
+   '<h3>Roteiro desta OP</h3><datalist id="gx-ops-l">'+RT_OPS.map(function(x){return'<option value="'+esc(x)+'">'}).join("")+'</datalist>'+
+   '<div class="tbx"><table class="itb rt-tab"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r">Setup (min)</th><th class="r">Ciclo (min/pç)</th><th>Instruções</th><th></th></tr></thead><tbody>'+
+   g.rot.map(function(o,i){return'<tr><td class="mono">'+((i+1)*10)+'</td><td><input data-gr="'+i+':op" list="gx-ops-l" value="'+esc(o.op)+'"></td><td><select data-gr="'+i+':rec"><option value="">escolha…</option>'+rec.map(function(x){return'<option'+(o.rec===x?" selected":"")+'>'+esc(x)+'</option>'}).join("")+'</select></td>'+
+     '<td><input data-gr="'+i+':setup" value="'+esc(o.setup)+'" class="r" style="width:70px" inputmode="decimal"></td><td><input data-gr="'+i+':ciclo" value="'+esc(o.ciclo)+'" class="r" style="width:70px" inputmode="decimal"></td><td><input data-gr="'+i+':obs" value="'+esc(o.obs)+'"></td>'+
+     '<td><span class="qi-mv"><button type="button" class="btn sm" data-gx="up" data-i="'+i+'"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm" data-gx="down" data-i="'+i+'"'+(i<g.rot.length-1?'':' disabled')+'>↓</button>'+ibtn("trash","Tirar fase",'data-gx="rm" data-i="'+i+'"',"danger")+'</span></td></tr>'}).join("")+
+   '</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-gx="add">+ Fase</button>'+(JSON.stringify(g.rot)!==g.base?'<button class="btn sm" type="button" data-gx="reset">Voltar ao roteiro '+(g.edit?"da OP":"do item")+'</button>':'')+'<span class="sp" style="flex:1"></span><button class="btn" type="button" data-gx="n">Cancelar</button><button class="btn pri" type="button" data-gx="y">'+(g.edit?"Gravar alterações":"Emitir OP")+'</button></div></div>';
+  m.hidden=false}
+$("mx-modal").addEventListener("input",function(e){if(!GEN)return;var t=e.target;if(t.id==="gx-qtd"){GEN.qtd=t.value;var b=$("gx-min");if(b)b.textContent=fmtH(genMin()/60);return}
+  var k=t.dataset.gr;if(!k)return;var p=k.split(":");GEN.rot[+p[0]][p[1]]=t.value;if(p[1]==="setup"||p[1]==="ciclo"){var b2=$("gx-min");if(b2)b2.textContent=fmtH(genMin()/60)}},true);
+$("mx-modal").addEventListener("change",function(e){if(!GEN)return;var k=e.target.dataset.gr;if(k){var p=k.split(":");GEN.rot[+p[0]][p[1]]=e.target.value}},true);
+$("mx-modal").addEventListener("click",function(e){if(!GEN)return;var m=$("mx-modal"),b=e.target.closest("[data-gx]");
+  if(e.target===m||(b&&b.dataset.gx==="n")){e.stopImmediatePropagation();var ed=GEN.edit;GEN=null;m.hidden=true;if(ed)opAbrir(ed);else mxRender();return}
+  if(!b)return;e.stopImmediatePropagation();var a=b.dataset.gx,i=+b.dataset.i,R=GEN.rot;
+  if(a==="add"){R.push({op:"",rec:"",setup:"",ciclo:"",obs:"",src:-1});genHtml();return}
+  if(a==="rm"){R.splice(i,1);genHtml();return}
+  if(a==="up"||a==="down"){var j=a==="up"?i-1:i+1;var t=R[i];R[i]=R[j];R[j]=t;genHtml();return}
+  if(a==="reset"){GEN.rot=JSON.parse(GEN.base);genHtml();return}
+  if(a==="y"){var q=parseInt(GEN.qtd,10);if(!(q>0)){toast("Informe a quantidade.");return}if(!R.length){toast("A OP precisa de pelo menos uma fase.");return}
+    var f=R.filter(function(o){return!String(o.op).trim()||!o.rec}).length;if(f){toast(f+(f===1?" fase sem":" fases sem")+" operação ou máquina.");return}
+    b.disabled=true;if(GEN.edit)genGravarEdicao(q);else genEmitir(q)}
+},true);
+function genNota(g,q){var n=[];if(g.r&&q!==g.r.qtd)n.push("quantidade "+q+" pç (demanda "+g.r.qtd+")");if(JSON.stringify(g.rot)!==g.base)n.push("roteiro ajustado: "+g.rot.map(function(o,j){return((j+1)*10)+" "+o.op}).join(", "));return n.join("; ")}
+function genEmitir(q){var g=GEN,r=g.r,it={};for(var k in r.it)it[k]=r.it[k];it.roteiro={status:"liberado",ops:g.rot.map(function(o){return{op:o.op,rec:o.rec,setup:o.setup,ciclo:o.ciclo,obs:o.obs}})};
+  var r2={};for(var k2 in r)r2[k2]=r[k2];r2.qtd=q;r2.it=it;r2.ok=true;var nota=genNota(g,q);
+  OPN.notas[r.p.id+":"+r.i]=nota?"Emitida pelo PCP com "+nota+".":"";OPN.abrir=r.p.id+":"+r.i;
+  GEN=null;$("mx-modal").hidden=true;opGerar([r2])}
+function genGravarEdicao(q){var g=GEN,id=g.edit;
+  PR.db.doc("ordens/"+id).get().then(function(sn){var o=sn.data()||{},old=o.roteiro||[];
+    if(old.some(function(x){return x.status&&x.status!=="aguardando"})){toast("Uma operação foi iniciada enquanto você editava; nada foi gravado.");return}
+    var rot=g.rot.map(function(r,j){var b0=r.src>-1&&old[r.src]?JSON.parse(JSON.stringify(old[r.src])):{status:"aguardando"},s=+parse(r.setup)||0,c=+parse(r.ciclo)||0;
+      if(b0.rec!==r.rec){delete b0.maq;delete b0.fila}b0.seq=(j+1)*10;b0.op=r.op;b0.rec=r.rec;b0.setup=s;b0.ciclo=c;b0.obs=r.obs;b0.min=Math.round((s+c*q)*10)/10;b0.status=b0.status||"aguardando";return b0});
+    var mats=JSON.parse(JSON.stringify(o.materiais||[]));mats.forEach(function(m){m.nec=Math.round(esNec(m,q)*1000)/1000});
+    var hs=0;rot.forEach(function(x){hs+=x.min});var ch=[];if(q!==+o.qtd)ch.push("quantidade "+o.qtd+" → "+q+" pç");if(JSON.stringify(g.rot)!==g.base)ch.push("roteiro: "+rot.map(function(x){return x.seq+" "+x.op}).join(", "));
+    var h=(o.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"PCP alterou a OP: "+(ch.join("; ")||"sem mudanças")+"."});
+    return PR.db.doc("ordens/"+id).update({qtd:q,roteiro:rot,materiais:mats,horas:Math.round(hs/60*100)/100,atualizado:Date.now(),hist:h}).then(function(){GEN=null;$("mx-modal").hidden=true;toast("OP alterada.");return cmAutoEmp([id])}).then(function(){setTimeout(function(){opAbrir(id)},400)})})
+   .catch(function(){toast("Não consegui gravar a OP.")})}
+/* depois de gerar OPs (pelo PCP, pelo pedido ou "gerar todas"): anota o ajuste do PCP, empenha o material e abre a OP */
+var OPN={notas:{},abrir:""};
+var _opGerar7=opGerar;opGerar=function(rows){var antes={};(PP.ops||[]).forEach(function(o){antes[o.id]=1});var abrir=OPN.abrir;OPN.abrir="";
+  var p=_opGerar7.apply(this,arguments);
+  return Promise.resolve(p).then(function(x){
+    (function w(n){var novas=(PP.ops||[]).filter(function(o){return!antes[o.id]});if(novas.length<rows.length&&n<25){setTimeout(function(){w(n+1)},300);return}
+      var ch=Promise.resolve(),alvo="";
+      novas.forEach(function(o){var k=o.pedidoId+":"+o.itemIdx,nt=OPN.notas[k];delete OPN.notas[k];if(abrir&&k===abrir)alvo=o.id;if(nt)ch=ch.then(function(){return opSet(o,{},nt)})});
+      ch.then(function(){return cmAutoEmp(novas.map(function(o){return o.id}))}).then(function(){if(alvo){PP.aba="ops";if(S.tab!=="m-prod")showTab("m-prod");else mxRender();setTimeout(function(){opAbrir(alvo)},250)}})})(0);
+    return x})};
+/* PCP › demanda: "Gerar OP" abre a tela de emissão */
+document.addEventListener("click",function(e){if(S.tab!=="m-prod")return;var b=e.target.closest&&e.target.closest('[data-pp="op"]');if(!b)return;e.stopImmediatePropagation();e.preventDefault();
+  var r=ppDemanda().filter(function(x){return x.k===b.dataset.k})[0];genAbrir(r)},true);
+/* OP: botão editar */
+var _opDet7=opDetHtml;opDetHtml=function(o){var h=_opDet7.apply(this,arguments);
+  var ini=(o.roteiro||[]).some(function(x){return x.status&&x.status!=="aguardando"});
+  if(o.status!=="cancelada"&&o.status!=="concluida"&&!ini)h=h.replace('<button class="btn pri" type="button" data-op3="ficha">','<button class="btn" type="button" data-op7="editar">Editar quantidade e roteiro</button><button class="btn pri" type="button" data-op3="ficha">');
+  return h};
+$("mx-modal").addEventListener("click",function(e){if(!PP.open)return;var b=e.target.closest('[data-op7="editar"]');if(!b)return;e.stopImmediatePropagation();var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(o)genEditar(o)},true);
+/* PCP › Ordens: sinaliza falta de matéria-prima */
+var _rProd7=renderProd;renderProd=function(box){_rProd7.apply(this,arguments);
+  Array.prototype.forEach.call(box.querySelectorAll('.op-r[data-id]'),function(row){var o=PP.ops.filter(function(x){return x.id===row.dataset.id})[0];if(!o||o.status==="cancelada"||o.status==="concluida")return;var c=row.children[5];if(!c)return;
+    c.insertAdjacentHTML("beforeend",opFaltaMp(o)?'<span class="stp b">Falta MP'+(function(){var r=(o.materiais||[]).filter(function(m){return m.req&&m.req.status!=="atendida"&&m.req.status!=="cancelada"})[0];return r?" · "+esc(r.req.num):""})()+'</span>':opMatOk(o)?'<span class="stp g">Material empenhado</span>':'')})};
+
+/* ---------- código de barras (Code 128-C) ---------- */
+var C128="212222 222122 222221 121223 121322 131222 122213 122312 132212 221213 221312 231212 112232 122132 122231 113222 123122 123221 223211 221132 221231 213212 223112 312131 311222 321122 321221 312212 322112 322211 212123 212321 232121 111323 131123 131321 112313 132113 132311 211313 231113 231311 112133 112331 132131 113123 113321 133121 313121 211331 231131 213113 213311 213131 311123 311321 331121 312113 312311 332111 314111 221411 431111 111224 111422 121124 121421 141122 141221 112214 112412 122114 122411 142112 142211 241211 221114 413111 241112 134111 111242 121142 121241 114212 124112 124211 411212 421112 421211 212141 214121 412121 111143 111341 131141 114113 114311 411113 411311 113141 114131 311141 411131 211412 211214 211232 2331112".split(" ");
+function c128Bars(d){var c=[105];for(var i=0;i<d.length;i+=2)c.push(+d.substr(i,2));var s=105;for(var k=1;k<c.length;k++)s+=c[k]*k;c.push(s%103);c.push(106);var b=[];c.forEach(function(x){C128[x].split("").forEach(function(w){b.push(+w)})});return b}
+/* barras como vetor no PDF (nítidas para o leitor): x,y,w,h em mm a partir do canto superior esquerdo da folha A4 */
+function c128Pdf(d,x,y,w,h){var b=c128Bars(d),tot=0;b.forEach(function(v){tot+=v});var mod=w/tot,k=2.834646,out=[],cx=x;
+  b.forEach(function(v,i){if(i%2===0)out.push((cx*k).toFixed(2)+" "+((297-y-h)*k).toFixed(2)+" "+(v*mod*k).toFixed(3)+" "+(h*k).toFixed(2)+" re");cx+=v*mod});return"0 0 0 rg\n"+out.join("\n")+"\nf"}
+function opCodBar(o,j){var m=String(o.num||"").match(/(\d+)\/(\d+)/),n=o.idSeq||(m?+m[1]:0),yy=m?m[2]:pad(new Date().getFullYear()%100,2);return pad(n,4)+pad(+yy%100,2)+pad(j==null?0:j+1,2)}
+function opPorCod(c){c=String(c||"").replace(/\D/g,"");if(c.length!==8)return null;var n=+c.slice(0,4),yy=c.slice(4,6),j=+c.slice(6,8);
+  var o=(PP.ops||[]).filter(function(x){var m=String(x.num||"").match(/(\d+)\/(\d+)/);return(x.idSeq===n||(m&&+m[1]===n))&&m&&pad(+m[2]%100,2)===yy})[0];return o?{o:o,j:j?j-1:null}:null}
+
+/* ---------- apontamento: leitor de código de barras (USB/Bluetooth funciona como teclado) ---------- */
+function apFila(id){var f=mqFila(id);if(MQ.apSel){var k=-1;f.forEach(function(t,i){if(t.k===MQ.apSel)k=i});if(k>0){var t=f.splice(k,1)[0];f.unshift(t)}else if(k<0)MQ.apSel=""}return f}
+var _rApt7=renderApt;renderApt=function(box){_rApt7.apply(this,arguments);var top=box.querySelector(".ap-top");if(!top)return;
+  top.insertAdjacentHTML("beforeend",'<label class="ap-scan"><span>Ler código da ficha</span><input id="ap-scan" inputmode="none" autocomplete="off" placeholder="aponte o leitor"></label>');
+  setTimeout(function(){var i=$("ap-scan"),a=document.activeElement;if(i&&$("mx-modal").hidden&&(!a||a===document.body||a.id==="ap-scan"))try{i.focus({preventScroll:true})}catch(e){}},50)};
+$("v-mx").addEventListener("keydown",function(e){if(S.tab!=="m-apt"||e.target.id!=="ap-scan"||e.key!=="Enter")return;e.preventDefault();var v=e.target.value;e.target.value="";apLer(v)},true);
+function apLer(v){var r=opPorCod(v);if(!r){toast("Código não reconhecido: "+v);return}var o=r.o,j=r.j,rot=o.roteiro||[];
+  if(j==null){j=-1;rot.forEach(function(x,k){if(j<0&&x.status!=="concluida")j=k})}
+  var x=rot[j];if(!x){toast(o.num+": operação não encontrada.");return}if(x.status==="concluida"){toast(o.num+" · "+x.seq+" "+x.op+" já foi concluída.");return}
+  if(o.status==="cancelada"||o.status==="concluida"){toast(o.num+" está "+(OP_ST[o.status]||o.status)+".");return}
+  var k=o.id+":"+j;
+  if(x.maq===MQ.posto){MQ.apSel=k;mxRender();toast(o.num+" · "+x.seq+" "+x.op);return}
+  var ma=mqById(x.maq),pt=mqById(MQ.posto);
+  askDel("Trazer a operação para este posto?",o.num+" · "+x.seq+" "+x.op+(ma?" está programada para "+ma.nome:" ainda não foi programada")+". Passar para "+(pt?pt.nome:"este posto")+"?",function(){
+    opPatchRot(o,j,{maq:MQ.posto,fila:0},"Operação "+x.seq+" "+x.op+" passada para "+(pt?pt.nome:"o posto")+" pela leitura da ficha.").then(function(){MQ.apSel=k;mxRender()})})}
 
 })();
 </script>

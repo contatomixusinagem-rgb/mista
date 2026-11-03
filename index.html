@@ -1199,6 +1199,49 @@ body.sd-min .side.peek{width:236px;padding:24px 14px!important;overflow:auto;box
 .pp-atr{color:var(--bad,#B42318);font-weight:600}.pp-prox{color:#9A6700;font-weight:600}
 .lnk{background:none;border:0;padding:0;color:var(--ink);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
 #mx-modal .card.op-det{width:min(1000px,96vw)!important;max-width:min(1000px,96vw)!important;max-height:92vh;overflow:auto}
+
+/* ===== v100: máquinas, programação, apontamento e monitor ===== */
+.mq-r{display:grid;grid-template-columns:100px minmax(200px,2fr) 170px 170px 80px 70px 130px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;min-width:900px;cursor:pointer}
+.mq-r:hover{background:var(--surface2)}
+.mq-r.fh,.pg-r.fh{cursor:default;border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.mq-r small,.pg-r small{display:block;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg-r{display:grid;grid-template-columns:110px minmax(180px,1.6fr) minmax(150px,1fr) 50px 70px 110px minmax(220px,1.4fr);gap:10px;align-items:center;padding:8px 14px;border-top:1px solid var(--line);font-size:13px;min-width:1050px}
+.pg-r select{width:100%;min-height:34px}
+.pg-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:12px}
+.pg-col{display:flex;flex-direction:column;gap:8px}
+.pg-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pg-h small{flex:1 1 100%;color:var(--muted)}
+.pg-t{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;font-size:13px;background:var(--surface)}
+.pg-t small{color:var(--muted)}.pg-t.execucao{border-color:#1E7A4A;background:#E8F6EE}.pg-t.pausa{border-color:#C98A00;background:#FFF6DD}.pg-t.bloq{opacity:.7}
+.ap-postos{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ap-big{min-height:90px;border-radius:14px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding:14px 18px;cursor:pointer;font:inherit;text-align:left}
+.ap-big b{font-size:18px}.ap-big small{color:var(--muted)}
+.ap-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.ap-top small{display:block;color:var(--muted)}.ap-top b{font-size:22px}
+.ap-card{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.ap-card.execucao{border-color:#1E7A4A}.ap-card.pausa{border-color:#C98A00}
+.ap-op{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.ap-op b{font-size:26px}.ap-op span:last-child{flex:1 1 100%;color:var(--muted);font-size:16px}
+.ap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.ap-grid small{display:block;color:var(--muted)}.ap-grid b{font-size:20px}
+.ap-obs{background:var(--surface2);border-radius:10px;padding:10px 12px;font-size:15px}
+.ap-bar,.mon-bar{height:12px;border-radius:6px;background:var(--surface2);overflow:hidden}.ap-bar i,.mon-bar i{display:block;height:100%;background:#1E7A4A}.mon-bar.atr i{background:#EC3237}
+.ap-msg{font-weight:600;color:#9A6700}
+.ap-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.ap-b{min-height:72px;border-radius:14px;border:0;font:700 22px Inter,system-ui,sans-serif;color:#fff;cursor:pointer}
+.ap-b.ini{background:#1E7A4A}.ap-b.pausa{background:#C98A00}.ap-b.fim{background:#010066}.ap-b:disabled{opacity:.4;cursor:not-allowed}
+.ap-prox{margin-top:14px;display:flex;flex-direction:column;gap:6px;font-size:14px}.ap-prox small{color:var(--muted)}
+.ap-vazio{padding:60px 20px;text-align:center;font-size:20px;color:var(--muted);background:var(--surface);border-radius:18px}
+#mx-modal .card.ap-mod{width:min(560px,94vw)!important}
+.ap-mots{display:flex;flex-direction:column;gap:8px;margin:8px 0}.ap-mot{display:flex;gap:10px;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;font-size:16px}
+.mon{background:#070B2E;color:#F3F4FF;border-radius:18px;padding:18px;min-height:70vh}
+.mon-top{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-bottom:14px}.mon-top h2{margin:0;color:#fff}.mon-top small{color:#A9AEDB}
+.mon-k{display:flex;gap:10px;margin-left:auto}.mon-k div{background:#10164A;border-radius:12px;padding:8px 14px;display:flex;flex-direction:column}.mon-k b{font-size:22px}.mon-k b.r{color:#FF6A6D}.mon-k span{font-size:12px;color:#A9AEDB}
+.mon-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.mon-c{background:#10164A;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;border-left:6px solid #5A6199}
+.mon-c.prod{border-left-color:#2FBF71}.mon-c.pausa{border-left-color:#F5B700}.mon-c.esp{border-left-color:#7E86C7}.mon-c.man{border-left-color:#EC3237}.mon-c.par{border-left-color:#3A4170;opacity:.7}
+.mon-h{display:flex;justify-content:space-between;gap:8px}.mon-h b{font-size:16px}.mon-h span{font-size:12px;color:#A9AEDB}
+.mon-s{font-weight:700;font-size:14px}.mon-c.prod .mon-s{color:#2FBF71}.mon-c.pausa .mon-s{color:#F5B700}.mon-c.man .mon-s{color:#FF6A6D}
+.mon-op small{display:block;color:#A9AEDB;font-size:12px}.mon-op .idtag{background:#1C2463;color:#fff}
+.mon-bar{background:#1C2463}.mon-t{display:flex;justify-content:space-between;font-size:12px;color:#C9CDF2}.mon-f{font-size:12px;color:#A9AEDB}
+.mon small,.mon .mon-op small{color:#B9BEEA!important}
+.mon:fullscreen{border-radius:0;padding:28px;overflow:auto}
 </style>
 
 <div class="shell">
@@ -1232,7 +1275,7 @@ body.sd-min .side.peek{width:236px;padding:24px 14px!important;overflow:auto;box
 <button type="button" class="mod" data-tog2="eng" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l6-6M14 4l6 6-9 9H5v-6z"/></svg><span>Engenharia</span><svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
 <div class="subs" id="s-eng"><nav class="tabs" role="tablist" aria-label="Engenharia"><button type="button" role="tab" id="t-cnc" aria-selected="false" data-mtab="m-cnc">Programas CNC</button><button type="button" role="tab" id="t-meng" aria-selected="false" data-mtab="m-eng">Pedidos em engenharia</button></nav></div>
 <button type="button" class="mod" data-m="prod"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg><span>Produção</span><span class="tagf">F3</span></button>
-<button type="button" class="mod" data-m="qual"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Qualidade</span><span class="tagf">F4</span></button><button type="button" role="tab" id="t-qpi" aria-selected="false" data-mtab="m-qpi" hidden>Planos de inspeção</button><button type="button" role="tab" id="t-itens" aria-selected="false" data-mtab="m-itens" hidden>Cadastro de itens</button>
+<button type="button" class="mod" data-m="qual"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Qualidade</span><span class="tagf">F4</span></button><button type="button" role="tab" id="t-qpi" aria-selected="false" data-mtab="m-qpi" hidden>Planos de inspeção</button><button type="button" role="tab" id="t-itens" aria-selected="false" data-mtab="m-itens" hidden>Cadastro de itens</button><button type="button" role="tab" id="t-maq" aria-selected="false" data-mtab="m-maq" hidden>Máquinas</button><button type="button" role="tab" id="t-prog" aria-selected="false" data-mtab="m-prog" hidden>Programação de máquinas</button><button type="button" role="tab" id="t-apt" aria-selected="false" data-mtab="m-apt" hidden>Apontamentos</button><button type="button" role="tab" id="t-mon" aria-selected="false" data-mtab="m-mon" hidden>Monitor de produção</button>
 <button type="button" class="mod" data-m="exp"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg><span>Expedição</span><span class="tagf">F2</span></button>
 <button type="button" class="mod" data-m="pos"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.3A8 8 0 1121 12z"/></svg><span>Pós-venda</span><span class="tagf">F5</span></button>
 <button type="button" class="mod" data-m="dir"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Direção</span><span class="tagf">F5</span></button>
@@ -5269,7 +5312,7 @@ window.__regOpen=function(m){msOpenMod(m)};
 })();
 
 /* ===== v81: estrutura de 7 módulos (config/modulos), menu novo, Início do usuário e perfis (26/10/2026) ===== */
-var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Primeira peça"}, {"nome": "Inspeções", "tela": ".mod[data-m=\"qual\"]"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas"}, {"nome": "Máquinas"}, {"nome": "Apontamentos"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Matéria-prima"}, {"nome": "Peças acabadas"}, {"nome": "Movimentações"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários"}, {"nome": "Permissões"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeções", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
+var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Primeira peça"}, {"nome": "Inspeções", "tela": ".mod[data-m=\"qual\"]"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas", "tela": "#t-prog"}, {"nome": "Monitor de produção", "tela": "#t-mon"}, {"nome": "Apontamentos", "tela": "#t-apt"}, {"nome": "Máquinas", "tela": "#t-maq"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Matéria-prima"}, {"nome": "Peças acabadas"}, {"nome": "Movimentações"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários"}, {"nome": "Permissões"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeções", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
 var MSM={def:MODS_DEF,gestor:false,open:null,cur:"",user:null,nome:""};
 function msValid(d){return d&&Array.isArray(d.modulos)&&d.modulos.length&&d.modulos.every(function(m){return m&&m.nome&&Array.isArray(m.areas)})}
 function msAreas(m){return(m.areas||[]).filter(function(a){return!a.gestor||MSM.gestor})}
@@ -5313,7 +5356,7 @@ var _stMs=showTab;showTab=function(t){
   return r;
 };
 function msFind(t){
-  var T={ini:"#t-ini",sv:"#t-pc",in:"#t-pc",itens:"#t-pc",prop:"#t-pc",ped:"#t-ped","m-comp":"#t-mcomp","m-fin":"#t-mfin","m-cnc":"#t-cnc","m-qpi":"#t-qpi","m-itens":"#t-itens","m-eng":"#t-meng",par:"#t-par",cap:".mod[data-cap]","m-prod":'.mod[data-m="prod"]',"m-qual":'.mod[data-m="qual"]'};
+  var T={ini:"#t-ini",sv:"#t-pc",in:"#t-pc",itens:"#t-pc",prop:"#t-pc",ped:"#t-ped","m-comp":"#t-mcomp","m-fin":"#t-mfin","m-cnc":"#t-cnc","m-qpi":"#t-qpi","m-itens":"#t-itens","m-maq":"#t-maq","m-prog":"#t-prog","m-apt":"#t-apt","m-mon":"#t-mon","m-eng":"#t-meng",par:"#t-par",cap:".mod[data-cap]","m-prod":'.mod[data-m="prod"]',"m-qual":'.mod[data-m="qual"]'};
   var sel=t==="cad"?({cli:"#t-cli",forn:"#t-forn",emp:"#t-emp"}[PD.cadTab]||""):T[t];if(!sel)return"";
   var hit="";MSM.def.modulos.forEach(function(m){(m.areas||[]).forEach(function(a){if(!hit&&a.tela===sel&&(!a.gestor||MSM.gestor))hit=m.nome+"|"+a.nome})});return hit;
 }
@@ -7039,6 +7082,180 @@ var _stPcp=showTab;showTab=function(t){var r=_stPcp.apply(this,arguments);
   if(t==="m-eng"){$("crumb").innerHTML="Engenharia › <b>Roteiros e estruturas</b>";$("crumb-t").textContent="Roteiros e estruturas"}
   if(t==="m-prod"){$("crumb").innerHTML="PCP › <b>Ordens de produção</b>";$("crumb-t").textContent="Ordens de produção"}
   return r};
+
+
+/* ===== v100: PCP › Máquinas (postos de trabalho), Programação de máquinas, Apontamentos (tablet do posto) e Monitor de produção =====
+   Roteiro diz o TIPO de máquina; a programação escolhe a máquina; o operador aponta no tablet; o monitor mostra ao vivo. */
+var MQ_TIPOS=["Torno CNC","Centro de usinagem","Torno mecânico (convencional)","Fresadora","Serra de fita","Bancada (rebarba/montagem)","Inspeção de qualidade","Terceiro"];
+var MQ_ST={ativa:"Ativa",manutencao:"Em manutenção",parada:"Parada"};
+var AP_MOT=["Setup / preparação","Aguardando material","Quebra / troca de ferramenta","Aguardando inspeção","Manutenção da máquina","Intervalo / refeição","Fim do turno","Falta de programa CNC","Outro"];
+var MQ={list:[],sub:false,ed:null,edId:"",posto:"",tick:null};
+try{MQ.posto=localStorage.getItem("mista-posto")||""}catch(e){}
+function mqSub(){
+  if(MQ.sub||!PR.db)return;MQ.sub=true;
+  PR.db.collection("maquinas").onSnapshot(function(sn){MQ.list=sn.docs.map(function(x){var o=x.data()||{},c={};for(var k in o)c[k]=o[k];c.id=x.id;return c}).sort(function(a,b){return(a.emp||"")<(b.emp||"")?-1:(a.emp||"")>(b.emp||"")?1:(a.ordem||99)-(b.ordem||99)});mqRefresh()},function(){});
+}
+(function wmq(){if(typeof PR!=="undefined"&&PR&&PR.db){mqSub();return}setTimeout(wmq,700)})();
+function mqRefresh(){if(/^m-(maq|prog|apt|mon|prod)$/.test(S.tab)&&!MQ.edId&&!$("ap-modal"))mxRender()}
+function mqById(id){return MQ.list.filter(function(m){return m.id===id})[0]||null}
+function mqTipoDe(rec){var r=String(rec||"");for(var i=0;i<MQ_TIPOS.length;i++)if(r===MQ_TIPOS[i])return r;if(/terceiro/i.test(r))return"Terceiro";return r}
+/* operações de todas as OPs abertas, com estado calculado */
+function apMinReal(o,now){var m=+o.minReal||0;if(o.status==="execucao"&&o.ultIni)m+=(now-o.ultIni)/60000;return m}
+function mqTarefas(){
+  var out=[],now=Date.now();
+  (PP.ops||[]).forEach(function(op){if(op.status==="cancelada"||op.status==="concluida")return;
+    (op.roteiro||[]).forEach(function(r,j){var ant=j?op.roteiro[j-1]:null;
+      out.push({op:op,j:j,r:r,k:op.id+":"+j,maq:r.maq||"",fila:r.fila||0,st:r.status||"aguardando",liberada:!ant||ant.status==="concluida"||mqTipoDe(ant.rec)==="Terceiro"&&ant.status!=="aguardando",real:apMinReal(r,now)})})});
+  return out;
+}
+function mqFila(id){return mqTarefas().filter(function(t){return t.maq===id&&t.st!=="concluida"}).sort(function(a,b){var ea=a.st==="execucao"||a.st==="pausa"?0:1,eb=b.st==="execucao"||b.st==="pausa"?0:1;if(ea!==eb)return ea-eb;return(a.fila||1e9)-(b.fila||1e9)||(a.op.prio||0)-(b.op.prio||0)})}
+function mqCarga(id){var h=0;mqFila(id).forEach(function(t){h+=Math.max(0,(+t.r.min||0)-t.real)/60});return h}
+/* lê a OP atual do banco antes de mexer (várias mudanças seguidas na mesma OP não se atropelam) */
+var OP_FILA=Promise.resolve();
+function opPatchRot(op0,j,patch,txt){var run=function(){return PR.db.doc("ordens/"+op0.id).get().then(function(sn){var cur=sn&&sn.exists?sn.data():op0,op={};for(var k0 in cur)op[k0]=cur[k0];op.id=op0.id;return opPatchRot2(op,j,patch,txt)})};OP_FILA=OP_FILA.then(run,run);return OP_FILA}
+function opPatchRot2(op,j,patch,txt){var rot=JSON.parse(JSON.stringify(op.roteiro||[]));for(var k in patch){if(patch[k]===undefined)delete rot[j][k];else rot[j][k]=patch[k]}var p={roteiro:rot};
+  var algum=rot.some(function(x){return x.status&&x.status!=="aguardando"}),tudo=rot.every(function(x){return x.status==="concluida"});
+  if(tudo&&op.status!=="concluida")p.status="concluida";else if(algum&&(op.status==="planejada"||op.status==="liberada"))p.status="producao";
+  return opSet(op,p,txt).then(function(){if(p.status==="concluida")return opFechaPedido(op)})}
+function opFechaPedido(op){var p=PD.list.filter(function(x){return x.id===op.pedidoId})[0];if(!p)return;var its=JSON.parse(JSON.stringify(p.itens||[])),x=its[op.itemIdx];if(!x||x.opId!==op.id)return;x.situacao="produzido ("+op.num+")";
+  var patch={itens:its},txt=op.num+" concluída: item "+(x.cod||"")+" produzido.";
+  if(its.every(function(y){return/^produzido/.test(y.situacao||"")})&&(p.etapa==="os"||p.etapa==="producao"||p.etapa==="compras")){patch.etapa="qualidade";txt+=" Todos os itens produzidos: etapa → Qualidade."}
+  return pdSet(p,patch,txt)}
+
+/* ---------- PCP › Máquinas ---------- */
+function renderMaq(box){
+  mqSub();
+  if(MQ.edId){var m=MQ.edId==="novo"?{}:mqById(MQ.edId);if(m||MQ.edId==="novo"){mqEdHtml(box,m||{});return}MQ.edId=""}
+  var porEmp={MIX:[],STAR:[]};MQ.list.forEach(function(m){(porEmp[m.emp]||(porEmp[m.emp]=[])).push(m)});
+  box.innerHTML='<div class="mh"><div><h2>Máquinas e postos de trabalho</h2><p>Cada máquina ou setor é um posto: recebe as operações da programação, aparece no monitor e tem a sua tela de apontamento no tablet. O tipo do posto liga com o roteiro do item.</p></div><div class="acts2"><button class="btn sm pri" type="button" data-mq="novo">+ Posto</button></div></div>'+
+   Object.keys(porEmp).filter(function(k){return porEmp[k].length}).map(function(k){return'<div class="card"><h3>'+esc(k)+' · '+porEmp[k].length+' postos</h3><div class="tbx"><div class="mq-r fh"><span>Código</span><span>Posto</span><span>Tipo</span><span>Comando CNC</span><span class="r">Horas/dia</span><span class="r">Fila</span><span>Situação</span></div>'+
+     porEmp[k].map(function(m){var c=cnCmd(m.comando);return'<div class="mq-r" data-mq="abrir" data-id="'+esc(m.id)+'" title="Editar"><span class="idtag">'+esc(m.codigo||"")+'</span><span><b>'+esc(m.nome||"")+'</b><small>'+esc(m.obs||"")+'</small></span><span>'+esc(m.tipo||"")+'</span><span>'+esc(c?c.n:"–")+'</span><span class="r mono">'+esc(m.horasDia||"–")+'</span><span class="r mono">'+fmtH(mqCarga(m.id))+'</span><span><span class="stp '+(m.status==="ativa"?"g":m.status==="manutencao"?"b":"n")+'">'+esc(MQ_ST[m.status]||"Ativa")+'</span></span></div>'}).join("")+'</div></div>'}).join("")+
+   (MQ.list.length?'':'<div class="mx-empty">Nenhum posto cadastrado.</div>');
+}
+function mqEdHtml(box,m){
+  var e=MQ.ed||(MQ.ed={codigo:m.codigo||"",nome:m.nome||"",tipo:m.tipo||"Torno CNC",emp:m.emp||"MIX",comando:m.comando||"",horasDia:m.horasDia||"18",status:m.status||"ativa",obs:m.obs||"",ordem:m.ordem||99});
+  function inp(k,l,ph){return'<label class="f"><span class="lb">'+l+'</span><input data-mqf="'+k+'" value="'+esc(e[k])+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'></label>'}
+  box.innerHTML='<div class="mx-bar"><button class="btn sm" type="button" data-mq="voltar">‹ Máquinas</button><span class="sp"></span>'+(m.id?'<button class="btn danger" type="button" data-mq="del" data-id="'+esc(m.id)+'">Excluir</button>':'')+'</div>'+
+   '<div class="card"><h3>'+(m.id?"Editar posto":"Novo posto")+'</h3><div class="it-g">'+inp("codigo","Código","ex.: MIX-TC03")+inp("nome","Nome","ex.: Torno CNC GL280 #1")+
+   '<label class="f"><span class="lb">Tipo (liga com o roteiro)</span><select data-mqf="tipo">'+MQ_TIPOS.map(function(t){return'<option'+(e.tipo===t?" selected":"")+'>'+esc(t)+'</option>'}).join("")+'</select></label>'+
+   '<label class="f"><span class="lb">Empresa</span><select data-mqf="emp"><option'+(e.emp!=="STAR"?" selected":"")+'>MIX</option><option'+(e.emp==="STAR"?" selected":"")+'>STAR</option></select></label>'+
+   '<label class="f"><span class="lb">Comando CNC</span><select data-mqf="comando"><option value="">–</option>'+CN_CMDS.map(function(c){return'<option value="'+c.k+'"'+(e.comando===c.k?" selected":"")+'>'+esc(c.n)+'</option>'}).join("")+'</select></label>'+
+   inp("horasDia","Horas disponíveis por dia","ex.: 18 (2 turnos de 9 h)")+
+   '<label class="f"><span class="lb">Situação</span><select data-mqf="status">'+Object.keys(MQ_ST).map(function(k){return'<option value="'+k+'"'+(e.status===k?" selected":"")+'>'+MQ_ST[k]+'</option>'}).join("")+'</select></label>'+inp("obs","Observações")+
+   '</div><div class="acts2"><button class="btn pri" type="button" data-mq="salvar">Salvar</button><button class="btn" type="button" data-mq="voltar">Cancelar</button></div></div>';
+}
+$("v-mx").addEventListener("input",function(ev){if(S.tab!=="m-maq"||!MQ.ed)return;var k=ev.target.dataset.mqf;if(k)MQ.ed[k]=ev.target.value});
+$("v-mx").addEventListener("click",function(ev){
+  if(S.tab!=="m-maq")return;var b=ev.target.closest("[data-mq]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.mq;
+  if(a==="novo"){MQ.edId="novo";MQ.ed=null;mxRender();return}
+  if(a==="abrir"){MQ.edId=b.dataset.id;MQ.ed=null;mxRender();return}
+  if(a==="voltar"){MQ.edId="";MQ.ed=null;mxRender();return}
+  if(a==="salvar"){var e=MQ.ed;if(!e||!String(e.nome).trim()){toast("Dê um nome ao posto.");return}var d={codigo:e.codigo,nome:e.nome,tipo:e.tipo,emp:e.emp,comando:e.comando,horasDia:e.horasDia,status:e.status,obs:e.obs,ordem:+e.ordem||99,atualizado:Date.now()};
+    var id=MQ.edId==="novo"?"mq-"+normTxt(e.nome).replace(/[^a-z0-9]+/g,"-").slice(0,30)+"-"+rid().slice(0,3):MQ.edId;
+    PR.db.doc("maquinas/"+id)[MQ.edId==="novo"?"set":"update"](d).then(function(){MQ.edId="";MQ.ed=null;toast("Posto salvo.");mxRender()}).catch(function(){toast("Não consegui salvar.")});return}
+  if(a==="del"){var m=mqById(b.dataset.id),n=mqFila(b.dataset.id).length;askDel("Excluir o posto "+(m&&m.nome||"")+"?",n?"Ele tem "+n+" operações na fila; elas voltam para programar.":"Esta ação não pode ser desfeita.",function(){
+    var pr=Promise.resolve();mqFila(b.dataset.id).forEach(function(t){pr=pr.then(function(){return opPatchRot(t.op,t.j,{maq:undefined,fila:undefined},"Operação "+t.r.seq+" saiu do posto excluído.")})});
+    pr.then(function(){return PR.db.doc("maquinas/"+b.dataset.id).delete()}).then(function(){MQ.edId="";MQ.ed=null;toast("Posto excluído.");mxRender()}).catch(function(){toast("Não consegui excluir.")})});return}
+},true);
+
+/* ---------- PCP › Programação de máquinas ---------- */
+function renderProg(box){
+  mqSub();ppSub();
+  var ts=mqTarefas(),sem=ts.filter(function(t){return!t.maq&&t.st!=="concluida"&&mqTipoDe(t.r.rec)!=="Terceiro"}),terc=ts.filter(function(t){return mqTipoDe(t.r.rec)==="Terceiro"&&t.st!=="concluida"});
+  var postos=MQ.list.filter(function(m){return m.tipo!=="Terceiro"});
+  box.innerHTML='<div class="mh"><div><h2>Programação de máquinas</h2><p>As operações das OPs chegam pelo tipo de máquina do roteiro. Escolha o posto (a lista mostra a fila de cada um em horas) e ordene a fila de cada máquina. O operador vê essa fila no tablet.</p></div><span class="fase">PCP</span></div>'+
+   '<div class="card"><div class="mx-bar"><h3 style="margin:0">A programar ('+sem.length+')</h3><span class="sp"></span>'+(sem.length?'<button class="btn sm pri" type="button" data-pg="auto">Distribuir automático (menor fila)</button>':'')+'</div>'+
+   (sem.length?'<div class="tbx"><div class="pg-r fh"><span>OP</span><span>Item</span><span>Operação</span><span class="r">Qtd</span><span class="r">Previsto</span><span>Entrega</span><span>Posto</span></div>'+sem.map(function(t){var tipo=mqTipoDe(t.r.rec),cand=postos.filter(function(m){return m.tipo===tipo&&m.status!=="parada"}).sort(function(a,b){return(a.emp===t.op.emp?0:1)-(b.emp===t.op.emp?0:1)||mqCarga(a.id)-mqCarga(b.id)});
+     return'<div class="pg-r"><span class="idtag">'+esc(t.op.num)+'</span><span><b>'+esc(t.op.codigo)+'</b><small>'+esc(t.op.descricao||"")+'</small></span><span>'+esc(t.r.seq+" "+t.r.op)+'<small>'+esc(t.r.rec)+'</small></span><span class="r mono">'+esc(t.op.qtd)+'</span><span class="r mono">'+fmtH((+t.r.min||0)/60)+'</span><span>'+ppEnt(t.op.entrega)+'</span>'+
+       '<span><select data-pgsel="'+esc(t.k)+'"><option value="">'+(cand.length?"escolha o posto…":"nenhum posto do tipo "+esc(tipo))+'</option>'+cand.map(function(m){return'<option value="'+esc(m.id)+'">'+esc(m.nome)+' ('+esc(m.emp)+') · fila '+fmtH(mqCarga(m.id))+'</option>'}).join("")+'</select></span></div>'}).join("")+'</div>':'<p class="hint">Nada para programar. As operações chegam aqui quando o PCP gera OPs.</p>')+'</div>'+
+   '<div class="pg-cols">'+postos.map(function(m){var f=mqFila(m.id),h=mqCarga(m.id),dias=(+m.horasDia||0)>0?h/(+m.horasDia):0;
+     return'<div class="card pg-col"><div class="pg-h"><b>'+esc(m.nome)+'</b><span class="emp-tag" data-e="'+esc(m.emp)+'">'+esc(m.emp)+'</span><small>'+esc(m.tipo)+' · fila '+fmtH(h)+(dias?" · "+nf(dias,1)+" dia(s)":"")+'</small></div>'+
+      (f.length?f.map(function(t,i){return'<div class="pg-t '+t.st+(t.liberada?'':' bloq')+'"><div><span class="idtag">'+esc(t.op.num)+'</span> <b>'+esc(t.op.codigo)+'</b></div><small>'+esc(t.r.seq+" "+t.r.op+" · "+t.op.qtd+" pç · "+fmtH((+t.r.min||0)/60))+(t.st==="execucao"?" · produzindo":t.st==="pausa"?" · pausada":!t.liberada?" · espera a operação anterior":"")+'</small>'+
+        '<span class="qi-mv"><button type="button" class="btn sm" data-pg="up" data-k="'+esc(t.k)+'" data-m="'+esc(m.id)+'"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm" data-pg="down" data-k="'+esc(t.k)+'" data-m="'+esc(m.id)+'"'+(i<f.length-1?'':' disabled')+'>↓</button>'+(t.st==="aguardando"?'<button type="button" class="btn sm" data-pg="tirar" data-k="'+esc(t.k)+'">Tirar</button>':'')+'</span></div>'}).join(""):'<p class="hint">Fila vazia.</p>')+'</div>'}).join("")+'</div>'+
+   (terc.length?'<div class="card"><h3>Operações em terceiros ('+terc.length+')</h3><ul class="plan">'+terc.map(function(t){return'<li>'+esc(t.op.num+" · "+t.op.codigo+" · "+t.r.seq+" "+t.r.op+" ("+t.r.rec+")")+'</li>'}).join("")+'</ul><p class="hint">Saída e retorno de terceiros entram com Compras (MRP).</p></div>':'');
+}
+function pgTarefa(k){return mqTarefas().filter(function(t){return t.k===k})[0]}
+function pgPoe(t,maqId){var f=mqFila(maqId),max=0;f.forEach(function(x){if((x.fila||0)>max)max=x.fila});var m=mqById(maqId);return opPatchRot(t.op,t.j,{maq:maqId,fila:max+10},"Operação "+t.r.seq+" "+t.r.op+" programada no posto "+(m?m.nome:maqId)+".")}
+$("v-mx").addEventListener("change",function(ev){if(S.tab!=="m-prog")return;var k=ev.target.dataset.pgsel;if(!k||!ev.target.value)return;ev.stopPropagation();var t=pgTarefa(k);if(t)pgPoe(t,ev.target.value).then(function(){toast("Programado.")})},true);
+$("v-mx").addEventListener("click",function(ev){
+  if(S.tab!=="m-prog")return;var b=ev.target.closest("[data-pg]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.pg;
+  if(a==="auto"){var ts=mqTarefas().filter(function(t){return!t.maq&&t.st!=="concluida"&&mqTipoDe(t.r.rec)!=="Terceiro"}),carga={},n=0,pr=Promise.resolve();MQ.list.forEach(function(m){carga[m.id]=mqCarga(m.id)});
+    ts.sort(function(x,y){return(x.op.prio||0)-(y.op.prio||0)||x.j-y.j}).forEach(function(t){var tipo=mqTipoDe(t.r.rec),c=MQ.list.filter(function(m){return m.tipo===tipo&&m.status==="ativa"}).sort(function(x,y){return(x.emp===t.op.emp?0:1)-(y.emp===t.op.emp?0:1)||carga[x.id]-carga[y.id]})[0];if(!c)return;carga[c.id]+=(+t.r.min||0)/60;n++;
+      pr=pr.then(function(){var tt=pgTarefa(t.k);return tt?pgPoe(tt,c.id):null})});
+    pr.then(function(){toast(n?n+" operações distribuídas.":"Nenhum posto ativo do tipo das operações.")});return}
+  var t=pgTarefa(b.dataset.k);if(!t)return;
+  if(a==="tirar"){opPatchRot(t.op,t.j,{maq:undefined,fila:undefined},"Operação "+t.r.seq+" voltou para programar.");return}
+  if(a==="up"||a==="down"){var f=mqFila(b.dataset.m),i=f.map(function(x){return x.k}).indexOf(t.k),j=a==="up"?i-1:i+1,o=f[j];if(!o)return;
+    var fa=t.fila||((i+1)*10),fb=o.fila||((j+1)*10);if(fa===fb)fb=fa+(a==="up"?-1:1);
+    opPatchRot(t.op,t.j,{fila:fb},null).then(function(){var oo=pgTarefa(o.k);return oo?opPatchRot(oo.op,oo.j,{fila:fa},null):null});return}
+},true);
+
+/* ---------- PCP › Apontamentos (tela do posto, para tablet) ---------- */
+function renderApt(box){
+  mqSub();ppSub();
+  var m=mqById(MQ.posto);
+  if(!m){box.innerHTML='<div class="mh"><div><h2>Apontamento</h2><p>Escolha o posto deste tablet. A escolha fica gravada neste aparelho.</p></div></div><div class="ap-postos">'+MQ.list.filter(function(x){return x.tipo!=="Terceiro"}).map(function(x){return'<button type="button" class="ap-big" data-ap="posto" data-id="'+esc(x.id)+'"><b>'+esc(x.nome)+'</b><small>'+esc(x.emp+" · "+x.tipo)+'</small></button>'}).join("")+'</div>';return}
+  var f=mqFila(m.id),at=f[0],prox=f.slice(1,4);
+  var h='<div class="ap-top"><div><small>Posto</small><b>'+esc(m.nome)+'</b></div><button type="button" class="btn sm" data-ap="trocar">Trocar posto</button></div>';
+  if(!at){box.innerHTML=h+'<div class="ap-vazio">Sem operações na fila desta máquina.<br><small>O PCP programa em Programação de máquinas.</small></div>';return}
+  var r=at.r,real=at.real,prev=+r.min||0,pct=prev?Math.min(100,Math.round(real/prev*100)):0;
+  h+='<div class="ap-card '+at.st+'"><div class="ap-op"><span class="idtag big">'+esc(at.op.num)+'</span><b>'+esc(at.op.codigo)+'</b><span>'+esc(at.op.descricao||"")+'</span></div>'+
+    '<div class="ap-grid"><div><small>Operação</small><b>'+esc(r.seq+" · "+r.op)+'</b></div><div><small>Quantidade</small><b>'+esc(at.op.qtd)+' pç</b></div><div><small>Previsto</small><b>'+fmtH(prev/60)+'</b></div><div><small>Realizado</small><b id="ap-real">'+fmtH(real/60)+'</b></div></div>'+
+    (r.obs?'<div class="ap-obs">'+esc(r.obs)+'</div>':'')+'<div class="ap-bar"><i style="width:'+pct+'%"></i></div>'+
+    (r.status==="pausa"?'<div class="ap-msg">Pausada: '+esc(r.motivo||"")+'</div>':'')+(!at.liberada&&r.status==="aguardando"?'<div class="ap-msg">Espera a operação anterior terminar.</div>':'')+
+    '<div class="ap-btns">'+(r.status==="execucao"?'<button type="button" class="ap-b pausa" data-ap="pausar">Pausar</button><button type="button" class="ap-b fim" data-ap="terminar">Terminar</button>':
+      r.status==="pausa"?'<button type="button" class="ap-b ini" data-ap="iniciar">Retomar</button><button type="button" class="ap-b fim" data-ap="terminar">Terminar</button>':
+      '<button type="button" class="ap-b ini" data-ap="iniciar"'+(at.liberada?'':' disabled')+'>Iniciar</button>')+'</div></div>'+
+    (prox.length?'<div class="ap-prox"><small>Próximas na fila</small>'+prox.map(function(t){return'<div><span class="idtag">'+esc(t.op.num)+'</span> '+esc(t.op.codigo+" · "+t.r.seq+" "+t.r.op+" · "+t.op.qtd+" pç")+'</div>'}).join("")+'</div>':'');
+  box.innerHTML=h;
+}
+function apEvento(t,tipo,extra){var d={opId:t.op.id,opNum:t.op.num,seq:t.r.seq,maq:MQ.posto,tipo:tipo,at:Date.now(),uid:AG.uid||""};for(var k in extra||{})d[k]=extra[k];return PR.db.doc("apontamentos/a-"+Date.now().toString(36)+"-"+rid().slice(0,4)).set(d).catch(function(){})}
+function apModal(html,onOk){var m=$("mx-modal");m.innerHTML='<div class="card ap-mod" id="ap-modal" role="dialog" aria-modal="true">'+html+'</div>';m.hidden=false;
+  m.onclick=function(e){var b=e.target.closest("[data-apm]");if(e.target===m||(b&&b.dataset.apm==="n")){m.hidden=true;m.onclick=null;m.innerHTML="";return}if(b&&b.dataset.apm==="y"){var r=onOk(m);if(r!==false){m.hidden=true;m.onclick=null;m.innerHTML=""}}}}
+$("v-mx").addEventListener("click",function(ev){
+  if(S.tab!=="m-apt")return;var b=ev.target.closest("[data-ap]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.ap;
+  if(a==="posto"){MQ.posto=b.dataset.id;try{localStorage.setItem("mista-posto",MQ.posto)}catch(e){}mxRender();return}
+  if(a==="trocar"){MQ.posto="";try{localStorage.removeItem("mista-posto")}catch(e){}mxRender();return}
+  var t=mqFila(MQ.posto)[0];if(!t)return;var r=t.r,now=Date.now();
+  if(a==="iniciar"){var ret=r.status==="pausa";opPatchRot(t.op,t.j,{status:"execucao",ultIni:now,iniciadoEm:r.iniciadoEm||now,motivo:undefined},(ret?"Retomada":"Início")+" da operação "+r.seq+" "+r.op+" no posto "+(mqById(MQ.posto)||{}).nome+".");apEvento(t,ret?"retomada":"inicio");return}
+  if(a==="pausar"){apModal('<h3>Pausar a operação</h3><p class="hint">Motivo da parada:</p><div class="ap-mots">'+AP_MOT.map(function(x,i){return'<label class="ap-mot"><input type="radio" name="apmot" value="'+esc(x)+'"'+(i?'':' checked')+'> '+esc(x)+'</label>'}).join("")+'</div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y">Pausar</button></div>',function(m){
+      var mot=(m.querySelector('input[name="apmot"]:checked')||{}).value||"Outro",acc=(+r.minReal||0)+(r.ultIni?(Date.now()-r.ultIni)/60000:0);
+      opPatchRot(t.op,t.j,{status:"pausa",minReal:Math.round(acc*10)/10,ultIni:undefined,motivo:mot},"Pausa na operação "+r.seq+": "+mot+".");apEvento(t,"pausa",{motivo:mot})});return}
+  if(a==="terminar"){apModal('<h3>Terminar a operação '+esc(r.seq+" "+r.op)+'</h3><div class="fgrid"><label class="f"><span class="lb">Peças boas</span><input id="ap-boas" type="number" min="0" value="'+esc(t.op.qtd)+'" inputmode="numeric"></label><label class="f"><span class="lb">Refugo</span><input id="ap-ref" type="number" min="0" value="0" inputmode="numeric"></label></div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y">Terminar</button></div>',function(m){
+      var boas=Math.max(0,+m.querySelector("#ap-boas").value||0),ref=Math.max(0,+m.querySelector("#ap-ref").value||0),acc=(+r.minReal||0)+(r.status==="execucao"&&r.ultIni?(Date.now()-r.ultIni)/60000:0);
+      opPatchRot(t.op,t.j,{status:"concluida",minReal:Math.round(acc*10)/10,ultIni:undefined,fimEm:Date.now(),boas:boas,refugo:ref,motivo:undefined},"Operação "+r.seq+" "+r.op+" terminada: "+boas+" boas, "+ref+" refugo, "+fmtH(acc/60)+" realizadas (previsto "+fmtH((+r.min||0)/60)+").");
+      apEvento(t,"fim",{boas:boas,refugo:ref,min:Math.round(acc*10)/10});if(ref)toast("Refugo registrado: "+ref+" pç. Avise o PCP para repor a quantidade.")});return}
+},true);
+
+/* ---------- PCP › Monitor de produção ---------- */
+function renderMon(box){
+  mqSub();ppSub();
+  var ts=mqTarefas(),now=Date.now();
+  var cards=MQ.list.filter(function(m){return m.tipo!=="Terceiro"}).map(function(m){var f=mqFila(m.id),at=f[0],st=m.status!=="ativa"?(m.status==="manutencao"?"man":"par"):!at?"livre":at.r.status==="execucao"?"prod":at.r.status==="pausa"?"pausa":"esp";
+    var real=at?at.real:0,prev=at?+at.r.min||0:0,pct=prev?Math.round(real/prev*100):0,atras=prev&&real>prev;
+    return'<div class="mon-c '+st+'"><div class="mon-h"><b>'+esc(m.nome)+'</b><span>'+esc(m.emp)+'</span></div>'+
+     '<div class="mon-s">'+(st==="esp"&&!at.liberada?"Aguarda a operação anterior":({prod:"Produzindo",pausa:"Pausada",esp:"Aguardando início",livre:"Sem fila",man:"Em manutenção",par:"Parada"})[st])+(st==="pausa"&&at.r.motivo?" · "+esc(at.r.motivo):"")+'</div>'+
+     (at?'<div class="mon-op"><span class="idtag">'+esc(at.op.num)+'</span> <b>'+esc(at.op.codigo)+'</b><small>'+esc(at.r.seq+" "+at.r.op+" · "+at.op.qtd+" pç · entrega "+(at.op.entrega?dStr(at.op.entrega):"–"))+'</small></div><div class="mon-bar'+(atras?" atr":"")+'"><i style="width:'+Math.min(100,pct)+'%"></i></div><div class="mon-t"><span>'+fmtH(real/60)+' de '+fmtH(prev/60)+'</span><span>'+pct+'%</span></div>':'')+
+     '<div class="mon-f">Fila: '+f.length+' op. · '+fmtH(mqCarga(m.id))+'</div></div>'}).join("");
+  var abertas=(PP.ops||[]).filter(function(o){return o.status!=="concluida"&&o.status!=="cancelada"}),atr=abertas.filter(function(o){var d=ppDias(o.entrega);return d!=null&&d<0}).length;
+  var prod=MQ.list.filter(function(m){var f=mqFila(m.id);return f[0]&&f[0].r.status==="execucao"}).length;
+  box.innerHTML='<div class="mon"><div class="mon-top"><div><h2>Monitor de produção</h2><small>Atualiza sozinho · '+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+'</small></div><div class="mon-k"><div><b>'+prod+'</b><span>produzindo</span></div><div><b>'+abertas.length+'</b><span>OPs abertas</span></div><div><b class="'+(atr?"r":"")+'">'+atr+'</b><span>OPs atrasadas</span></div></div><button class="btn sm" type="button" data-mon="cheia">Tela cheia</button></div><div class="mon-g">'+(cards||'<div class="mx-empty">Cadastre as máquinas em PCP › Máquinas.</div>')+'</div></div>';
+}
+$("v-mx").addEventListener("click",function(ev){if(S.tab!=="m-mon")return;var b=ev.target.closest('[data-mon="cheia"]');if(!b)return;ev.preventDefault();var el=document.querySelector(".mon");try{if(document.fullscreenElement)document.exitFullscreen();else el.requestFullscreen()}catch(e){}},true);
+setInterval(function(){if(S.tab==="m-mon"||(S.tab==="m-apt"&&!$("mx-modal").innerHTML.match(/ap-mod/)))mxRender()},30000);
+
+/* ---------- OP: mostra o posto e o realizado de cada operação ---------- */
+var _opDetMq=opDetHtml;opDetHtml=function(o){var h=_opDetMq.apply(this,arguments),now=Date.now();
+  var rows=(o.roteiro||[]).map(function(r){var m=mqById(r.maq);return'<tr><td class="mono">'+r.seq+'</td><td>'+esc(r.op)+'</td><td>'+esc(m?m.nome:"a programar")+'</td><td>'+esc(({aguardando:"Aguardando",execucao:"Produzindo",pausa:"Pausada",concluida:"Concluída"})[r.status||"aguardando"])+'</td><td class="r">'+fmtH((+r.min||0)/60)+'</td><td class="r">'+fmtH(apMinReal(r,now)/60)+'</td><td class="r">'+(r.boas!=null?r.boas+(r.refugo?" (+"+r.refugo+" ref.)":""):"–")+'</td></tr>'}).join("");
+  return h.replace('<h3>Material','<h3>Execução</h3><table class="itb"><thead><tr><th>Seq.</th><th>Operação</th><th>Posto</th><th>Situação</th><th class="r">Previsto</th><th class="r">Realizado</th><th class="r">Peças boas</th></tr></thead><tbody>'+rows+'</tbody></table><h3>Material')};
+
+/* ---------- menu ---------- */
+["maq","prog","apt","mon"].forEach(function(k){MODS[k]={n:{maq:"Máquinas",prog:"Programação de máquinas",apt:"Apontamentos",mon:"Monitor de produção"}[k],fase:"",et:[],txt:"",plan:[]};MX_TABS.push("m-"+k)});
+var _rmMq=renderMod;renderMod=function(box,k){if(k==="maq"){renderMaq(box);return}if(k==="prog"){renderProg(box);return}if(k==="apt"){renderApt(box);return}if(k==="mon"){renderMon(box);return}return _rmMq.apply(this,arguments)};
+var _stMq=showTab;showTab=function(t){var r=_stMq.apply(this,arguments);var N={"m-maq":"Máquinas","m-prog":"Programação de máquinas","m-apt":"Apontamentos","m-mon":"Monitor de produção"};
+  ["maq","prog","apt","mon"].forEach(function(k){var a=$("t-"+k);if(a)a.setAttribute("aria-selected",String(t==="m-"+k))});
+  if(N[t]){$("crumb").innerHTML="PCP › <b>"+N[t]+"</b>";$("crumb-t").textContent=N[t]}else if(t!=="m-maq"){MQ.edId="";MQ.ed=null}
+  document.body.classList.toggle("mon-on",t==="m-mon");return r};
 
 })();
 </script>

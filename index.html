@@ -6960,6 +6960,7 @@ var _itDiffPcp=itDiff;itDiff=function(x,e){var ch=_itDiffPcp.apply(this,argument
   if(JSON.stringify(x.roteiro||{})!==JSON.stringify(e.roteiro||{}))ch.push("Roteiro: "+((e.roteiro&&e.roteiro.ops)||[]).length+" operações"+(e.roteiro&&e.roteiro.status==="liberado"?" (liberado)":""));
   if(JSON.stringify(x.estrutura||{})!==JSON.stringify(e.estrutura||{}))ch.push("Estrutura: "+((e.estrutura&&e.estrutura.mats)||[]).length+" materiais"+(e.estrutura&&e.estrutura.status==="liberado"?" (liberada)":""));return ch};
 function esKgBtn(e,i){var m=e.estrutura&&e.estrutura.mats[i];if(!m)return;var inp=document.querySelector('[data-es="'+i+':consumo"]');if(!inp)return;var td=inp.parentNode,b=td.querySelector('[data-esb="kg"]'),kg=esKg(m.desc,m.forma,m.medida);
+  if(isFinite(kg)&&m.tipo==="mp"&&m.un==="kg"){var kv=String(kg).replace(".",",");if(!String(m.consumo||"").trim()||inp.dataset.auto===String(m.consumo)){m.consumo=kv;inp.value=kv;inp.dataset.auto=kv}}   /* consumo em kg preenchido sozinho pela medida (enquanto o usuário não digitar outro) */
   if(isFinite(kg)&&m.tipo==="mp"){if(!b){b=document.createElement("button");b.type="button";b.className="btn sm es-kg";b.dataset.esb="kg";b.dataset.i=i;b.title="Usar o peso calculado pela medida";td.appendChild(b)}b.textContent="= "+nf(kg,3)+" kg"}else if(b)b.remove()}
 function rtEdit(fn){var x=itById(IT.open);if(!x)return;var e=itEdOf(x);fn(e);itMark(e);mxRender()}
 function rtDesliga(e,k){var o=e[k];if(o&&o.status==="liberado"){o.status="rascunho";o.liberadoEm=0;toast((k==="roteiro"?"Roteiro":"Estrutura")+" voltou para elaboração por causa da mudança. Libere de novo depois de conferir.")}}
@@ -6980,8 +6981,9 @@ $("v-mx").addEventListener("click",function(ev){
     if(c==="addt"){rtEdit(function(){rtDesliga(e,"estrutura");s.mats.push({tipo:"terc",desc:"",forma:"—",medida:"",consumo:"1",un:"pç",perda:"0",cliente:false})});return}
     if(c==="rm"){rtEdit(function(){rtDesliga(e,"estrutura");s.mats.splice(i,1)});return}
     if(c==="kg"){var m=s.mats[i],kg=esKg(m.desc,m.forma,m.medida);if(isFinite(kg))rtEdit(function(){rtDesliga(e,"estrutura");m.consumo=String(kg).replace(".",",");m.un="kg"});return}
-    if(c==="liberar"){var f2=s.mats.filter(function(m){return!m.desc||!(+parse(m.consumo)>0)}).length;if(f2){toast(f2+(f2===1?" linha sem":" linhas sem")+" material ou consumo.");return}
-      rtEdit(function(){s.status="liberado";s.liberadoEm=Date.now();s.liberadoPor=AG.uid||""});toast("Estrutura liberada. Clique em Salvar para gravar.");return}
+    if(c==="liberar"){var auto=0;s.mats.forEach(function(m){if(!(+parse(m.consumo)>0)&&m.tipo==="mp"){var kg=esKg(m.desc,m.forma,m.medida);if(isFinite(kg)&&kg>0){m.consumo=String(kg).replace(".",",");m.un="kg";auto++}}});
+      var f2=s.mats.filter(function(m){return!m.desc||!(+parse(m.consumo)>0)});if(f2.length){if(auto)itMark(e),mxRender();var m0=f2[0];toast(!m0.desc?"Falta o material na linha "+(s.mats.indexOf(m0)+1)+".":"Falta o consumo por peça na linha "+(s.mats.indexOf(m0)+1)+(m0.tipo==="mp"?": informe a medida do bruto (ex.: Ø25,4 x 20) ou digite o consumo.":"."));return}
+      rtEdit(function(){s.status="liberado";s.liberadoEm=Date.now();s.liberadoPor=AG.uid||""});toast((auto?"Consumo preenchido pelo peso calculado da medida. ":"")+"Estrutura liberada. Clique em Salvar para gravar.");return}
     if(c==="reabrir"){rtEdit(function(){s.status="rascunho";s.liberadoEm=0});return}
   }
 },true);

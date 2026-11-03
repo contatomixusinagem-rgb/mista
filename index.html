@@ -6820,8 +6820,8 @@ function itDetail(box,x){
 function renderItens(box){
   itSub();
   if(IT.open){var x=itById(IT.open);if(x){
-    var ae=document.activeElement,keep=null;if(ae&&box.contains(ae)&&ae.dataset){var at=["data-iti","data-itf"].filter(function(k){return ae.hasAttribute(k)})[0];if(at)keep={sel:"["+at+'="'+ae.getAttribute(at)+'"]',s:ae.selectionStart,e:ae.selectionEnd}}
-    itDetail(box,x);if(keep){var ne=box.querySelector(keep.sel);if(ne)try{ne.focus({preventScroll:true});if(keep.s!=null&&ne.setSelectionRange)ne.setSelectionRange(keep.s,keep.e)}catch(er){}}return}IT.open=""}
+    var ae=document.activeElement,keep=null;if(ae&&box.contains(ae)&&ae.dataset){var at=["data-iti","data-itf","data-rt","data-es"].filter(function(k){return ae.hasAttribute(k)})[0];if(at)keep={sel:"["+at+'="'+ae.getAttribute(at)+'"]',s:ae.selectionStart,e:ae.selectionEnd}}
+    var sy=window.scrollY,mb=document.querySelector(".app>main"),ms=mb?mb.scrollTop:0;itDetail(box,x);try{window.scrollTo(0,sy);if(mb)mb.scrollTop=ms}catch(er){}if(keep){var ne=box.querySelector(keep.sel);if(ne)try{ne.focus({preventScroll:true});if(keep.s!=null&&ne.setSelectionRange)ne.setSelectionRange(keep.s,keep.e)}catch(er){}}return}IT.open=""}
   var ae2=document.activeElement,kid=ae2&&ae2.id==="it-q",pos=kid?ae2.selectionStart:null;
   box.innerHTML='<div class="mh"><div><h2>Cadastro de itens</h2><p>Cada peça fabricada tem um cadastro único: identificação, dados fiscais (NCM, origem, CSOSN, CFOP, IPI, PIS/COFINS, tipo SPED) e, na próxima etapa, roteiro e estrutura. Os itens nascem sozinhos quando uma proposta é aprovada.</p></div><span class="fase">Engenharia</span></div>'+itListHtml();
   if(kid){var q=$("it-q");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(er){}}}
@@ -6959,6 +6959,8 @@ var _itDetPcp=itDetail;itDetail=function(box,x){
 var _itDiffPcp=itDiff;itDiff=function(x,e){var ch=_itDiffPcp.apply(this,arguments);
   if(JSON.stringify(x.roteiro||{})!==JSON.stringify(e.roteiro||{}))ch.push("Roteiro: "+((e.roteiro&&e.roteiro.ops)||[]).length+" operações"+(e.roteiro&&e.roteiro.status==="liberado"?" (liberado)":""));
   if(JSON.stringify(x.estrutura||{})!==JSON.stringify(e.estrutura||{}))ch.push("Estrutura: "+((e.estrutura&&e.estrutura.mats)||[]).length+" materiais"+(e.estrutura&&e.estrutura.status==="liberado"?" (liberada)":""));return ch};
+function esKgBtn(e,i){var m=e.estrutura&&e.estrutura.mats[i];if(!m)return;var inp=document.querySelector('[data-es="'+i+':consumo"]');if(!inp)return;var td=inp.parentNode,b=td.querySelector('[data-esb="kg"]'),kg=esKg(m.desc,m.forma,m.medida);
+  if(isFinite(kg)&&m.tipo==="mp"){if(!b){b=document.createElement("button");b.type="button";b.className="btn sm es-kg";b.dataset.esb="kg";b.dataset.i=i;b.title="Usar o peso calculado pela medida";td.appendChild(b)}b.textContent="= "+nf(kg,3)+" kg"}else if(b)b.remove()}
 function rtEdit(fn){var x=itById(IT.open);if(!x)return;var e=itEdOf(x);fn(e);itMark(e);mxRender()}
 function rtDesliga(e,k){var o=e[k];if(o&&o.status==="liberado"){o.status="rascunho";o.liberadoEm=0;toast((k==="roteiro"?"Roteiro":"Estrutura")+" voltou para elaboração por causa da mudança. Libere de novo depois de conferir.")}}
 $("v-mx").addEventListener("click",function(ev){
@@ -6990,7 +6992,8 @@ $("v-mx").addEventListener("input",function(ev){
   var x=itById(IT.open);if(!x)return;var e=itEdOf(x),p=k.split(":"),i=+p[0],f=p[1],obj=t.dataset.rt?e.roteiro:e.estrutura,arr=t.dataset.rt?obj.ops:obj.mats;if(!arr[i])return;
   var v=t.type==="checkbox"?t.checked:t.value;if(arr[i][f]===v)return;
   var era=obj.status==="liberado";arr[i][f]=v;rtDesliga(e,t.dataset.rt?"roteiro":"estrutura");itMark(e);
-  if(era||t.tagName==="SELECT"||t.type==="checkbox"||(t.dataset.es&&/desc|forma|medida/.test(f)))mxRender();
+  if(era||(t.tagName==="SELECT"&&f!=="forma"&&f!=="un"&&f!=="rec")){mxRender();return}
+  if(t.dataset.es&&/desc|forma|medida/.test(f))esKgBtn(e,i);   /* atualiza só o botão "= x kg" da linha, sem redesenhar a tela */
 },true);
 $("v-mx").addEventListener("change",function(ev){if(S.tab==="m-itens"&&(ev.target.dataset.rt||ev.target.dataset.es))ev.stopPropagation()},true);
 /* ---------- demanda: itens dos pedidos internos sem OP ---------- */

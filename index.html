@@ -1260,6 +1260,21 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .aba-x{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:0;border-radius:6px;background:none;color:inherit;cursor:pointer;font-size:15px;line-height:1}
 .aba-x:hover{background:var(--line)}
 .aba:focus-visible,.aba-x:focus-visible{outline:2px solid #FF6A6D;outline-offset:1px}
+
+/* v105 compras / lotes / OP */
+.cm-mod{max-width:980px;width:calc(100vw - 32px);max-height:88vh;overflow:auto}
+.cm-n{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;grid-template-columns:28px 90px minmax(170px,1.4fr) minmax(150px,1.2fr) 120px 100px 100px 150px;min-width:980px}
+.cm-n.ok{opacity:.6}
+.cm-p{display:grid;gap:10px;align-items:start;padding:10px 14px;border-top:1px solid var(--line);font-size:13px;grid-template-columns:90px minmax(150px,1fr) minmax(300px,2.4fr) 90px 140px 44px;min-width:900px}
+.cm-pi{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:2px 0}
+.lt-r{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;grid-template-columns:100px minmax(180px,1.6fr) minmax(140px,1fr) 100px 100px 140px 120px;min-width:980px;cursor:pointer}
+.lt-r:hover{background:var(--hover,rgba(0,0,0,.03))}
+.cm-n.fh,.cm-p.fh,.lt-r.fh{cursor:default;border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.cm-n small,.cm-p small,.lt-r small,.op-mat small{display:block;color:var(--muted);font-size:11.5px}
+.op-cab{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}
+.op-cab>div{border:1px solid var(--line);border-radius:8px;padding:6px 10px}.op-cab small{display:block;color:var(--muted);font-size:11px}
+.op-mat select{max-width:300px}
+@media(max-width:640px){.op-cab{grid-template-columns:1fr 1fr}}
 </style>
 
 <div class="shell">
@@ -1293,7 +1308,7 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 <button type="button" class="mod" data-tog2="eng" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l6-6M14 4l6 6-9 9H5v-6z"/></svg><span>Engenharia</span><svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
 <div class="subs" id="s-eng"><nav class="tabs" role="tablist" aria-label="Engenharia"><button type="button" role="tab" id="t-cnc" aria-selected="false" data-mtab="m-cnc">Programas CNC</button><button type="button" role="tab" id="t-meng" aria-selected="false" data-mtab="m-eng">Pedidos em engenharia</button></nav></div>
 <button type="button" class="mod" data-m="prod"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg><span>Produção</span><span class="tagf">F3</span></button>
-<button type="button" class="mod" data-m="qual"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Qualidade</span><span class="tagf">F4</span></button><button type="button" role="tab" id="t-qpi" aria-selected="false" data-mtab="m-qpi" hidden>Planos de inspeção</button><button type="button" role="tab" id="t-itens" aria-selected="false" data-mtab="m-itens" hidden>Cadastro de itens</button><button type="button" role="tab" id="t-maq" aria-selected="false" data-mtab="m-maq" hidden>Máquinas</button><button type="button" role="tab" id="t-prog" aria-selected="false" data-mtab="m-prog" hidden>Programação de máquinas</button><button type="button" role="tab" id="t-apt" aria-selected="false" data-mtab="m-apt" hidden>Apontamentos</button><button type="button" role="tab" id="t-mon" aria-selected="false" data-mtab="m-mon" hidden>Monitor de produção</button>
+<button type="button" class="mod" data-m="qual"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Qualidade</span><span class="tagf">F4</span></button><button type="button" role="tab" id="t-qpi" aria-selected="false" data-mtab="m-qpi" hidden>Planos de inspeção</button><button type="button" role="tab" id="t-itens" aria-selected="false" data-mtab="m-itens" hidden>Cadastro de itens</button><button type="button" role="tab" id="t-maq" aria-selected="false" data-mtab="m-maq" hidden>Máquinas</button><button type="button" role="tab" id="t-estmp" aria-selected="false" data-mtab="m-estmp" hidden>Matéria-prima</button><button type="button" role="tab" id="t-estmv" aria-selected="false" data-mtab="m-estmv" hidden>Movimentações</button><button type="button" role="tab" id="t-prog" aria-selected="false" data-mtab="m-prog" hidden>Programação de máquinas</button><button type="button" role="tab" id="t-apt" aria-selected="false" data-mtab="m-apt" hidden>Apontamentos</button><button type="button" role="tab" id="t-mon" aria-selected="false" data-mtab="m-mon" hidden>Monitor de produção</button>
 <button type="button" class="mod" data-m="exp"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg><span>Expedição</span><span class="tagf">F2</span></button>
 <button type="button" class="mod" data-m="pos"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.3A8 8 0 1121 12z"/></svg><span>Pós-venda</span><span class="tagf">F5</span></button>
 <button type="button" class="mod" data-m="dir"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Direção</span><span class="tagf">F5</span></button>
@@ -5330,7 +5345,7 @@ window.__regOpen=function(m){msOpenMod(m)};
 })();
 
 /* ===== v81: estrutura de 7 módulos (config/modulos), menu novo, Início do usuário e perfis (26/10/2026) ===== */
-var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Primeira peça"}, {"nome": "Inspeções", "tela": ".mod[data-m=\"qual\"]"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas", "tela": "#t-prog"}, {"nome": "Monitor de produção", "tela": "#t-mon"}, {"nome": "Apontamentos", "tela": "#t-apt"}, {"nome": "Máquinas", "tela": "#t-maq"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Matéria-prima"}, {"nome": "Peças acabadas"}, {"nome": "Movimentações"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários"}, {"nome": "Permissões"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeções", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
+var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Primeira peça"}, {"nome": "Inspeções", "tela": ".mod[data-m=\"qual\"]"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas", "tela": "#t-prog"}, {"nome": "Monitor de produção", "tela": "#t-mon"}, {"nome": "Apontamentos", "tela": "#t-apt"}, {"nome": "Máquinas", "tela": "#t-maq"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Matéria-prima", "tela": "#t-estmp"}, {"nome": "Peças acabadas"}, {"nome": "Movimentações", "tela": "#t-estmv"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários"}, {"nome": "Permissões"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeções", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
 var MSM={def:MODS_DEF,gestor:false,open:null,cur:"",user:null,nome:""};
 function msValid(d){return d&&Array.isArray(d.modulos)&&d.modulos.length&&d.modulos.every(function(m){return m&&m.nome&&Array.isArray(m.areas)})}
 function msAreas(m){return(m.areas||[]).filter(function(a){return!a.gestor||MSM.gestor})}
@@ -5386,7 +5401,7 @@ var _stMs=showTab;showTab=function(t){
   return r;
 };
 function msFind(t){
-  var T={ini:"#t-ini",sv:"#t-pc",in:"#t-pc",itens:"#t-pc",prop:"#t-pc",ped:"#t-ped","m-comp":"#t-mcomp","m-fin":"#t-mfin","m-cnc":"#t-cnc","m-qpi":"#t-qpi","m-itens":"#t-itens","m-maq":"#t-maq","m-prog":"#t-prog","m-apt":"#t-apt","m-mon":"#t-mon","m-eng":"#t-meng",par:"#t-par",cap:".mod[data-cap]","m-prod":'.mod[data-m="prod"]',"m-qual":'.mod[data-m="qual"]'};
+  var T={ini:"#t-ini",sv:"#t-pc",in:"#t-pc",itens:"#t-pc",prop:"#t-pc",ped:"#t-ped","m-comp":"#t-mcomp","m-fin":"#t-mfin","m-cnc":"#t-cnc","m-qpi":"#t-qpi","m-itens":"#t-itens","m-maq":"#t-maq","m-prog":"#t-prog","m-apt":"#t-apt","m-mon":"#t-mon","m-eng":"#t-meng","m-estmp":"#t-estmp","m-estmv":"#t-estmv",par:"#t-par",cap:".mod[data-cap]","m-prod":'.mod[data-m="prod"]',"m-qual":'.mod[data-m="qual"]'};
   var sel=t==="cad"?({cli:"#t-cli",forn:"#t-forn",emp:"#t-emp"}[PD.cadTab]||""):T[t];if(!sel)return"";
   var hit="";MSM.def.modulos.forEach(function(m){(m.areas||[]).forEach(function(a){if(!hit&&a.tela===sel&&(!a.gestor||MSM.gestor))hit=m.nome+"|"+a.nome})});return hit;
 }
@@ -7337,6 +7352,289 @@ function abFechar(k){var i=AB.list.map(function(x){return x.k}).indexOf(k);if(i<
 document.addEventListener("keydown",function(e){var a=e.target&&e.target.closest&&e.target.closest("[data-ab]");if(a&&(e.key==="Enter"||e.key===" ")&&!e.target.closest("[data-abx]")){e.preventDefault();abIr(a.dataset.ab)}});
 var _stAb=showTab;showTab=function(t){var r=_stAb.apply(this,arguments);try{abSync();if(t!=="home"&&t!=="wip"&&AB.cur){var pp=AB.cur.split("|");$("crumb").innerHTML=esc(pp[0])+" › <b>"+esc(pp[1])+"</b>";$("crumb-t").textContent=pp[1]}}catch(e){}return r};
 setTimeout(function(){try{abSync()}catch(e){}},0);
+
+
+/* ===== v105: Compras (pedido de compra = lote), recebimento com NF/corrida/certificado/inspeção, estoque por lote,
+   baixa do material na OP e ficha da OP impressa. Regra do gestor (03/11/2026): o LOTE é o nº do pedido de compra (ex.: 135/26);
+   compra sob demanda; no recebimento amarra NF do fornecedor, certificado e corrida; na OP o lote é baixado do estoque. ===== */
+var CM={pcs:[],lotes:[],movs:[],sub:false,aba:"nec",sel:{},open:"",novo:null,rec:null,lt:""};
+function cmSub(){
+  if(CM.sub||!PR.db)return;CM.sub=true;try{agSub()}catch(e){}
+  function L(col,key,sort){PR.db.collection(col).onSnapshot(function(sn){CM[key]=sn.docs.map(function(x){var o=x.data()||{},c={};for(var k in o)c[k]=o[k];c.id=x.id;return c}).sort(sort);cmRefresh()},function(){})}
+  L("pedidos_compra","pcs",function(a,b){return(b.ano||0)-(a.ano||0)||(b.n||0)-(a.n||0)});
+  L("lotes","lotes",function(a,b){return(b.recebidoEm||0)-(a.recebidoEm||0)});
+  L("movimentos","movs",function(a,b){return(b.at||0)-(a.at||0)});
+}
+(function wcm(){if(typeof PR!=="undefined"&&PR&&PR.db){cmSub();return}setTimeout(wcm,700)})();
+function cmRefresh(){if(/^m-(comp|estmp|estmv|prod)$/.test(S.tab)&&!CM.novo&&!CM.rec&&!CM.av)mxRender();if(PP.open&&!$("mx-modal").hidden){var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(o&&!CM.focoOp)$("mx-modal").innerHTML=opDetHtml(o)}}
+function cmKey(desc,forma,medida){return normTxt(desc)+"|"+normTxt(forma)+"|"+normTxt(String(medida||"").replace(/,/g,"."))}
+function cmPar(a,b){var x=normTxt(a).split(" ").filter(function(s){return s.length>2}),y=normTxt(b);return x.length&&x.some(function(s){return y.indexOf(s)>-1})}
+function ltSaldo(l){return Math.round((+l.saldo||0)*1000)/1000}
+function ltLib(l){return l.status==="liberado"}
+function cmUn(v,un){return nf(+v||0,un==="kg"?3:un==="pç"?0:1)+" "+(un||"")}
+/* necessidades: linhas de material das OPs abertas (matéria-prima que não é do cliente), com o que já foi baixado e o que já tem pedido de compra */
+function cmNecs(){
+  var out=[];(PP.ops||[]).forEach(function(o){if(o.status==="cancelada"||o.status==="concluida")return;
+    (o.materiais||[]).forEach(function(m,i){if(m.tipo!=="mp"||m.cliente)return;var bx=0;(m.baixas||[]).forEach(function(b){bx+=+b.qtd||0});
+      var falta=Math.max(0,(+m.nec||0)-bx),pc=m.pcId?CM.pcs.filter(function(p){return p.id===m.pcId})[0]:null;
+      out.push({k:o.id+":"+i,o:o,i:i,m:m,bx:bx,falta:falta,pc:pc})})});
+  return out;
+}
+
+/* ---------- pedido de compra ---------- */
+function pcNum(p){return p.n+"/"+pad((p.ano||new Date().getFullYear())%100,2)}
+function pcProx(){var ano=new Date().getFullYear(),max=0;CM.pcs.forEach(function(p){if(p.ano===ano&&p.n>max)max=p.n});return PR.db.doc("config/pcseq-"+ano).get().then(function(s){var n=s&&s.exists?+s.data().n||0:0;return Math.max(n,max)+1}).catch(function(){return max+1})}
+function pcNovo(linhas){
+  /* agrupa as necessidades iguais (mesmo material, forma e medida) num item do pedido */
+  var g={};linhas.forEach(function(r){var k=cmKey(r.m.desc,r.m.forma,r.m.medida),x=g[k]||(g[k]={desc:r.m.desc,forma:r.m.forma,medida:r.m.medida,un:r.m.un,qtd:0,preco:"",ops:[]});x.qtd+=r.falta;x.ops.push({opId:r.o.id,opNum:r.o.num,i:r.i})});
+  var its=Object.keys(g).map(function(k){var x=g[k];x.qtd=Math.ceil(x.qtd*100)/100;return x});
+  CM.novo={n:"",fornecedor:"",emp:(linhas[0]&&linhas[0].o.emp)||"MIX",prazo:"",obs:"",itens:its.length?its:[{desc:"",forma:"Barra redonda",medida:"",un:"kg",qtd:"",preco:"",ops:[]}]};
+  pcProx().then(function(n){if(CM.novo&&!CM.novo.n){CM.novo.n=String(n);pcNovoHtml()}});pcNovoHtml();
+}
+function pcNovoHtml(){
+  var p=CM.novo,m=$("mx-modal"),fs=(AG.forn||[]).map(function(f){return'<option value="'+esc(f.nome)+'">'}).join(""),ano=new Date().getFullYear()%100;
+  m.innerHTML='<div class="card cm-mod" role="dialog" aria-modal="true" aria-label="Pedido de compra"><h3>Novo pedido de compra</h3><p class="hint">O número do pedido é o <b>lote</b> do material: ele vai na etiqueta da barra, no recebimento e na baixa da OP.</p>'+
+   '<div class="fgrid"><label class="f"><span class="lb">Nº do pedido (lote)</span><span class="cm-n"><input id="pc-n" value="'+esc(p.n)+'" inputmode="numeric" style="width:90px"> /'+pad(ano,2)+'</span></label>'+
+   '<label class="f"><span class="lb">Fornecedor</span><input id="pc-forn" list="pc-forn-l" value="'+esc(p.fornecedor)+'" placeholder="ex.: Pasifer"><datalist id="pc-forn-l">'+fs+'</datalist></label>'+
+   '<label class="f"><span class="lb">Empresa que compra</span><select id="pc-emp"><option'+(p.emp!=="STAR"?" selected":"")+'>MIX</option><option'+(p.emp==="STAR"?" selected":"")+'>STAR</option></select></label>'+
+   '<label class="f"><span class="lb">Prazo de entrega</span><input type="date" id="pc-prazo" value="'+esc(p.prazo)+'"></label></div>'+
+   '<div class="tbx"><table class="itb cm-it"><thead><tr><th>Material</th><th>Forma</th><th>Medida / bitola</th><th class="r">Qtd</th><th>Un.</th><th class="r">Preço un. (R$)</th><th>Para as OPs</th><th></th></tr></thead><tbody>'+
+   p.itens.map(function(x,i){return'<tr><td><input data-pci="'+i+':desc" value="'+esc(x.desc)+'"></td><td><select data-pci="'+i+':forma">'+ES_FORMAS.map(function(f){return'<option'+(x.forma===f?" selected":"")+'>'+esc(f)+'</option>'}).join("")+'</select></td><td><input data-pci="'+i+':medida" value="'+esc(x.medida)+'" placeholder="ex.: Ø25,4 x 3000"></td>'+
+     '<td><input data-pci="'+i+':qtd" value="'+esc(x.qtd)+'" class="r" style="width:80px"></td><td><select data-pci="'+i+':un">'+ES_UN.map(function(u){return'<option'+(x.un===u?" selected":"")+'>'+u+'</option>'}).join("")+'</select></td><td><input data-pci="'+i+':preco" value="'+esc(x.preco)+'" class="r" style="width:90px"></td>'+
+     '<td><small>'+esc((x.ops||[]).map(function(o){return o.opNum}).join(", ")||"estoque")+'</small></td><td>'+(p.itens.length>1?ibtn("trash","Tirar",'data-pcx="rm" data-i="'+i+'"',"danger"):'')+'</td></tr>'}).join("")+
+   '</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-pcx="add">+ Item</button></div>'+
+   '<label class="f"><span class="lb">Observações para o fornecedor</span><textarea id="pc-obs" rows="2" placeholder="ex.: enviar certificado de material com a NF">'+esc(p.obs)+'</textarea></label>'+
+   '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-pcx="n">Cancelar</button><button class="btn pri" type="button" data-pcx="y">Gravar pedido de compra</button></div></div>';
+  m.hidden=false;
+}
+$("mx-modal").addEventListener("input",function(e){var p=CM.novo;if(!p)return;var t=e.target;
+  if(t.id==="pc-n")p.n=t.value.replace(/\D/g,"");else if(t.id==="pc-forn")p.fornecedor=t.value;else if(t.id==="pc-prazo")p.prazo=t.value;else if(t.id==="pc-obs")p.obs=t.value;else if(t.id==="pc-emp")p.emp=t.value;
+  else if(t.dataset.pci){var q=t.dataset.pci.split(":");p.itens[+q[0]][q[1]]=t.value}},true);
+$("mx-modal").addEventListener("change",function(e){var p=CM.novo;if(!p)return;if(e.target.id==="pc-emp")p.emp=e.target.value},true);
+$("mx-modal").addEventListener("click",function(e){var p=CM.novo;if(!p)return;var m=$("mx-modal"),b=e.target.closest("[data-pcx]");
+  if(e.target===m||(b&&b.dataset.pcx==="n")){e.stopImmediatePropagation();m.hidden=true;CM.novo=null;mxRender();return}if(!b)return;e.stopImmediatePropagation();var a=b.dataset.pcx;
+  if(a==="add"){p.itens.push({desc:"",forma:"Barra redonda",medida:"",un:"kg",qtd:"",preco:"",ops:[]});pcNovoHtml();return}
+  if(a==="rm"){p.itens.splice(+b.dataset.i,1);pcNovoHtml();return}
+  if(a==="y"){var n=parseInt(p.n,10),ano=new Date().getFullYear();if(!(n>0)){toast("Informe o nº do pedido.");return}if(!String(p.fornecedor).trim()){toast("Informe o fornecedor.");return}
+    if(CM.pcs.some(function(x){return x.ano===ano&&x.n===n})){toast("O pedido "+n+"/"+pad(ano%100,2)+" já existe.");return}
+    var its=p.itens.filter(function(x){return String(x.desc).trim()&&+parse(x.qtd)>0});if(!its.length){toast("Informe material e quantidade.");return}
+    var id="pc-"+pad(ano%100,2)+"-"+pad(n,4),t=Date.now(),num=n+"/"+pad(ano%100,2);
+    var doc={n:n,ano:ano,num:num,fornecedor:String(p.fornecedor).trim(),emp:p.emp,prazo:p.prazo,obs:p.obs,status:"aberto",criado:t,atualizado:t,
+      itens:its.map(function(x){return{desc:String(x.desc).trim(),forma:x.forma,medida:x.medida,qtd:+parse(x.qtd),un:x.un,preco:+parse(x.preco)||0,ops:x.ops||[],recebido:0}}),hist:[{at:t,uid:AG.uid||"",txt:"Pedido de compra "+num+" emitido."}]};
+    b.disabled=true;
+    PR.db.doc("pedidos_compra/"+id).set(doc).then(function(){PR.db.doc("config/pcseq-"+ano).set({n:Math.max(n,0)}).catch(function(){});
+      /* liga o pedido às linhas de material das OPs */
+      var porOp={};doc.itens.forEach(function(x){(x.ops||[]).forEach(function(r){(porOp[r.opId]=porOp[r.opId]||[]).push(r.i)})});
+      return Promise.all(Object.keys(porOp).map(function(oid){var o=PP.ops.filter(function(x){return x.id===oid})[0];if(!o)return null;var mats=JSON.parse(JSON.stringify(o.materiais||[]));porOp[oid].forEach(function(i){if(mats[i]){mats[i].pcId=id;mats[i].pcNum=num}});return opSet(o,{materiais:mats},"Material comprado no pedido de compra "+num+" (lote).")}));
+    }).then(function(){m.hidden=true;CM.novo=null;CM.aba="pcs";toast("Pedido de compra "+num+" gravado. O lote do material é "+num+".");mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gravar o pedido.")});}
+},true);
+
+/* ---------- recebimento: NF, corrida, certificado, inspeção → lote no estoque ---------- */
+function recHtml(){
+  var r=CM.rec,p=CM.pcs.filter(function(x){return x.id===r.pcId})[0],x=p&&p.itens[r.i];if(!x)return"";
+  return'<div class="card cm-mod" role="dialog" aria-modal="true" aria-label="Recebimento"><h3>Receber · lote '+esc(p.num)+'</h3><p class="hint">'+esc(x.desc+" · "+x.forma+" · "+(x.medida||""))+' — pedido '+cmUn(x.qtd,x.un)+(x.recebido?", já recebido "+cmUn(x.recebido,x.un):"")+'</p>'+
+   '<div class="fgrid"><label class="f"><span class="lb">NF do fornecedor</span><input id="rc-nf" value="'+esc(r.nf)+'" placeholder="ex.: 45.821"></label><label class="f"><span class="lb">Data do recebimento</span><input type="date" id="rc-data" value="'+esc(r.data)+'"></label>'+
+   '<label class="f"><span class="lb">Quantidade recebida ('+esc(x.un)+')</span><input id="rc-qtd" value="'+esc(r.qtd)+'" inputmode="decimal"></label><label class="f"><span class="lb">Corrida (do certificado)</span><input id="rc-cor" value="'+esc(r.corrida)+'" placeholder="ex.: 23A0457"></label></div>'+
+   '<label class="f"><span class="lb">Certificado de material (PDF ou foto)</span><input type="file" id="rc-cert" accept=".pdf,image/*"></label>'+(r.cert?'<p class="hint">Anexado: '+esc(r.cert.nome)+'</p>':'')+
+   '<div class="fgrid"><label class="f"><span class="lb">Inspeção de recebimento</span><select id="rc-insp"><option value="dispensada"'+(r.insp==="dispensada"?" selected":"")+'>Não requer (liberar direto)</option><option value="pendente"'+(r.insp==="pendente"?" selected":"")+'>Requer: inspecionar depois</option><option value="aprovado"'+(r.insp==="aprovado"?" selected":"")+'>Inspecionado: aprovado</option><option value="reprovado"'+(r.insp==="reprovado"?" selected":"")+'>Inspecionado: reprovado</option></select></label>'+
+   '<label class="f"><span class="lb">Observação da inspeção</span><input id="rc-iobs" value="'+esc(r.iobs)+'" placeholder="ex.: 100% conferido diâmetro e comprimento"></label></div>'+
+   '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-rcx="n">Cancelar</button><button class="btn pri" type="button" data-rcx="y">Receber e dar entrada no estoque</button></div></div>';
+}
+function recAbrir(pcId,i){var p=CM.pcs.filter(function(x){return x.id===pcId})[0],x=p&&p.itens[i];if(!x)return;CM.rec={pcId:pcId,i:i,nf:"",data:new Date().toISOString().slice(0,10),qtd:String(Math.max(0,(+x.qtd||0)-(+x.recebido||0))).replace(".",","),corrida:"",cert:null,insp:"dispensada",iobs:""};var m=$("mx-modal");m.innerHTML=recHtml();m.hidden=false}
+$("mx-modal").addEventListener("input",function(e){var r=CM.rec;if(!r)return;var t=e.target,k={"rc-nf":"nf","rc-data":"data","rc-qtd":"qtd","rc-cor":"corrida","rc-iobs":"iobs","rc-insp":"insp"}[t.id];if(k)r[k]=t.value},true);
+$("mx-modal").addEventListener("change",function(e){var r=CM.rec;if(!r)return;var t=e.target;if(t.id==="rc-insp")r.insp=t.value;
+  if(t.id==="rc-cert"&&t.files&&t.files[0]){var f=t.files[0];if(!AG.assets||!AG.assets.upload){toast("Esta visualização não guarda arquivos.");return}toast("Guardando o certificado…");
+    AG.assets.upload(f).then(function(a){r.cert={id:a.id,url:a.url,nome:f.name};$("mx-modal").innerHTML=recHtml();toast("Certificado anexado.")}).catch(function(){toast("Não consegui guardar o certificado.")})}},true);
+$("mx-modal").addEventListener("click",function(e){var r=CM.rec;if(!r)return;var m=$("mx-modal"),b=e.target.closest("[data-rcx]");
+  if(e.target===m||(b&&b.dataset.rcx==="n")){e.stopImmediatePropagation();m.hidden=true;CM.rec=null;mxRender();return}if(!b)return;e.stopImmediatePropagation();
+  var p=CM.pcs.filter(function(x){return x.id===r.pcId})[0],x=p&&p.itens[r.i];if(!x)return;var q=+parse(r.qtd);
+  if(!String(r.nf).trim()){toast("Informe a NF do fornecedor.");return}if(!(q>0)){toast("Informe a quantidade recebida.");return}
+  b.disabled=true;var t=Date.now(),multi=p.itens.length>1,lote=p.num+(multi?" #"+(r.i+1):""),lid="lt-"+p.id.slice(3)+"-"+(r.i+1)+(x.recebido?"-"+t.toString(36):"");
+  var st=r.insp==="reprovado"?"reprovado":r.insp==="pendente"?"aguardando inspeção":"liberado";
+  var lt={lote:lote,pcId:p.id,pcNum:p.num,itemIdx:r.i,material:x.desc,forma:x.forma,medida:x.medida,un:x.un,qtdRec:q,saldo:q,fornecedor:p.fornecedor,emp:p.emp,nf:String(r.nf).trim(),corrida:String(r.corrida).trim(),cert:r.cert||null,
+    inspecao:{status:r.insp,obs:r.iobs,em:r.insp==="aprovado"||r.insp==="reprovado"?t:0,por:AG.uid||""},status:st,recebidoEm:r.data?new Date(r.data+"T12:00:00").getTime():t,criado:t,ops:x.ops||[]};
+  var its=JSON.parse(JSON.stringify(p.itens));its[r.i].recebido=(+its[r.i].recebido||0)+q;var tudo=its.every(function(y){return(+y.recebido||0)>=(+y.qtd||0)*0.98});
+  var h=(p.hist||[]).slice(-199);h.push({at:t,uid:AG.uid||"",txt:"Recebido "+cmUn(q,x.un)+" de "+x.desc+" (NF "+lt.nf+(lt.corrida?", corrida "+lt.corrida:"")+(lt.cert?", com certificado":"")+"); lote "+lote+" "+st+"."});
+  Promise.all([PR.db.doc("lotes/"+lid).set(lt),PR.db.doc("movimentos/mv-"+t.toString(36)+"-"+rid().slice(0,3)).set({tipo:"entrada",loteId:lid,lote:lote,material:x.desc,qtd:q,un:x.un,doc:"NF "+lt.nf,pcId:p.id,at:t,uid:AG.uid||""}),
+    PR.db.doc("pedidos_compra/"+p.id).update({itens:its,status:tudo?"recebido":"parcial",atualizado:t,hist:h})])
+   .then(function(){m.hidden=true;CM.rec=null;toast("Lote "+lote+" no estoque: "+cmUn(q,x.un)+(st==="liberado"?", liberado para as OPs.":st==="reprovado"?", REPROVADO.":", aguardando inspeção."));mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gravar o recebimento.")});
+},true);
+
+/* ---------- Administrativo › Compras ---------- */
+function renderComp(box){
+  cmSub();ppSub();
+  var nec=cmNecs(),semPc=nec.filter(function(r){return r.falta>0&&!r.pc}),abertos=CM.pcs.filter(function(p){return p.status==="aberto"||p.status==="parcial"});
+  var h='<div class="mh"><div><h2>Compras</h2><p>Compra sob demanda: a necessidade de material nasce da OP. O nº do pedido de compra é o <b>lote</b>; no recebimento você amarra NF, corrida, certificado e a inspeção, e o lote entra no estoque para ser baixado na OP.</p></div><div class="acts2"><button class="btn sm" type="button" data-cm="novo">+ Pedido de compra avulso</button></div></div>'+
+   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-cm="aba" data-a="nec" aria-selected="'+(CM.aba==="nec")+'">Necessidades das OPs ('+semPc.length+')</button><button type="button" role="tab" data-cm="aba" data-a="pcs" aria-selected="'+(CM.aba==="pcs")+'">Pedidos de compra ('+abertos.length+' abertos)</button></div>';
+  if(CM.aba==="nec"){
+    var nsel=semPc.filter(function(r){return CM.sel[r.k]}).length;
+    h+='<div class="mx-bar"><span class="hint">Marque as linhas e gere um pedido de compra para o mesmo fornecedor. Linhas iguais (mesmo material, forma e medida) viram um item só.</span><span class="sp"></span><button class="btn sm pri" type="button" data-cm="gerar"'+(nsel?'':' disabled')+'>Gerar pedido de compra ('+nsel+')</button></div>'+
+     '<div class="tbx"><div class="cm-n fh"><span></span><span>OP</span><span>Peça</span><span>Material</span><span>Bruto/pç</span><span class="r">Necessário</span><span class="r">Baixado</span><span>Compra</span></div>'+
+     (nec.length?nec.map(function(r){var ok=r.falta<=0;return'<div class="cm-n'+(ok?' ok':'')+'"><span>'+(!ok&&!r.pc?'<input type="checkbox" data-cmsel="'+esc(r.k)+'"'+(CM.sel[r.k]?" checked":"")+' aria-label="Selecionar">':'')+'</span><span class="idtag">'+esc(r.o.num)+'</span><span><b>'+esc(r.o.codigo)+'</b><small>'+esc(r.o.cliente||"")+' · entrega '+(r.o.entrega?dStr(r.o.entrega):"–")+'</small></span><span>'+esc(r.m.desc)+'<small>'+esc(r.m.forma||"")+'</small></span><span>'+esc(r.m.medida||"–")+'</span><span class="r mono">'+cmUn(r.m.nec,r.m.un)+'</span><span class="r mono">'+cmUn(r.bx,r.m.un)+'</span><span>'+(ok?'<span class="stp g">Baixado</span>':r.pc?'<span class="stp w">PC '+esc(r.pc.num)+' · '+esc(r.pc.status)+'</span>':'<span class="stp b">Sem pedido</span>')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhuma OP aberta precisando de material.</div>')+'</div>';
+  }else{
+    h+='<div class="tbx"><div class="cm-p fh"><span>Pedido / lote</span><span>Fornecedor</span><span>Itens</span><span>Prazo</span><span>Situação</span><span></span></div>'+
+     (CM.pcs.length?CM.pcs.map(function(p){var tot=0;p.itens.forEach(function(x){tot+=(+x.qtd||0)*(+x.preco||0)});
+       return'<div class="cm-p"><span class="idtag big">'+esc(p.num)+'</span><span><b>'+esc(p.fornecedor)+'</b><small>'+esc(p.emp)+(tot?" · "+brl(tot):"")+'</small></span><span>'+p.itens.map(function(x,i){var falta=(+x.qtd||0)-(+x.recebido||0);return'<div class="cm-pi">'+esc(x.desc+" "+(x.medida||""))+' · '+cmUn(x.qtd,x.un)+(x.recebido?' <small>(recebido '+cmUn(x.recebido,x.un)+')</small>':'')+(falta>0.0001&&p.status!=="cancelado"?' <button type="button" class="btn sm pri" data-cm="receber" data-id="'+esc(p.id)+'" data-i="'+i+'">Receber</button>':'')+'</div>'}).join("")+'</span>'+
+        '<span>'+(p.prazo?dStr(p.prazo):"–")+'</span><span><span class="stp '+({aberto:"i",parcial:"w",recebido:"g",cancelado:"b"}[p.status]||"i")+'">'+esc({aberto:"Aberto",parcial:"Recebido em parte",recebido:"Recebido",cancelado:"Cancelado"}[p.status]||p.status)+'</span></span><span>'+(p.status==="aberto"?ibtn("trash","Cancelar pedido",'data-cm="cancela" data-id="'+esc(p.id)+'"',"danger"):'')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum pedido de compra.</div>')+'</div>';
+  }
+  box.innerHTML=h;
+}
+$("v-mx").addEventListener("change",function(e){if(S.tab!=="m-comp")return;var k=e.target.dataset.cmsel;if(k==null)return;e.stopPropagation();CM.sel[k]=e.target.checked;mxRender()},true);
+$("v-mx").addEventListener("click",function(e){
+  if(S.tab!=="m-comp")return;var b=e.target.closest("[data-cm]");if(!b)return;e.stopPropagation();e.preventDefault();var a=b.dataset.cm;
+  if(a==="aba"){CM.aba=b.dataset.a;mxRender();return}
+  if(a==="novo"){pcNovo([]);return}
+  if(a==="gerar"){var ls=cmNecs().filter(function(r){return CM.sel[r.k]&&r.falta>0&&!r.pc});CM.sel={};pcNovo(ls);return}
+  if(a==="receber"){recAbrir(b.dataset.id,+b.dataset.i);return}
+  if(a==="cancela"){var p=CM.pcs.filter(function(x){return x.id===b.dataset.id})[0];if(!p)return;askDel("Cancelar o pedido de compra "+p.num+"?",p.fornecedor+". As OPs voltam a mostrar o material sem pedido.",function(){
+    var h=(p.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"Pedido cancelado."});
+    PR.db.doc("pedidos_compra/"+p.id).update({status:"cancelado",atualizado:Date.now(),hist:h}).then(function(){
+      return Promise.all(PP.ops.filter(function(o){return(o.materiais||[]).some(function(m){return m.pcId===p.id})}).map(function(o){var mats=JSON.parse(JSON.stringify(o.materiais));mats.forEach(function(m){if(m.pcId===p.id){delete m.pcId;delete m.pcNum}});return opSet(o,{materiais:mats},"Pedido de compra "+p.num+" cancelado.")}))}).then(function(){toast("Pedido cancelado.")})});return}
+},true);
+
+/* ---------- Estoque › Matéria-prima (lotes) e Movimentações ---------- */
+function renderEstMp(box){
+  cmSub();
+  if(CM.lt){var l=CM.lotes.filter(function(x){return x.id===CM.lt})[0];if(l){ltDet(box,l);return}CM.lt=""}
+  var L=CM.lotes.filter(function(l){return CM.ltTodos||ltSaldo(l)>0});
+  box.innerHTML='<div class="mh"><div><h2>Matéria-prima</h2><p>Cada lote é um pedido de compra recebido (ex.: 135/26), com NF, corrida, certificado e inspeção. O saldo baixa quando o material é requisitado na OP. Sobras ficam no lote com o saldo que restou.</p></div><div class="acts2"><button class="btn sm" type="button" data-lt="avulso">+ Entrada avulsa (sobra / sem pedido)</button></div></div>'+
+   '<div class="mx-bar"><label class="mx-chk"><input type="checkbox" id="lt-todos"'+(CM.ltTodos?" checked":"")+'> Mostrar lotes zerados</label><span class="sp"></span><span class="hint">'+L.length+' lotes</span></div>'+
+   '<div class="tbx"><div class="lt-r fh"><span>Lote</span><span>Material</span><span>Fornecedor · NF</span><span>Corrida</span><span>Certificado</span><span>Inspeção</span><span class="r">Saldo</span></div>'+
+   (L.length?L.map(function(l){return'<div class="lt-r" data-lt="abrir" data-id="'+esc(l.id)+'" title="Abrir"><span class="idtag big">'+esc(l.lote)+'</span><span><b>'+esc(l.material)+'</b><small>'+esc((l.forma||"")+" · "+(l.medida||""))+'</small></span><span>'+esc(l.fornecedor||"–")+'<small>NF '+esc(l.nf||"–")+'</small></span><span>'+esc(l.corrida||"–")+'</span><span>'+(l.cert?'<span class="stp g">Anexado</span>':'<span class="stp n">Sem</span>')+'</span><span><span class="stp '+(l.status==="liberado"?"g":l.status==="reprovado"?"b":"w")+'">'+esc(l.status)+'</span></span><span class="r mono">'+cmUn(l.saldo,l.un)+'<small>de '+cmUn(l.qtdRec,l.un)+'</small></span></div>'}).join(""):'<div class="mx-empty">Nenhum lote no estoque. Os lotes entram pelo recebimento do pedido de compra.</div>')+'</div>';
+}
+function ltDet(box,l){
+  var mv=CM.movs.filter(function(m){return m.loteId===l.id});
+  box.innerHTML='<div class="mx-bar"><button class="btn sm" type="button" data-lt="voltar">‹ Matéria-prima</button><span class="sp"></span>'+(l.cert&&l.cert.url?'<button class="btn sm" type="button" data-lt="cert" data-id="'+esc(l.id)+'">Abrir certificado</button>':'')+'</div>'+
+   '<div class="card"><div class="dh2"><span class="idtag big">Lote '+esc(l.lote)+'</span><h2>'+esc(l.material)+'</h2><span class="sub">'+esc((l.forma||"")+" · "+(l.medida||"")+" · "+(l.fornecedor||""))+'</span></div>'+
+   '<dl class="cn-dl"><dt>Pedido de compra</dt><dd>'+esc(l.pcNum||"– (entrada avulsa)")+'</dd><dt>NF do fornecedor</dt><dd>'+esc(l.nf||"–")+'</dd><dt>Corrida</dt><dd>'+esc(l.corrida||"–")+'</dd><dt>Recebido</dt><dd>'+cmUn(l.qtdRec,l.un)+' em '+esc(new Date(l.recebidoEm||l.criado).toLocaleDateString("pt-BR"))+'</dd><dt>Saldo</dt><dd><b>'+cmUn(l.saldo,l.un)+'</b></dd><dt>Situação</dt><dd>'+esc(l.status)+'</dd></dl></div>'+
+   '<div class="card"><h3>Inspeção de recebimento</h3><div class="fgrid"><label class="f"><span class="lb">Resultado</span><select id="lt-insp"><option value="dispensada"'+(l.inspecao&&l.inspecao.status==="dispensada"?" selected":"")+'>Não requer</option><option value="pendente"'+(l.inspecao&&l.inspecao.status==="pendente"?" selected":"")+'>Pendente</option><option value="aprovado"'+(l.inspecao&&l.inspecao.status==="aprovado"?" selected":"")+'>Aprovado</option><option value="reprovado"'+(l.inspecao&&l.inspecao.status==="reprovado"?" selected":"")+'>Reprovado</option></select></label><label class="f"><span class="lb">Observação</span><input id="lt-iobs" value="'+esc(l.inspecao&&l.inspecao.obs||"")+'"></label></div>'+
+   '<div class="acts2"><button class="btn sm pri" type="button" data-lt="insp" data-id="'+esc(l.id)+'">Gravar inspeção</button><span class="sp" style="flex:1"></span><label class="mx-chk">Ajustar saldo para <input id="lt-aj" style="width:90px" inputmode="decimal" placeholder="'+esc(nf(+l.saldo||0,3))+'"> '+esc(l.un)+'</label><button class="btn sm" type="button" data-lt="ajuste" data-id="'+esc(l.id)+'">Ajustar</button></div></div>'+
+   '<div class="card"><h3>Movimentações</h3><table class="itb"><thead><tr><th>Data</th><th>Tipo</th><th class="r">Quantidade</th><th>Documento</th></tr></thead><tbody>'+(mv.map(function(m){return'<tr><td>'+esc(nowStr(m.at))+'</td><td>'+esc({entrada:"Entrada",saida:"Baixa para OP",ajuste:"Ajuste"}[m.tipo]||m.tipo)+'</td><td class="r mono">'+(m.tipo==="saida"?"−":m.tipo==="ajuste"&&m.qtd<0?"−":"+")+cmUn(Math.abs(m.qtd),m.un)+'</td><td>'+esc(m.doc||m.opNum||"")+'</td></tr>'}).join("")||'<tr><td colspan="4" class="hint">Sem movimentos.</td></tr>')+'</tbody></table></div>';
+}
+function renderEstMv(box){cmSub();
+  box.innerHTML='<div class="mh"><div><h2>Movimentações de estoque</h2><p>Entradas (recebimento), baixas para OP e ajustes, lote a lote. É a base do controle de produção e estoque (Bloco K).</p></div></div><div class="tbx"><table class="itb"><thead><tr><th>Data</th><th>Tipo</th><th>Lote</th><th>Material</th><th class="r">Quantidade</th><th>Documento</th></tr></thead><tbody>'+
+   (CM.movs.map(function(m){return'<tr><td>'+esc(nowStr(m.at))+'</td><td>'+esc({entrada:"Entrada",saida:"Baixa para OP",ajuste:"Ajuste"}[m.tipo]||m.tipo)+'</td><td class="mono">'+esc(m.lote||"")+'</td><td>'+esc(m.material||"")+'</td><td class="r mono">'+(m.tipo==="saida"||(m.tipo==="ajuste"&&m.qtd<0)?"−":"+")+cmUn(Math.abs(m.qtd),m.un)+'</td><td>'+esc(m.doc||m.opNum||"")+'</td></tr>'}).join("")||'<tr><td colspan="6" class="hint">Sem movimentações.</td></tr>')+'</tbody></table></div>';
+}
+$("v-mx").addEventListener("change",function(e){if(S.tab==="m-estmp"&&e.target.id==="lt-todos"){CM.ltTodos=e.target.checked;mxRender()}});
+$("v-mx").addEventListener("click",function(e){
+  if(S.tab!=="m-estmp")return;var b=e.target.closest("[data-lt]");if(!b)return;e.stopPropagation();e.preventDefault();var a=b.dataset.lt,l=CM.lotes.filter(function(x){return x.id===b.dataset.id})[0];
+  if(a==="voltar"){CM.lt="";mxRender();return}
+  if(a==="abrir"){CM.lt=b.dataset.id;mxRender();return}
+  if(a==="avulso"){pcAvulso();return}
+  if(!l)return;
+  if(a==="cert"){fetch(l.cert.url).then(function(r){return r.blob()}).then(function(bl){cnSave(l.cert.nome||"certificado.pdf",bl)}).catch(function(){toast("Não consegui abrir o certificado.")});return}
+  if(a==="insp"){var st=$("lt-insp").value,ob=$("lt-iobs").value;PR.db.doc("lotes/"+l.id).update({inspecao:{status:st,obs:ob,em:Date.now(),por:AG.uid||""},status:st==="reprovado"?"reprovado":st==="pendente"?"aguardando inspeção":"liberado"}).then(function(){toast("Inspeção gravada.")});return}
+  if(a==="ajuste"){var v=+parse($("lt-aj").value);if(!(v>=0)){toast("Informe o saldo correto.");return}var d=Math.round((v-(+l.saldo||0))*1000)/1000;if(!d){toast("O saldo já é esse.");return}
+    askDel("Ajustar o saldo do lote "+l.lote+"?",cmUn(l.saldo,l.un)+" → "+cmUn(v,l.un)+" (diferença "+(d>0?"+":"")+nf(d,3)+").",function(){var t=Date.now();
+      Promise.all([PR.db.doc("lotes/"+l.id).update({saldo:v}),PR.db.doc("movimentos/mv-"+t.toString(36)+"-"+rid().slice(0,3)).set({tipo:"ajuste",loteId:l.id,lote:l.lote,material:l.material,qtd:d,un:l.un,doc:"Ajuste de inventário",at:t,uid:AG.uid||""})]).then(function(){toast("Saldo ajustado.")})});return}
+},true);
+function pcAvulso(){CM.av={lote:"",material:"",forma:"Barra redonda",medida:"",qtd:"",un:"kg",corrida:"",nf:"",emp:"MIX"};avHtml()}
+function avHtml(){var a=CM.av,m=$("mx-modal");m.innerHTML='<div class="card cm-mod" role="dialog" aria-modal="true" aria-label="Entrada avulsa"><h3>Entrada avulsa no estoque</h3><p class="hint">Para sobras já existentes ou material que chegou sem pedido de compra no MISTA. Use o nº do pedido de compra original como lote, se souber.</p>'+
+  '<div class="fgrid"><label class="f"><span class="lb">Lote (nº do pedido de compra)</span><input data-av="lote" value="'+esc(a.lote)+'" placeholder="ex.: 128/26"></label><label class="f"><span class="lb">Material</span><input data-av="material" value="'+esc(a.material)+'" placeholder="ex.: Alumínio 6351 T6"></label>'+
+  '<label class="f"><span class="lb">Forma</span><select data-av="forma">'+ES_FORMAS.map(function(f){return'<option'+(a.forma===f?" selected":"")+'>'+esc(f)+'</option>'}).join("")+'</select></label><label class="f"><span class="lb">Medida</span><input data-av="medida" value="'+esc(a.medida)+'" placeholder="ex.: Ø25,4"></label>'+
+  '<label class="f"><span class="lb">Quantidade</span><input data-av="qtd" value="'+esc(a.qtd)+'" inputmode="decimal"></label><label class="f"><span class="lb">Unidade</span><select data-av="un">'+ES_UN.map(function(u){return'<option'+(a.un===u?" selected":"")+'>'+u+'</option>'}).join("")+'</select></label>'+
+  '<label class="f"><span class="lb">Corrida</span><input data-av="corrida" value="'+esc(a.corrida)+'"></label><label class="f"><span class="lb">NF de origem</span><input data-av="nf" value="'+esc(a.nf)+'"></label></div>'+
+  '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-avx="n">Cancelar</button><button class="btn pri" type="button" data-avx="y">Dar entrada</button></div></div>';m.hidden=false}
+$("mx-modal").addEventListener("input",function(e){if(CM.av&&e.target.dataset.av)CM.av[e.target.dataset.av]=e.target.value},true);
+$("mx-modal").addEventListener("change",function(e){if(CM.av&&e.target.dataset.av)CM.av[e.target.dataset.av]=e.target.value},true);
+$("mx-modal").addEventListener("click",function(e){var a=CM.av;if(!a)return;var m=$("mx-modal"),b=e.target.closest("[data-avx]");
+  if(e.target===m||(b&&b.dataset.avx==="n")){e.stopImmediatePropagation();m.hidden=true;CM.av=null;mxRender();return}if(!b)return;e.stopImmediatePropagation();
+  var q=+parse(a.qtd),lote=String(a.lote).trim();if(!lote){toast("Informe o lote.");return}if(!String(a.material).trim()){toast("Informe o material.");return}if(!(q>0)){toast("Informe a quantidade.");return}
+  b.disabled=true;var t=Date.now(),id="lt-av-"+t.toString(36);
+  Promise.all([PR.db.doc("lotes/"+id).set({lote:lote,pcId:"",pcNum:"",material:String(a.material).trim(),forma:a.forma,medida:a.medida,un:a.un,qtdRec:q,saldo:q,fornecedor:"",emp:a.emp,nf:a.nf,corrida:a.corrida,cert:null,inspecao:{status:"dispensada"},status:"liberado",recebidoEm:t,criado:t}),
+    PR.db.doc("movimentos/mv-"+t.toString(36)+"-av").set({tipo:"entrada",loteId:id,lote:lote,material:String(a.material).trim(),qtd:q,un:a.un,doc:"Entrada avulsa"+(a.nf?" · NF "+a.nf:""),at:t,uid:AG.uid||""})])
+   .then(function(){m.hidden=true;CM.av=null;toast("Lote "+lote+" incluído no estoque.");mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gravar.")})},true);
+
+/* ---------- OP: pedido do cliente, requisição/baixa por lote, plano de inspeção e ficha impressa ---------- */
+function opPedido(o){return PD.list.filter(function(x){return x.id===o.pedidoId})[0]||{}}
+function opPlanos(o){var k=normTxt(o.codigo),d=normTxt(o.desenho);return(typeof QI!=="undefined"?QI.list:[]).filter(function(p){var c=normTxt(p.codigo);return c&&(c===k||(d&&c===d))})}
+function opCncs(o){var k=normTxt(o.codigo),d=normTxt(o.desenho);return(CN.list||[]).filter(function(p){var c=normTxt(p.codigo);return c&&(c===k||(d&&c===d))})}
+function opMatOk(o){return(o.materiais||[]).every(function(m){if(m.tipo!=="mp")return true;if(m.cliente)return!!String(m.nfCliente||"").trim();var bx=0;(m.baixas||[]).forEach(function(b){bx+=+b.qtd||0});return bx>=(+m.nec||0)*0.999})}
+var _opDetCm=opDetHtml;opDetHtml=function(o){
+  var h=_opDetCm.apply(this,arguments),pd=opPedido(o),pis=opPlanos(o),cns=opCncs(o);
+  var cab='<div class="op-cab"><div><small>Pedido do cliente</small><b>'+esc(pd.pedidoCliente||"–")+'</b></div><div><small>Pedido interno</small><b>'+esc(o.pedidoNum||"–")+'</b></div><div><small>Cliente</small><b>'+esc(o.cliente||"–")+'</b></div><div><small>Entrega</small><b>'+(o.entrega?dStr(o.entrega):"–")+'</b></div></div>'+
+   '<div class="acts2"><button class="btn pri" type="button" data-op3="ficha">Imprimir ficha da OP (PDF)</button>'+(opMatOk(o)?'<span class="stp g">Material requisitado</span>':'<span class="stp w">Falta requisitar o material</span>')+'</div>';
+  var mat='<h3>Requisição e baixa do material</h3><table class="itb op-mat"><thead><tr><th>Material</th><th>Bruto/pç</th><th class="r">Necessário</th><th>Lote(s) baixado(s)</th><th>Requisitar</th></tr></thead><tbody>'+(o.materiais||[]).map(function(m,i){
+    if(m.tipo!=="mp")return'<tr><td>'+esc(m.desc)+'<small> ('+esc(({terc:"terceiro",comp:"componente"})[m.tipo]||m.tipo)+')</small></td><td>'+esc(m.medida||"–")+'</td><td class="r">'+cmUn(m.nec,m.un)+'</td><td colspan="2" class="hint">Fora do estoque de matéria-prima.</td></tr>';
+    if(m.cliente)return'<tr><td>'+esc(m.desc)+'<small> (cliente fornece)</small></td><td>'+esc(m.medida||"–")+'</td><td class="r">'+cmUn(m.nec,m.un)+'</td><td>'+(m.nfCliente?'NF de remessa '+esc(m.nfCliente):'<span class="hint">–</span>')+'</td><td><input data-opnf="'+i+'" value="'+esc(m.nfCliente||"")+'" placeholder="NF de remessa do cliente" style="width:170px"> <button class="btn sm" type="button" data-op3="nfcli" data-i="'+i+'">Gravar</button></td></tr>';
+    var bx=0;(m.baixas||[]).forEach(function(b){bx+=+b.qtd||0});var falta=Math.max(0,(+m.nec||0)-bx);
+    var lts=CM.lotes.filter(function(l){return ltLib(l)&&ltSaldo(l)>0&&l.un===m.un&&(cmPar(m.desc,l.material)||(m.pcId&&l.pcId===m.pcId))}).sort(function(a,b){return(a.pcId===m.pcId?0:1)-(b.pcId===m.pcId?0:1)});
+    return'<tr><td>'+esc(m.desc)+'<small>'+esc(m.forma||"")+'</small></td><td>'+esc(m.medida||"–")+'</td><td class="r mono">'+cmUn(m.nec,m.un)+'</td><td>'+((m.baixas||[]).map(function(b){return'<span class="idtag">'+esc(b.lote)+'</span> '+cmUn(b.qtd,m.un)}).join("<br>")||'<span class="hint">nenhum</span>')+(m.pcNum&&falta>0?'<br><small>comprado no PC '+esc(m.pcNum)+'</small>':'')+'</td>'+
+     '<td>'+(falta<=0.0005?'<span class="stp g">Baixado</span>':lts.length?'<select data-oplt="'+i+'">'+lts.map(function(l){return'<option value="'+esc(l.id)+'">Lote '+esc(l.lote)+' · '+esc(l.material)+' · saldo '+cmUn(l.saldo,l.un)+'</option>'}).join("")+'</select> <input data-opq="'+i+'" value="'+esc(String(Math.round(falta*1000)/1000).replace(".",","))+'" style="width:80px" class="r"> '+esc(m.un)+' <button class="btn sm pri" type="button" data-op3="baixar" data-i="'+i+'">Baixar</button>':
+       (m.pcId?'<span class="hint">aguardando o recebimento do PC '+esc(m.pcNum||"")+'</span>':'<button class="btn sm" type="button" data-op3="comprar" data-i="'+i+'">Gerar pedido de compra</button>'))+'</td></tr>'}).join("")+'</tbody></table>';
+  var pi='<h3>Plano de inspeção</h3><div class="acts2"><label class="mx-chk"><input type="checkbox" id="op-exigepi"'+(o.exigePI!==false?" checked":"")+'> Mencionar plano de inspeção na ficha</label>'+(pis.length?'<select id="op-pi">'+pis.map(function(p){return'<option value="'+esc(p.id)+'"'+(o.piId===p.id?" selected":"")+'>'+esc(cnIdTxt("planos_inspecao",p))+' · '+esc(p.status==="validado"?"validado":"aguardando validação")+'</option>'}).join("")+'</select>':'<span class="hint">Nenhum plano de inspeção com o código '+esc(o.codigo)+' (Qualidade › Planos de inspeção).</span>')+'</div>'+
+   (cns.length?'<p class="hint">Programas CNC desta peça: '+cns.map(function(p){return esc(cnIdTxt("programas_cnc",p)+" ("+(p.status||"")+")")}).join(", ")+'</p>':'');
+  h=h.replace('<dl class="cn-dl">',cab+'<dl class="cn-dl">');
+  var i0=h.indexOf('<h3>Material'),i1=h.indexOf('<p class="hint">O MRP');if(i0>-1&&i1>i0){var i2=h.indexOf('</p>',i1)+4;h=h.slice(0,i0)+mat+pi+h.slice(i2)}
+  return h;
+};
+$("mx-modal").addEventListener("change",function(e){if(!PP.open)return;var t=e.target,o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(!o)return;
+  if(t.id==="op-exigepi"){e.stopImmediatePropagation();opSet(o,{exigePI:t.checked},t.checked?"Plano de inspeção será mencionado na ficha.":"Ficha sem plano de inspeção.");return}
+  if(t.id==="op-pi"){e.stopImmediatePropagation();opSet(o,{piId:t.value},null);return}
+},true);
+document.addEventListener("change",function(e){var t=e.target;if(!PP.open||t.id!=="op-st")return;var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(!o)return;
+  if((t.value==="liberada"||t.value==="producao")&&o.status==="planejada"&&!opMatOk(o)){e.stopImmediatePropagation();e.stopPropagation();var v=t.value;t.value=o.status;
+    askDel("Liberar sem o material requisitado?","A "+o.num+" ainda não tem todo o material baixado de um lote (ou a NF de remessa do cliente). Liberar mesmo assim?",function(){opSet(o,{status:v},"Situação: "+(OP_ST[o.status]||o.status)+" → "+OP_ST[v]+" (sem material requisitado).")})}},true);
+$("mx-modal").addEventListener("focusin",function(e){if(PP.open&&e.target.closest&&e.target.closest(".op-mat"))CM.focoOp=1},true);
+$("mx-modal").addEventListener("focusout",function(e){if(PP.open)setTimeout(function(){var a=document.activeElement;if(!a||!a.closest||!a.closest(".op-mat"))CM.focoOp=0},50)},true);
+$("mx-modal").addEventListener("click",function(e){if(!PP.open)return;var b=e.target.closest("[data-op3]");if(!b)return;e.stopImmediatePropagation();var o=PP.ops.filter(function(x){return x.id===PP.open})[0];if(!o)return;var a=b.dataset.op3,i=+b.dataset.i,m=(o.materiais||[])[i];
+  if(a==="ficha"){opFicha(o);return}
+  if(a==="comprar"){var bx=0;(m.baixas||[]).forEach(function(z){bx+=+z.qtd||0});$("mx-modal").hidden=true;PP.open="";pcNovo([{o:o,i:i,m:m,falta:Math.max(0,(+m.nec||0)-bx)}]);return}
+  if(a==="nfcli"){var v=String(($('[data-opnf="'+i+'"]')||document.querySelector('[data-opnf="'+i+'"]')).value||"").trim();if(!v){toast("Informe a NF de remessa.");return}var mats=JSON.parse(JSON.stringify(o.materiais));mats[i].nfCliente=v;CM.focoOp=0;opSet(o,{materiais:mats},"Material do cliente: NF de remessa "+v+".");return}
+  if(a==="baixar"){var sel=document.querySelector('[data-oplt="'+i+'"]'),qi=document.querySelector('[data-opq="'+i+'"]');var l=CM.lotes.filter(function(x){return x.id===(sel&&sel.value)})[0],q=Math.round((+parse(qi&&qi.value)||0)*1000)/1000;
+    if(!l){toast("Escolha o lote.");return}if(!(q>0)){toast("Informe a quantidade.");return}if(q>ltSaldo(l)+0.0005){toast("O lote "+l.lote+" só tem "+cmUn(l.saldo,l.un)+".");return}
+    b.disabled=true;var t=Date.now(),mats2=JSON.parse(JSON.stringify(o.materiais));(mats2[i].baixas=mats2[i].baixas||[]).push({loteId:l.id,lote:l.lote,corrida:l.corrida||"",nf:l.nf||"",cert:!!l.cert,qtd:q,at:t,uid:AG.uid||""});
+    PR.db.doc("lotes/"+l.id).update({saldo:Math.round((ltSaldo(l)-q)*1000)/1000}).then(function(){return PR.db.doc("movimentos/mv-"+t.toString(36)+"-"+rid().slice(0,3)).set({tipo:"saida",loteId:l.id,lote:l.lote,material:l.material,qtd:q,un:l.un,opId:o.id,opNum:o.num,doc:o.num,at:t,uid:AG.uid||""})})
+     .then(function(){CM.focoOp=0;return opSet(o,{materiais:mats2},"Baixa de "+cmUn(q,l.un)+" do lote "+l.lote+(l.corrida?" (corrida "+l.corrida+")":"")+".")}).then(function(){toast("Baixado do lote "+l.lote+".")}).catch(function(){b.disabled=false;toast("Não consegui baixar.")});return}
+},true);
+
+/* ficha da OP: A4 retrato, identidade da empresa, acompanha a peça na fábrica */
+function opFicha(o){
+  var E=empData(o.emp==="STAR"?"STAR":"MIX"),cor=QI_COR[o.emp]||QI_COR.MIX,pd=opPedido(o),pi=o.exigePI===false?null:(opPlanos(o).filter(function(p){return p.id===o.piId})[0]||opPlanos(o)[0]),cns=opCncs(o),X=10,W=190,y=10,s="";
+  function T(x,yy,t,pt,op){return qiT(x,yy,t,pt,op)}
+  function box(x,yy,w,hh,f){return'<rect x="'+x.toFixed(2)+'" y="'+yy.toFixed(2)+'" width="'+w.toFixed(2)+'" height="'+hh.toFixed(2)+'" fill="'+(f||"none")+'" stroke="#9AA0B4" stroke-width="0.2"/>'}
+  s+='<rect x="0" y="0" width="210" height="297" fill="#fff"/>'+box(X,y,W,24)+'<image x="'+(X+2)+'" y="'+(y+3)+'" width="40" height="18" preserveAspectRatio="xMinYMid meet" href="'+fx(E.logoPng)+'"/>'+
+   T(X+W/2+8,y+11,"ORDEM DE PRODUÇÃO",15,{bold:true,c:cor.a,a:"middle"})+T(X+W/2+8,y+17,E.razao,7,{c:"#555A70",a:"middle"})+T(X+W-2,y+10,o.num,14,{bold:true,c:cor.p,a:"end"})+T(X+W-2,y+16,"Emitida "+new Date().toLocaleDateString("pt-BR"),7,{c:"#555A70",a:"end"})+T(X+W-2,y+21,(OP_ST[o.status]||o.status).toUpperCase(),7,{bold:true,c:cor.a,a:"end"});
+  y+=27;
+  var g=[["Cliente",o.cliente],["Pedido do cliente",pd.pedidoCliente||"–"],["Pedido interno",o.pedidoNum],["Entrega",o.entrega?dStr(o.entrega):"–"],["Peça / código",o.codigo],["Desenho / rev.",(o.desenho||"–")+(o.rev?" · rev. "+o.rev:"")],["Quantidade",o.qtd+" pç"],["Material",o.material||"–"]];
+  g.forEach(function(f,k){var cx=X+(k%4)*47.5,cy=y+Math.floor(k/4)*10;s+=box(cx,cy,47.5,10,k%2?"#fff":"#F6F7FA")+T(cx+1.5,cy+3.6,f[0],6,{c:"#555A70"})+T(cx+1.5,cy+8,qiCut(f[1]||"–",44,8.5),8.5,{bold:true})});
+  y+=21;s+=T(X,y+3.5,"Descrição: "+qiCut(o.descricao||"",180,8),8);y+=7;
+  /* material */
+  s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>'+T(X+2,y+4.2,"MATERIAL (requisição e baixa por lote)",8,{bold:true,c:"#fff"});y+=6;
+  var mc=[["Material",52],["Bruto/pç",30],["Necessário",22],["Lote",22],["Corrida",24],["NF",20],["Cert.",20]];var x0=X;mc.forEach(function(c){s+=box(x0,y,c[1],5.5,"#EEF0F6")+T(x0+1.2,y+3.8,c[0],6.5,{bold:true});x0+=c[1]});y+=5.5;
+  (o.materiais||[]).forEach(function(m){var bxs=(m.baixas||[]).length?m.baixas:[{}];bxs.forEach(function(bx,j){x0=X;var v=[j?"":m.desc+(m.cliente?" (cliente)":m.tipo!=="mp"?" (terceiro)":""),j?"":m.medida||"",j?"":cmUn(m.nec,m.un),m.cliente?"NF "+(m.nfCliente||"____"):bx.lote||"________",bx.corrida||(m.cliente||m.tipo!=="mp"?"":"________"),bx.nf||"",bx.lote?(bx.cert?"sim":"não"):""];
+    mc.forEach(function(c,ci){s+=box(x0,y,c[1],6.5)+T(x0+1.2,y+4.4,qiCut(v[ci],c[1]-2,7.5),7.5,{bold:ci===3});x0+=c[1]});y+=6.5})});
+  y+=4;
+  /* roteiro com espaço para o apontamento manual */
+  s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>'+T(X+2,y+4.2,"ROTEIRO DE FABRICAÇÃO E APONTAMENTO",8,{bold:true,c:"#fff"});y+=6;
+  var rc=[["Seq.",10],["Operação / instruções",50],["Máquina",34],["Prev.",13],["Operador",25],["Data",16],["Início",12],["Fim",12],["Boas",9],["Ref.",9]];x0=X;rc.forEach(function(c){s+=box(x0,y,c[1],5.5,"#EEF0F6")+T(x0+1,y+3.8,c[0],6.3,{bold:true});x0+=c[1]});y+=5.5;
+  (o.roteiro||[]).forEach(function(r){var mq=mqById(r.maq),rh=11;x0=X;var v=[String(r.seq),r.op,mq?(mq.codigo||"")+" "+(mq.nome||""):r.rec,fmtH((+r.min||0)/60),"","","","","",""];
+    rc.forEach(function(c,ci){s+=box(x0,y,c[1],rh);if(v[ci])s+=T(x0+1,y+4.2,qiCut(v[ci],c[1]-2,7.5),7.5,{bold:ci===1});x0+=c[1]});
+    if(r.obs)s+=T(X+11,y+8.6,qiCut(r.obs,48,6.5),6.5,{c:"#555A70"});if(mq)s+=T(X+61,y+8.6,qiCut(r.rec,32,6),6,{c:"#555A70"});y+=rh});
+  y+=4;
+  /* inspeção e programas */
+  s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>'+T(X+2,y+4.2,"QUALIDADE",8,{bold:true,c:"#fff"});y+=6;s+=box(X,y,W,22);
+  s+=T(X+2,y+5,pi?"Plano de inspeção: "+cnIdTxt("planos_inspecao",pi)+" ("+((pi.itens||[]).length)+" características"+(pi.status==="validado"?", validado":", aguardando validação")+") — medir conforme o plano.":(o.exigePI===false?"Sem plano de inspeção: inspeção visual e cotas do desenho.":"Plano de inspeção: não cadastrado para esta peça — inspecionar conforme desenho."),8);
+  s+=T(X+2,y+10.5,"Programas CNC: "+(cns.length?cns.map(function(p){return cnIdTxt("programas_cnc",p)+(p.status==="validado"?"":" (aguardando validação)")}).join(", "):"–"),8);
+  s+=T(X+2,y+17,"Rebarbas e aspecto visual:",8)+T(X+42,y+17,"( ) OK    ( ) NOK",8)+T(X+95,y+17,"Lote aprovado:",8)+T(X+118,y+17,"( ) Sim    ( ) Não    ( ) Com concessão",8);y+=26;
+  s+=box(X,y,W/2-2,16)+box(X+W/2+2,y,W/2-2,16)+T(X+2,y+4,"PCP · emissão",7,{c:"#555A70"})+T(X+W/2+4,y+4,"Qualidade · liberação final",7,{c:"#555A70"})+T(X+2,y+13,"Data ___/___/______  Visto ______________",7.5)+T(X+W/2+4,y+13,"Data ___/___/______  Visto ______________",7.5);
+  s+=T(X,290,E.razao+" · CNPJ "+E.cnpj+" · "+E.tel,6.5,{c:"#555A70"})+T(X+W,290,o.num+" · página 1",6.5,{c:"#555A70",a:"end"});
+  toast("Montando a ficha da OP…");
+  s='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 210 297" width="210mm" height="297mm">'+s+'</svg>';
+  svgToJpeg(s,1654).then(function(j){var pdf=pdfJpegPages([j],o.num+" - Ordem de producao");var bl=pdf instanceof Blob?pdf:new Blob([pdf],{type:"application/pdf"});
+    cnSave(String(o.num).replace(/\//g,"-")+"_"+String(o.codigo||"").replace(/[^A-Za-z0-9.\-]+/g,"-")+"_ORDEM-PRODUCAO.pdf",bl);
+    opSet(o,{fichaEm:Date.now()},"Ficha da OP impressa.")}).catch(function(){toast("Não consegui montar a ficha.")});
+}
+
+/* ---------- menu ---------- */
+["estmp","estmv"].forEach(function(k){MODS[k]={n:k==="estmp"?"Matéria-prima":"Movimentações",fase:"",et:[],txt:"",plan:[]};MX_TABS.push("m-"+k)});
+var _rmCm=renderMod;renderMod=function(box,k){if(k==="comp"){renderComp(box);return}if(k==="estmp"){renderEstMp(box);return}if(k==="estmv"){renderEstMv(box);return}return _rmCm.apply(this,arguments)};
+
+var _stCm=showTab;showTab=function(t){var r=_stCm.apply(this,arguments);
+  if(t==="m-comp"){$("crumb").innerHTML="Administrativo › <b>Compras</b>";$("crumb-t").textContent="Compras"}
+  if(t==="m-estmp"){$("crumb").innerHTML="Estoque › <b>Matéria-prima</b>";$("crumb-t").textContent="Matéria-prima"}
+  if(t==="m-estmv"){$("crumb").innerHTML="Estoque › <b>Movimentações</b>";$("crumb-t").textContent="Movimentações"}
+  return r};
 
 })();
 </script>

@@ -3587,9 +3587,9 @@ function pdSet(p,patch,txt){
   return PR.db.doc("pedidos/"+p.id).update(patch).catch(function(){toast("Não consegui gravar o pedido.")});
 }
 function pdNext(){
-  var ano=new Date().getFullYear(),ref=PR.db.doc("config/pseq-"+ano),holder=rid();
-  function tryAcq(k){return ref.acquire({holder:holder,ttlMs:8000}).then(function(r){
-    if(!r.acquired){if(k>8)throw new Error("ocupado");return new Promise(function(ok){setTimeout(ok,500)}).then(function(){return tryAcq(k+1)})}
+  var ano=new Date().getFullYear(),ref=PR.db.doc("config/pseq-"+ano),holder=ID_HOLDER;
+  function tryAcq(k){return ref.acquire({holder:holder,ttlMs:3000}).then(function(r){
+    if(!r.acquired){if(k>25)throw new Error("ocupado");return new Promise(function(ok){setTimeout(ok,500)}).then(function(){return tryAcq(k+1)})}
     return ref.get().then(function(sn){var n=((sn.exists&&sn.data().n)||0)+1;return ref.set({n:n}).then(function(){return{n:n,ano:ano}})})})}
   return tryAcq(0);
 }
@@ -5147,13 +5147,16 @@ var _stCnc=showTab;showTab=function(t){var r=_stCnc.apply(this,arguments);
 /* ---- ID sequencial para todo cadastro (gestor, 23/10/2026) ---- */
 var IDP={clientes:"CLI",fornecedores:"FOR",programas_cnc:"CNC"};
 function cnIdTxt(col,r){return r&&r.idSeq?IDP[col]+"-"+("000"+r.idSeq).slice(-4):IDP[col]+"-…"}
-function cnNextId(col){
-  var ref=PR.db.doc("config/ids-"+col),holder=rid();
-  function go(k){return ref.acquire({holder:holder,ttlMs:8000}).then(function(r){
-    if(!r.acquired){if(k>10)throw new Error("ocupado");return new Promise(function(ok){setTimeout(ok,400)}).then(function(){return go(k+1)})}
-    return ref.get().then(function(sn){var n=((sn.exists&&sn.data().n)||0)+1;return ref.set({n:n}).then(function(){return n})})})}
+/* v97: o lease não tem "soltar"; com um holder fixo por aba, a mesma aba renova na hora (antes cada número esperava o lease anterior vencer, ~8 s) */
+var ID_HOLDER="aba-"+Math.random().toString(36).slice(2,10);
+function cnNextIdN(col,qtd){
+  var ref=PR.db.doc("config/ids-"+col);qtd=Math.max(1,qtd||1);
+  function go(k){return ref.acquire({holder:ID_HOLDER,ttlMs:3000}).then(function(r){
+    if(!r.acquired){if(k>25)throw new Error("ocupado");return new Promise(function(ok){setTimeout(ok,400)}).then(function(){return go(k+1)})}
+    return ref.get().then(function(sn){var n0=(sn.exists&&sn.data().n)||0;return ref.set({n:n0+qtd}).then(function(){return n0+1})})})}
   return go(0);
 }
+function cnNextId(col){return cnNextIdN(col,1)}
 var IDS_BUSY=false;
 function idSweep(){
   if(IDS_BUSY||!PR.db)return;
@@ -6551,6 +6554,22 @@ function itEnsure(x,cli,emp,mod,origem){
   return cnNextId("itens").then(function(n){doc.idSeq=n;return PR.db.doc("itens/"+id).set(doc)}).then(function(){IT.list.push((doc.id=id,doc));return id});
 }
 
+/* vários itens de uma vez: reserva os números num só passo e grava em paralelo; devolve os ids na mesma ordem */
+function itEnsureMany(list,cli,emp,mod,origem,onProg){
+  var out=list.map(function(x){var ex=itFind(cli,x.cod);return ex?ex.id:null}),novos=[],vistos={};
+  list.forEach(function(x,i){if(out[i])return;var k=itKey(cli,x.cod);if(vistos[k]!=null){out[i]={ref:vistos[k]};return}vistos[k]=i;novos.push(i)});
+  if(!novos.length)return Promise.resolve(out.map(function(o){return o&&o.ref!=null?out[o.ref]:o}));
+  var pad=IT.pad[emp]||{},t=Date.now(),feitos=0;
+  return cnNextIdN("itens",novos.length).then(function(n0){
+    return Promise.all(novos.map(function(i,k){var x=list[i],id="it-"+t.toString(36)+"-"+rid().slice(0,4)+k;
+      var f={ncm:"",cest:"",origem:"0",csosn:pad.csosn||"",cstIpi:pad.cstIpi||"",aliqIpi:"",cstPis:pad.cstPis||"",cstCofins:pad.cstCofins||""},cf=itCfopPad(mod);for(var q in cf)f[q]=cf[q];
+      var doc={codigo:String(x.cod||"").trim(),cliente:cli||"",descricao:x.nome||x.desc||"",desenho:x.dwg||"",rev:x.rev||"",material:x.mat||"",unidade:"PC",emp:emp||"MIX",modalidade:mod||"Venda",tipoSped:"04",pesoKg:"",
+        fiscal:f,origem:origem||"",idSeq:n0+k,criado:t,atualizado:t,hist:[{at:t,uid:AG.uid||"",txt:"Item cadastrado automaticamente"+(origem?" ("+origem+")":"")+"."}]};
+      return PR.db.doc("itens/"+id).set(doc).then(function(){out[i]=id;doc.id=id;IT.list.push(doc);feitos++;if(onProg)onProg(feitos,novos.length)})}));
+  }).then(function(){return out.map(function(o){return o&&o.ref!=null?out[o.ref]:o})});
+}
+/* material do item: o texto da proposta; senão o fim da descrição ("TAMPÃO LATERAL - Alumínio") */
+function itMatDe(it){var m=String(it.matTxt||"").trim();if(m)return m;var p=String(it.name||it.desc||"").split(/\s+-\s+/);if(p.length>1){var u=p[p.length-1].trim();if(u&&!/^DES\.?:/i.test(u)&&u.length<60)return u}return""}
 /* ---------- aprovar proposta → pedido interno ---------- */
 function pdAprovar(pid){
   var ex=PD.list.filter(function(x){return x.propostaId===pid&&!x.cancelado})[0];if(ex){PD.open=ex.id;showTab("ped");return}
@@ -6560,7 +6579,7 @@ function pdAprovar(pid){
     var d=sn.exists?sn.data():{},its=[],ind=0,cli=sm.cliente||d.cli||"";
     (d.items||[]).forEach(function(it){var c={};try{c=calc(it)}catch(e){}var q=Math.max(1,+parse(it.qtd)||1),u=c&&c.ok?c.preco:NaN;
       if(!isFinite(u)){var pv=parse(it.preco);u=isFinite(pv)?pv:0}var de="";try{de=pdfDesc(it)}catch(e){}if(!de)de=[it.name,it.dwg?"DES.:"+it.dwg:""].filter(Boolean).join(" - ")||it.desc||"";
-      var mat=it.matTxt||"";try{if(!mat&&S.P&&S.P.mat&&S.P.mat[it.mat])mat=S.P.mat[it.mat].n}catch(e){}
+      var mat=itMatDe(it);
       if(it.tipo==="Industrialização")ind++;
       var ent=it.entTxt?toDay(it.entTxt):NaN;
       its.push({ok:true,cod:it.cod||"",desc:de,nome:it.name||it.desc||"",dwg:dwgKey(it.dwg)||it.dwg||"",rev:it.revReq||"",mat:mat,ordem:it.ordem||"",qtd:q,unit:Math.round(u*100)/100,ent:isFinite(ent)?new Date(ent).toISOString().slice(0,10):""})});
@@ -6597,9 +6616,9 @@ $("mx-modal").addEventListener("click",function(e){var a=IT.ap;if(!a)return;var 
   if(!b)return;e.stopImmediatePropagation();
   var sel=a.its.filter(function(x){return x.ok&&x.qtd>0});if(!sel.length){toast("Marque pelo menos um item.");return}
   b.disabled=true;b.textContent="Gerando…";
-  var ids=[],pr=Promise.resolve(),org="proposta "+(a.sm.num||"");
-  sel.forEach(function(x){pr=pr.then(function(){return itEnsure(x,a.cli,a.emp,a.mod,org).then(function(id){ids.push(id)}).catch(function(){ids.push("")})})});
-  pr.then(function(){
+  var ids=[],org="proposta "+(a.sm.num||"");
+  itEnsureMany(sel,a.cli,a.emp,a.mod,org,function(f,n){b.textContent="Cadastrando itens "+f+" de "+n+"…"}).then(function(r){ids=r;b.textContent="Gerando o pedido…";
+
     var tot=0,its=sel.map(function(x,i){var ent=x.ent||a.prazo;tot+=x.qtd*x.unit;return{cod:x.cod,desc:x.desc,qtd:x.qtd,unit:x.unit,total:Math.round(x.qtd*x.unit*100)/100,entrega:ent,itemId:ids[i]||"",ordem:x.ordem||"",situacao:"aguardando OP"}});
     var prazo=its.reduce(function(m2,x){return x.entrega>m2?x.entrega:m2},"");
     m.hidden=true;var ap=IT.ap;IT.ap=null;

@@ -1286,6 +1286,17 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 #mx-modal .card.cm-mod{width:min(1000px,96vw)!important;max-width:min(1000px,96vw)!important;max-height:92vh;overflow:auto}
 .gen-mod .rt-tab input:not(.r){width:100%;min-width:110px}.gen-mod .rt-tab select{min-width:150px}
 .ap-scan{display:flex;flex-direction:column;gap:2px;margin-left:auto;font-size:11px;color:var(--muted)}.ap-scan input{width:190px;min-height:34px;padding:4px 8px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+
+/* v108 usuários */
+.us-r{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;grid-template-columns:minmax(170px,1.2fr) minmax(200px,1.5fr) minmax(160px,1fr) 150px 190px;min-width:900px}
+.us-r.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}.us-r.off{opacity:.55}.us-r small{display:block;color:var(--muted);font-size:11.5px}
+.us-pf{display:flex;flex-wrap:wrap;gap:6px 16px;margin:4px 0 8px}
+.pm-t td.c,.pm-t th.c{text-align:center}.pm-t tr.pm-g td{background:var(--surface2);font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.usr-ban{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:60;background:#FFF4D6;color:#5C4400;border:1px solid #F0D58A;border-top:0;border-radius:0 0 10px 10px;padding:6px 12px;font-size:13px;display:flex;gap:10px;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.fb-btn{position:fixed;right:16px;bottom:16px;z-index:55;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer}
+.fb-btn:hover{background:var(--surface2)}.fb-txt{white-space:pre-wrap;max-width:420px}
+.usr-vl{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}.usr-vl .btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;height:auto}.usr-vl small{color:var(--muted)}
+.h-quem{color:var(--muted)}
 </style>
 
 <div class="shell">
@@ -1319,7 +1330,7 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 <button type="button" class="mod" data-tog2="eng" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l6-6M14 4l6 6-9 9H5v-6z"/></svg><span>Engenharia</span><svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
 <div class="subs" id="s-eng"><nav class="tabs" role="tablist" aria-label="Engenharia"><button type="button" role="tab" id="t-cnc" aria-selected="false" data-mtab="m-cnc">Programas CNC</button><button type="button" role="tab" id="t-meng" aria-selected="false" data-mtab="m-eng">Pedidos em engenharia</button></nav></div>
 <button type="button" class="mod" data-m="prod"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg><span>Produção</span><span class="tagf">F3</span></button>
-<button type="button" class="mod" data-m="qual"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Qualidade</span><span class="tagf">F4</span></button><button type="button" role="tab" id="t-qpi" aria-selected="false" data-mtab="m-qpi" hidden>Planos de inspeção</button><button type="button" role="tab" id="t-itens" aria-selected="false" data-mtab="m-itens" hidden>Cadastro de itens</button><button type="button" role="tab" id="t-maq" aria-selected="false" data-mtab="m-maq" hidden>Máquinas</button><button type="button" role="tab" id="t-estmp" aria-selected="false" data-mtab="m-estmp" hidden>Matéria-prima</button><button type="button" role="tab" id="t-estmv" aria-selected="false" data-mtab="m-estmv" hidden>Movimentações</button><button type="button" role="tab" id="t-prog" aria-selected="false" data-mtab="m-prog" hidden>Programação de máquinas</button><button type="button" role="tab" id="t-apt" aria-selected="false" data-mtab="m-apt" hidden>Apontamentos</button><button type="button" role="tab" id="t-mon" aria-selected="false" data-mtab="m-mon" hidden>Monitor de produção</button>
+<button type="button" class="mod" data-m="qual"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Qualidade</span><span class="tagf">F4</span></button><button type="button" role="tab" id="t-qpi" aria-selected="false" data-mtab="m-qpi" hidden>Planos de inspeção</button><button type="button" role="tab" id="t-itens" aria-selected="false" data-mtab="m-itens" hidden>Cadastro de itens</button><button type="button" role="tab" id="t-maq" aria-selected="false" data-mtab="m-maq" hidden>Máquinas</button><button type="button" role="tab" id="t-estmp" aria-selected="false" data-mtab="m-estmp" hidden>Matéria-prima</button><button type="button" role="tab" id="t-estmv" aria-selected="false" data-mtab="m-estmv" hidden>Movimentações</button><button type="button" role="tab" id="t-usr" aria-selected="false" data-mtab="m-usr" hidden>Usuários</button><button type="button" role="tab" id="t-perm" aria-selected="false" data-mtab="m-perm" hidden>Permissões</button><button type="button" role="tab" id="t-prog" aria-selected="false" data-mtab="m-prog" hidden>Programação de máquinas</button><button type="button" role="tab" id="t-apt" aria-selected="false" data-mtab="m-apt" hidden>Apontamentos</button><button type="button" role="tab" id="t-mon" aria-selected="false" data-mtab="m-mon" hidden>Monitor de produção</button>
 <button type="button" class="mod" data-m="exp"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg><span>Expedição</span><span class="tagf">F2</span></button>
 <button type="button" class="mod" data-m="pos"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.5 7.2L4 20l1-4.3A8 8 0 1121 12z"/></svg><span>Pós-venda</span><span class="tagf">F5</span></button>
 <button type="button" class="mod" data-m="dir"><svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Direção</span><span class="tagf">F5</span></button>
@@ -3687,7 +3698,7 @@ function renderDet(box,p){
    '<div class="card"><h3>Itens</h3>'+(its.length?'<div style="overflow:auto"><table class="itb"><thead><tr><th>Código</th><th>Descrição</th><th class="r">Qtd</th><th class="r">Unitário</th><th class="r">Total</th></tr></thead><tbody>'+
     its.map(function(x){return'<tr><td>'+esc(x.cod||"")+'</td><td>'+esc(x.desc||"")+'</td><td class="r">'+esc(x.qtd)+'</td><td class="r">'+(x.unit?brl(+x.unit):"–")+'</td><td class="r">'+(x.total?brl(+x.total):"–")+'</td></tr>'}).join("")+
     '</tbody><tfoot><tr><td colspan="4">Total</td><td class="r">'+brl(tot)+'</td></tr></tfoot></table></div>':'<p class="hint">Pedido manual sem itens. Os itens vêm da proposta quando o pedido nasce dela.</p>')+'</div>'+
-  '</div><div class="card"><h3>Histórico</h3><ul class="hist">'+(hist.length?hist.map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+'</span></li>'}).join(""):'<li><span class="hint">Sem registros.</span></li>')+'</ul></div></div>';
+  '</div><div class="card"><h3>Histórico</h3><ul class="hist">'+(hist.length?hist.map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+histQuem(h)+'</span></li>'}).join(""):'<li><span class="hint">Sem registros.</span></li>')+'</ul></div></div>';
 }
 function pdSet(p,patch,txt){
   if(!PR.db){toast("Banco indisponível.");return Promise.resolve()}
@@ -4702,7 +4713,7 @@ function cnDetail(box,p){
      '<textarea class="cn-nc" data-cncop="'+i+'" spellcheck="false"'+(val?' readonly':'')+'>'+esc(o.nc||"")+'</textarea></details>'}).join("")+
    cbRefsHtml(p)+(busy?'':cbFbHtml(p))+
    (busy?'<div class="card">':'<div class="card"><div class="acts2">'+(val?'<button class="btn" type="button" data-cnc="reopen" data-id="'+esc(p.id)+'">Reabrir para correção</button>':'<button class="btn" type="button" data-cnc="savenc" data-id="'+esc(p.id)+'">Salvar correções</button><span class="sp" style="flex:1"></span><button class="btn pri" type="button" data-cnc="validate" data-id="'+esc(p.id)+'">Validar programa</button>')+'</div>')+
-   '<h3>Histórico</h3><ul class="hist">'+((p.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+'</span></li>'}).join("")||'<li><span class="hint">Sem registros.</span></li>')+'</ul></div>';
+   '<h3>Histórico</h3><ul class="hist">'+((p.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+histQuem(h)+'</span></li>'}).join("")||'<li><span class="hint">Sem registros.</span></li>')+'</ul></div>';
   cnDrawing(p).then(function(urls){var el=$("cn-dpv");if(!el)return;el.innerHTML=urls.length?urls.map(function(u){return'<img src="'+u+'" alt="Página do desenho">'}).join(""):'<span class="hint">Desenho não guardado.</span>';
     Array.prototype.forEach.call(document.querySelectorAll(".cn-f-img"),function(b){b.innerHTML=urls[0]?'<img src="'+urls[0]+'" alt="">':'<span class="hint">sem desenho</span>'})}).catch(function(){var el=$("cn-dpv");if(el)el.innerHTML='<span class="hint">Não consegui abrir o desenho guardado.</span>'});
 }
@@ -5356,7 +5367,7 @@ window.__regOpen=function(m){msOpenMod(m)};
 })();
 
 /* ===== v81: estrutura de 7 módulos (config/modulos), menu novo, Início do usuário e perfis (26/10/2026) ===== */
-var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Primeira peça"}, {"nome": "Inspeções", "tela": ".mod[data-m=\"qual\"]"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas", "tela": "#t-prog"}, {"nome": "Monitor de produção", "tela": "#t-mon"}, {"nome": "Apontamentos", "tela": "#t-apt"}, {"nome": "Máquinas", "tela": "#t-maq"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Matéria-prima", "tela": "#t-estmp"}, {"nome": "Peças acabadas"}, {"nome": "Movimentações", "tela": "#t-estmv"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários"}, {"nome": "Permissões"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeções", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
+var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Primeira peça"}, {"nome": "Inspeções", "tela": ".mod[data-m=\"qual\"]"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas", "tela": "#t-prog"}, {"nome": "Monitor de produção", "tela": "#t-mon"}, {"nome": "Apontamentos", "tela": "#t-apt"}, {"nome": "Máquinas", "tela": "#t-maq"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Matéria-prima", "tela": "#t-estmp"}, {"nome": "Peças acabadas"}, {"nome": "Movimentações", "tela": "#t-estmv"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários", "tela": "#t-usr"}, {"nome": "Permissões", "tela": "#t-perm"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeções", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
 var MSM={def:MODS_DEF,gestor:false,open:null,cur:"",user:null,nome:""};
 function msValid(d){return d&&Array.isArray(d.modulos)&&d.modulos.length&&d.modulos.every(function(m){return m&&m.nome&&Array.isArray(m.areas)})}
 function msAreas(m){return(m.areas||[]).filter(function(a){return!a.gestor||MSM.gestor})}
@@ -5412,7 +5423,7 @@ var _stMs=showTab;showTab=function(t){
   return r;
 };
 function msFind(t){
-  var T={ini:"#t-ini",sv:"#t-pc",in:"#t-pc",itens:"#t-pc",prop:"#t-pc",ped:"#t-ped","m-comp":"#t-mcomp","m-fin":"#t-mfin","m-cnc":"#t-cnc","m-qpi":"#t-qpi","m-itens":"#t-itens","m-maq":"#t-maq","m-prog":"#t-prog","m-apt":"#t-apt","m-mon":"#t-mon","m-eng":"#t-meng","m-estmp":"#t-estmp","m-estmv":"#t-estmv",par:"#t-par",cap:".mod[data-cap]","m-prod":'.mod[data-m="prod"]',"m-qual":'.mod[data-m="qual"]'};
+  var T={ini:"#t-ini",sv:"#t-pc",in:"#t-pc",itens:"#t-pc",prop:"#t-pc",ped:"#t-ped","m-comp":"#t-mcomp","m-fin":"#t-mfin","m-cnc":"#t-cnc","m-qpi":"#t-qpi","m-itens":"#t-itens","m-maq":"#t-maq","m-prog":"#t-prog","m-apt":"#t-apt","m-mon":"#t-mon","m-eng":"#t-meng","m-estmp":"#t-estmp","m-estmv":"#t-estmv","m-usr":"#t-usr","m-perm":"#t-perm",par:"#t-par",cap:".mod[data-cap]","m-prod":'.mod[data-m="prod"]',"m-qual":'.mod[data-m="qual"]'};
   var sel=t==="cad"?({cli:"#t-cli",forn:"#t-forn",emp:"#t-emp"}[PD.cadTab]||""):T[t];if(!sel)return"";
   var hit="";MSM.def.modulos.forEach(function(m){(m.areas||[]).forEach(function(a){if(!hit&&a.tela===sel&&(!a.gestor||MSM.gestor))hit=m.nome+"|"+a.nome})});return hit;
 }
@@ -6343,7 +6354,7 @@ function qiDetail(box,p){
    ((p.fora||[]).length?'<div class="cn-notes"><b>Ficou fora do balonamento (regra da casa)</b><p class="hint" style="margin:4px 0 0">'+esc(p.fora.join(" · "))+'</p></div>':'')+'</div>'+
    qiOrientHtml(p,busy)+
    (busy?'<div class="card">':'<div class="card"><div class="acts2">'+(val?'<button class="btn" type="button" data-qi="reopen" data-id="'+esc(p.id)+'">Reabrir para correção</button>':'<button class="btn" type="button" data-qi="save" data-id="'+esc(p.id)+'">Salvar correções</button><button class="btn" type="button" data-qi="desfaz" data-id="'+esc(p.id)+'"'+(e.dirty?'':' disabled')+'>Desfazer correções não salvas</button><span class="sp" style="flex:1"></span><button class="btn pri" type="button" data-qi="validate" data-id="'+esc(p.id)+'">Validar plano</button>')+'</div>')+
-   '<h3>Histórico</h3><ul class="hist">'+((p.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+'</span></li>'}).join("")||'<li><span class="hint">Sem registros.</span></li>')+'</ul></div>';
+   '<h3>Histórico</h3><ul class="hist">'+((p.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+histQuem(h)+'</span></li>'}).join("")||'<li><span class="hint">Sem registros.</span></li>')+'</ul></div>';
   if(!QI.img[p.id]&&p.fonte&&p.fonte.url)qiDrawing(p).then(function(){if(QI.open===p.id)mxRender()}).catch(function(){var el=$("qi-dw");if(el)el.innerHTML='<span class="hint">Não consegui abrir o desenho guardado.</span>'});
 }
 function qiDrawing(p){
@@ -6841,7 +6852,7 @@ function itDetail(box,x){
     '<dt>Planos de inspeção</dt><dd>'+(pis.length?pis.map(function(p){return'<span class="idtag">'+esc(cnIdTxt("planos_inspecao",p))+'</span>'}).join(" "):'<span class="hint">nenhum com este código</span>')+'</dd>'+
     '<dt>Roteiro e estrutura</dt><dd><span class="hint">na próxima etapa (engenharia define operações, máquinas, tempos e material por peça)</span></dd></dl></div>'+
    '<div class="card"><div class="acts2"><button class="btn pri" type="button" data-it="salvar" data-id="'+esc(x.id)+'"'+(e.dirty?'':' disabled')+'>Salvar</button><button class="btn" type="button" data-it="desfaz"'+(e.dirty?'':' disabled')+'>Desfazer</button></div>'+
-   '<h3>Histórico</h3><ul class="hist">'+((x.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+'</span></li>'}).join("")||'<li><span class="hint">Sem registros.</span></li>')+'</ul></div>';
+   '<h3>Histórico</h3><ul class="hist">'+((x.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+histQuem(h)+'</span></li>'}).join("")||'<li><span class="hint">Sem registros.</span></li>')+'</ul></div>';
 }
 function renderItens(box){
   itSub();
@@ -7100,7 +7111,7 @@ function opDetHtml(o){
    '<h3>Material (necessidade para '+esc(o.qtd)+' pç)</h3><table class="itb"><thead><tr><th>Tipo</th><th>Material</th><th>Forma</th><th>Bruto/pç</th><th class="r">Necessidade</th><th>Origem</th></tr></thead><tbody>'+(o.materiais||[]).map(function(m){return'<tr><td>'+esc(({mp:"Matéria-prima",terc:"Terceiro",comp:"Componente"})[m.tipo]||m.tipo)+'</td><td>'+esc(m.desc)+'</td><td>'+esc(m.forma)+'</td><td>'+esc(m.medida||"–")+'</td><td class="r">'+nf(m.nec,m.un==="kg"?3:m.un==="pç"?0:1)+' '+esc(m.un)+'</td><td>'+(m.cliente?"Cliente fornece":"Comprar / estoque")+'</td></tr>'}).join("")+'</tbody></table>'+
    '<p class="hint">O MRP (próxima etapa) soma estas necessidades com o estoque e gera as sugestões de compra.</p>'+
    '<div class="acts2"><span class="sp" style="flex:1"></span>'+(o.status!=="cancelada"&&o.status!=="concluida"?'<button class="btn sm danger" type="button" data-op2="cancel">Cancelar OP</button>':'')+'</div>'+
-   '<h3>Histórico</h3><ul class="hist">'+(o.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+'</span></li>'}).join("")+'</ul></div>';
+   '<h3>Histórico</h3><ul class="hist">'+(o.hist||[]).slice().reverse().map(function(h){return'<li><time>'+esc(nowStr(h.at))+'</time><span>'+esc(h.txt)+histQuem(h)+'</span></li>'}).join("")+'</ul></div>';
 }
 function opSet(o,patch,txt){patch.atualizado=Date.now();if(txt){var h=(o.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:txt});patch.hist=h}return PR.db.doc("ordens/"+o.id).update(patch).catch(function(){toast("Não consegui gravar a OP.")})}
 function opAbrir(id){var o=PP.ops.filter(function(x){return x.id===id})[0];if(!o)return;PP.open=id;var m=$("mx-modal");m.innerHTML=opDetHtml(o);m.hidden=false}
@@ -7875,6 +7886,180 @@ function apLer(v){var r=opPorCod(v);if(!r){toast("Código não reconhecido: "+v)
   var ma=mqById(x.maq),pt=mqById(MQ.posto);
   askDel("Trazer a operação para este posto?",o.num+" · "+x.seq+" "+x.op+(ma?" está programada para "+ma.nome:" ainda não foi programada")+". Passar para "+(pt?pt.nome:"este posto")+"?",function(){
     opPatchRot(o,j,{maq:MQ.posto,fila:0},"Operação "+x.seq+" "+x.op+" passada para "+(pt?pt.nome:"o posto")+" pela leitura da ficha.").then(function(){MQ.apSel=k;mxRender()})})}
+
+
+/* ===== v108: usuários, perfis e permissões (Configurações › Usuários / Permissões), "ver como" e feedback dos testadores.
+   Portável para a hospedagem própria: os perfis e a matriz ficam no banco (usuarios, config/permissoes); só a identificação muda (hoje: id do Claude; depois: login). ===== */
+var USR={list:[],sub:false,ok:false,como:"",perm:null,fb:[],aba:"usr",ed:null,fbOpen:null,pedido:false,dono:false};
+var PERFIS=[["diretoria","Diretoria"],["pcp","PCP"],["programador","Programador CNC"],["administrativo","Administrativo"],["qualidade","Qualidade"],["posto","Posto (tablet da máquina)"]];
+var ACOES=[
+ ["vendas.pedido","Vendas","Criar propostas e aprovar pedido interno"],
+ ["compras.pedido","Compras","Emitir e cancelar pedido de compra"],
+ ["compras.receber","Compras","Receber material (NF, corrida, certificado)"],
+ ["estoque.ajuste","Estoque","Ajustar saldo e dar entrada avulsa"],
+ ["qual.inspecao","Qualidade","Gravar inspeção de recebimento do lote"],
+ ["eng.liberar","Engenharia","Liberar e reabrir roteiro e estrutura do item"],
+ ["pcp.op","PCP","Emitir, editar, cancelar OP e mudar a situação"],
+ ["pcp.material","PCP","Empenhar, estornar, requisitar e entregar material à fábrica"],
+ ["apont","PCP","Apontar produção (iniciar, pausar, terminar)"],
+ ["cad.maquinas","PCP","Cadastrar, alterar e excluir máquinas"]
+];
+/* padrão: áreas (Módulo|Área) e ações por perfil. A Diretoria tem tudo. */
+var PERM_DEF={
+ pcp:{areas:["Vendas|Pedidos internos","Administrativo|Compras","Engenharia|Cadastro de itens","Engenharia|Roteiros e estruturas","Engenharia|Programas CNC","Qualidade|Planos de inspeção","PCP|*","Estoque|*"],acoes:["pcp.op","pcp.material","apont","cad.maquinas"]},
+ programador:{areas:["Engenharia|*","PCP|Ordens de produção","PCP|Programação de máquinas","PCP|Monitor de produção","PCP|Apontamentos","PCP|Máquinas","Qualidade|Planos de inspeção","Estoque|Matéria-prima"],acoes:["eng.liberar","apont"]},
+ administrativo:{areas:["Vendas|*","Administrativo|*","Estoque|*","PCP|Ordens de produção","PCP|Monitor de produção","Engenharia|Cadastro de itens"],acoes:["vendas.pedido","compras.pedido","compras.receber","estoque.ajuste"]},
+ qualidade:{areas:["Qualidade|*","Engenharia|Cadastro de itens","Engenharia|Programas CNC","PCP|Ordens de produção","PCP|Monitor de produção","Estoque|Matéria-prima","Estoque|Movimentações","Vendas|Pedidos internos"],acoes:["qual.inspecao"]},
+ posto:{areas:["PCP|Apontamentos"],acoes:["apont"]}
+};
+function usrSub(){
+  if(USR.sub||!PR.db)return;USR.sub=true;
+  PR.db.collection("usuarios").onSnapshot(function(sn){USR.list=sn.docs.map(function(x){var o=x.data()||{},c={};for(var k in o)c[k]=o[k];c.id=x.id;return c}).sort(function(a,b){return String(a.nome).localeCompare(String(b.nome))});USR.ok=true;usrAplica()},function(){USR.ok=true;usrAplica()});
+  PR.db.collection("feedback").onSnapshot(function(sn){USR.fb=sn.docs.map(function(x){var o=x.data()||{},c={};for(var k in o)c[k]=o[k];c.id=x.id;return c}).sort(function(a,b){return(b.at||0)-(a.at||0)});if(S.tab==="m-usr"&&USR.aba==="fb")mxRender()},function(){});
+  var r=PR.db.doc("config/permissoes");if(r.onSnapshot)r.onSnapshot(function(s){USR.perm=s&&s.exists?s.data():null;USR.permV=s&&s.version||0;usrAplica()},function(){});else r.get().then(function(s){USR.perm=s&&s.exists?s.data():null;usrAplica()}).catch(function(){});
+  try{claude.use("user").then(function(u){if(u&&u.isOwner)return u.isOwner().then(function(o){USR.dono=!!o;usrAplica()})}).catch(function(){})}catch(e){}
+}
+(function wus(){if(typeof PR!=="undefined"&&PR&&PR.db){usrSub();return}setTimeout(wus,600)})();
+function usrReal(){var id=AG.uid;return id?USR.list.filter(function(u){return u.uid===id&&u.ativo!==false})[0]||null:null}
+function usrEu(){if(USR.como){var c=USR.list.filter(function(u){return u.id===USR.como})[0];if(c)return c}return usrReal()}
+function usrNome(uid){if(!uid)return"";var u=USR.list.filter(function(x){return x.uid===uid})[0];return u?u.nome:""}
+/* sem usuários cadastrados (ou antes de carregar) tudo fica liberado, como antes; o dono do MISTA é sempre Diretoria (salvo no "ver como") */
+function usrLivre(){return!USR.ok||!USR.list.length}
+function usrDir(){if(usrLivre())return true;var e=usrEu();if(USR.como)return!!(e&&(e.perfis||[]).indexOf("diretoria")>-1);return USR.dono||!!(e&&(e.perfis||[]).indexOf("diretoria")>-1)}
+function usrPerm(p){var m=USR.perm&&USR.perm.perfis&&USR.perm.perfis[p];return m||PERM_DEF[p]||{areas:[],acoes:[]}}
+function podeArea(mod,area){if(usrDir())return true;var e=usrEu();if(!e)return false;return(e.perfis||[]).some(function(p){var a=usrPerm(p).areas||[];return a.indexOf(mod+"|"+area)>-1||a.indexOf(mod+"|*")>-1})}
+function pode(acao){if(usrDir())return true;var e=usrEu();if(!e)return false;return(e.perfis||[]).some(function(p){return(usrPerm(p).acoes||[]).indexOf(acao)>-1})}
+function usrPerfTxt(u){return(u.perfis||[]).map(function(p){return(PERFIS.filter(function(x){return x[0]===p})[0]||[p,p])[1]}).join(", ")}
+
+/* ---------- menu, abas e ações respeitam o perfil ---------- */
+var _msAreasU=msAreas;msAreas=function(m){return _msAreasU.apply(this,arguments).filter(function(a){return podeArea(m.nome,a.nome)})};
+var _msMenuU=msMenu;msMenu=function(){_msMenuU.apply(this,arguments);var N=$("nmods");if(!N)return;
+  Array.prototype.forEach.call(N.querySelectorAll('[data-nm="m"]'),function(b){var m=MSM.def.modulos[+b.dataset.i];if(m&&!msAreas(m).length)b.remove()})};
+function usrAreaDaTab(t){var h=msFind(t);return h?h.split("|"):null}
+var _stU=showTab;showTab=function(t){
+  if(!usrLivre()&&t!=="home"&&t!=="wip"){var a=usrAreaDaTab(t);if(a&&!podeArea(a[0],a[1])){toast("Sem acesso a "+a[0]+" › "+a[1]+" no seu perfil.");t="home"}}
+  var r=_stU.call(this,t);usrBanner();return r};
+var USR_ACAO=[
+ ["compras.pedido",'[data-cm="gerar"],[data-cm="novo"],[data-cm="cancela"],[data-pcx="y"]'],
+ ["compras.receber",'[data-cm="receber"],[data-rcx="y"]'],
+ ["estoque.ajuste",'[data-lt="ajuste"],[data-lt="avulso"],[data-avx="y"]'],
+ ["qual.inspecao",'[data-lt="insp"]'],
+ ["eng.liberar",'[data-rtb="liberar"],[data-esb="liberar"],[data-rtb="reabrir"],[data-esb="reabrir"]'],
+ ["pcp.op",'[data-pp="op"],[data-pp="optodos"],[data-x="opgerar"],[data-op7="editar"],[data-op2="cancel"],[data-gx="y"]'],
+ ["pcp.material",'[data-op3="empenhar"],[data-op3="estorno"],[data-op3="baixar"],[data-op3="requisitar"]'],
+ ["apont",'[data-ap="iniciar"],[data-ap="pausar"],[data-ap="terminar"]'],
+ ["cad.maquinas",'[data-mq="novo"],[data-mq="salvar"],[data-mq="del"]']
+];
+function usrNega(acao){var a=ACOES.filter(function(x){return x[0]===acao})[0];toast("Seu perfil não permite: "+(a?a[2].charAt(0).toLowerCase()+a[2].slice(1):acao)+".")}
+/* captura na janela: roda antes de qualquer outro clique da tela */
+window.addEventListener("click",function(e){if(usrLivre()||!e.target.closest)return;
+  for(var i=0;i<USR_ACAO.length;i++){var b=e.target.closest(USR_ACAO[i][1]);if(b&&!pode(USR_ACAO[i][0])){e.stopImmediatePropagation();e.preventDefault();usrNega(USR_ACAO[i][0]);return}}},true);
+window.addEventListener("change",function(e){if(usrLivre())return;var t=e.target;
+  if(t.id==="op-st"&&!pode("pcp.op")){e.stopImmediatePropagation();var o=(PP.ops||[]).filter(function(x){return x.id===PP.open})[0];if(o)t.value=o.status;usrNega("pcp.op")}},true);
+window.addEventListener("keydown",function(e){if(usrLivre())return;if(e.target&&e.target.id==="ap-scan"&&e.key==="Enter"&&!pode("apont")){e.stopImmediatePropagation();e.preventDefault();e.target.value="";usrNega("apont")}},true);
+/* posto: o tablet abre direto no apontamento da máquina do usuário */
+function usrAplica(){
+  var e=usrEu();
+  if(e&&(e.perfis||[]).length===1&&e.perfis[0]==="posto"&&e.posto&&typeof MQ!=="undefined"){MQ.posto=e.posto;if(S.tab!=="m-apt"&&$("t-apt"))setTimeout(function(){showTab("m-apt")},50)}
+  MSM.gestor=MSM.gestor||usrDir();msMenu();usrBanner();msContaU();
+  if(S.tab!=="home"&&S.tab!=="wip"&&!usrLivre()){var a=usrAreaDaTab(S.tab);if(a&&!podeArea(a[0],a[1]))showTab("home")}
+  if(/^m-(usr|perm)$/.test(S.tab)&&!USR.ed)mxRender();
+  usrPedeVinculo();
+}
+function msContaU(){var b=$("nacc");if(!b)return;var e=usrEu();b.title=e?e.nome+" · "+usrPerfTxt(e):(MSM.nome||"Você")+(USR.dono?" · dono (Diretoria)":"")}
+$("nacc").addEventListener("click",function(e){e.stopImmediatePropagation();var u=usrEu();toast(u?u.nome+" · perfil "+usrPerfTxt(u):USR.dono?"Dono do MISTA · acesso total (Diretoria)":"Você ainda não está vinculado a um usuário.")},true);
+function usrBanner(){var b=$("usr-ban");if(!USR.como){if(b)b.remove();return}var c=USR.list.filter(function(u){return u.id===USR.como})[0];if(!c){USR.como="";if(b)b.remove();return}
+  if(!b){b=document.createElement("div");b.id="usr-ban";b.className="usr-ban";document.body.appendChild(b)}
+  b.innerHTML='Vendo o MISTA como <b>'+esc(c.nome)+'</b> ('+esc(usrPerfTxt(c))+') <button type="button" class="btn sm" data-usrx="sair">Voltar ao meu perfil</button>'}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-usrx="sair"]');if(!b)return;USR.como="";usrAplica();showTab("m-usr")});
+/* primeira vez de alguém que não é o dono: escolhe quem é na lista */
+function usrPedeVinculo(){
+  if(USR.pedido||usrLivre()||!AG.uid||USR.dono||usrReal())return;var livres=USR.list.filter(function(u){return!u.uid&&u.ativo!==false});if(!livres.length)return;
+  USR.pedido=true;var m=$("mx-modal");if(!m.hidden)return;
+  m.innerHTML='<div class="card cm-mod usr-vinc" role="dialog" aria-modal="true" aria-label="Quem é você"><h3>Quem é você?</h3><p class="hint">Primeiro acesso neste aparelho/conta. Escolha seu nome; a Diretoria confere o vínculo em Configurações › Usuários.</p><div class="usr-vl">'+
+   livres.map(function(u){return'<button type="button" class="btn" data-usrv="'+esc(u.id)+'"><b>'+esc(u.nome)+'</b><small>'+esc(usrPerfTxt(u))+'</small></button>'}).join("")+'</div></div>';m.hidden=false}
+$("mx-modal").addEventListener("click",function(e){var b=e.target.closest("[data-usrv]");if(!b)return;e.stopImmediatePropagation();var u=USR.list.filter(function(x){return x.id===b.dataset.usrv})[0];if(!u)return;
+  askDel("Você é "+u.nome+"?","Seu acesso fica ligado a este usuário ("+usrPerfTxt(u)+").",function(){PR.db.doc("usuarios/"+u.id).update({uid:AG.uid,vinculadoEm:Date.now()}).then(function(){$("mx-modal").hidden=true;toast("Bem-vindo, "+u.nome+".")})})},true);
+
+/* ---------- histórico mostra quem fez ---------- */
+function histQuem(h){var n=usrNome(h&&h.uid);return n?' <small class="h-quem">— '+esc(n)+'</small>':''}
+
+/* ---------- Configurações › Usuários e Permissões ---------- */
+function renderUsr(box,aba){
+  usrSub();mqSub();if(aba)USR.aba=aba;
+  if(!usrDir()){box.innerHTML='<div class="mx-empty">Só a Diretoria gerencia usuários e permissões.</div>';return}
+  var h='<div class="mh"><div><h2>Usuários e permissões</h2><p>Cada pessoa tem um ou mais perfis; o perfil define as áreas do menu e as ações que ela pode fazer. Use <b>Ver como</b> para testar o que cada um enxerga.</p></div><div class="acts2"><button class="btn sm pri" type="button" data-us="novo">+ Usuário</button></div></div>'+
+   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-us="aba" data-a="usr" aria-selected="'+(USR.aba==="usr")+'">Usuários ('+USR.list.length+')</button><button type="button" role="tab" data-us="aba" data-a="perm" aria-selected="'+(USR.aba==="perm")+'">Permissões por perfil</button><button type="button" role="tab" data-us="aba" data-a="fb" aria-selected="'+(USR.aba==="fb")+'">Feedback ('+USR.fb.filter(function(f){return f.status!=="resolvido"}).length+')</button></div>';
+  if(USR.aba==="usr"){
+    h+='<div class="tbx"><div class="us-r fh"><span>Nome</span><span>Perfis</span><span>E-mail</span><span>Acesso</span><span></span></div>'+
+     (USR.list.length?USR.list.map(function(u){var mq=u.posto&&typeof mqById==="function"?mqById(u.posto):null;return'<div class="us-r'+(u.ativo===false?' off':'')+'"><span><b>'+esc(u.nome)+'</b>'+(u.cargo?'<small>'+esc(u.cargo)+'</small>':'')+'</span><span>'+(u.perfis||[]).map(function(p){return'<span class="stp i">'+esc((PERFIS.filter(function(x){return x[0]===p})[0]||[p,p])[1])+'</span>'}).join(" ")+(mq?'<small>posto '+esc(mq.nome)+'</small>':'')+'</span><span>'+esc(u.email||"–")+'</span>'+
+       '<span>'+(u.ativo===false?'<span class="stp b">Inativo</span>':u.uid?'<span class="stp g">Vinculado</span>'+(u.uid===AG.uid?'<small>você</small>':''):'<span class="stp n">Aguardando 1º acesso</span>')+'</span>'+
+       '<span class="ra2"><button class="btn sm" type="button" data-us="como" data-id="'+esc(u.id)+'">Ver como</button><button class="btn sm" type="button" data-us="editar" data-id="'+esc(u.id)+'">Editar</button></span></div>'}).join(""):'<div class="mx-empty">Nenhum usuário. Enquanto não houver usuários, todos veem tudo.</div>')+'</div>';
+  }else if(USR.aba==="perm"){
+    var ps=PERFIS.filter(function(p){return p[0]!=="diretoria"});
+    h+='<p class="hint">A Diretoria tem acesso total. Marque o que cada perfil pode ver e fazer. As mudanças valem na hora para todos.</p><div class="tbx"><table class="itb pm-t"><thead><tr><th>Área / ação</th>'+ps.map(function(p){return'<th class="c">'+esc(p[1])+'</th>'}).join("")+'</tr></thead><tbody>';
+    MSM.def.modulos.forEach(function(m){if(m.nome==="Configurações")return;h+='<tr class="pm-g"><td colspan="'+(ps.length+1)+'">'+esc(m.nome)+'</td></tr>';
+      (m.areas||[]).forEach(function(a){if(a.gestor)return;h+='<tr><td>'+esc(a.nome)+(a.tela?'':' <small class="hint">(em construção)</small>')+'</td>'+ps.map(function(p){var ar=usrPerm(p[0]).areas||[],on=ar.indexOf(m.nome+"|"+a.nome)>-1||ar.indexOf(m.nome+"|*")>-1;return'<td class="c"><input type="checkbox" data-pm="a" data-p="'+p[0]+'" data-k="'+esc(m.nome+"|"+a.nome)+'"'+(on?" checked":"")+' aria-label="'+esc(p[1]+": "+a.nome)+'"></td>'}).join("")+'</tr>'})});
+    h+='<tr class="pm-g"><td colspan="'+(ps.length+1)+'">Ações</td></tr>'+ACOES.map(function(a){return'<tr><td>'+esc(a[2])+' <small class="hint">'+esc(a[1])+'</small></td>'+ps.map(function(p){var on=(usrPerm(p[0]).acoes||[]).indexOf(a[0])>-1;return'<td class="c"><input type="checkbox" data-pm="x" data-p="'+p[0]+'" data-k="'+a[0]+'"'+(on?" checked":"")+' aria-label="'+esc(p[1]+": "+a[2])+'"></td>'}).join("")+'</tr>'}).join("");
+    h+='</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-us="padrao">Voltar ao padrão</button></div>';
+  }else{
+    h+='<div class="tbx"><table class="itb"><thead><tr><th>Data</th><th>Quem</th><th>Tela</th><th>Tipo</th><th>Mensagem</th><th>Situação</th></tr></thead><tbody>'+
+     (USR.fb.map(function(f){return'<tr><td>'+esc(nowStr(f.at))+'</td><td>'+esc(f.nome||usrNome(f.uid)||"–")+'</td><td><small>'+esc(f.area||f.tela||"")+'</small></td><td>'+esc(f.tipo||"")+'</td><td class="fb-txt">'+esc(f.txt||"")+'</td><td><select data-fbst="'+esc(f.id)+'">'+["novo","visto","resolvido"].map(function(s){return'<option'+(f.status===s?" selected":"")+'>'+s+'</option>'}).join("")+'</select></td></tr>'}).join("")||'<tr><td colspan="6" class="hint">Nenhum feedback ainda. Todos têm o botão "Feedback" no canto da tela.</td></tr>')+'</tbody></table></div>';
+  }
+  box.innerHTML=h;
+}
+function usrEdHtml(){var u=USR.ed,m=$("mx-modal"),maqs=(typeof MQ!=="undefined"?MQ.list:[]).filter(function(x){return x.tipo!=="Terceiro"});
+  m.innerHTML='<div class="card cm-mod" role="dialog" aria-modal="true" aria-label="Usuário"><h3>'+(u.id?"Editar usuário":"Novo usuário")+'</h3>'+
+   '<div class="fgrid"><label class="f"><span class="lb">Nome</span><input data-ue="nome" value="'+esc(u.nome||"")+'"></label><label class="f"><span class="lb">Função / cargo</span><input data-ue="cargo" value="'+esc(u.cargo||"")+'" placeholder="ex.: Programador TCN"></label>'+
+   '<label class="f"><span class="lb">E-mail (para o login na hospedagem própria)</span><input data-ue="email" type="email" value="'+esc(u.email||"")+'"></label><label class="f"><span class="lb">Empresa</span><select data-ue="emp"><option'+(u.emp!=="STAR"?" selected":"")+'>MIX</option><option'+(u.emp==="STAR"?" selected":"")+'>STAR</option></select></label></div>'+
+   '<div class="f"><span class="lb">Perfis</span><div class="us-pf">'+PERFIS.map(function(p){return'<label class="mx-chk"><input type="checkbox" data-uep="'+p[0]+'"'+((u.perfis||[]).indexOf(p[0])>-1?" checked":"")+'> '+esc(p[1])+'</label>'}).join("")+'</div></div>'+
+   '<label class="f"><span class="lb">Máquina do posto (só para o perfil Posto)</span><select data-ue="posto"><option value="">–</option>'+maqs.map(function(q){return'<option value="'+esc(q.id)+'"'+(u.posto===q.id?" selected":"")+'>'+esc(q.nome)+'</option>'}).join("")+'</select></label>'+
+   '<div class="acts2"><label class="mx-chk"><input type="checkbox" data-ue="ativo"'+(u.ativo!==false?" checked":"")+'> Ativo</label>'+(u.uid?'<button class="btn sm" type="button" data-uex="desv">Desfazer vínculo de acesso</button>':'')+'<span class="sp" style="flex:1"></span><button class="btn" type="button" data-uex="n">Cancelar</button><button class="btn pri" type="button" data-uex="y">Gravar</button></div></div>';m.hidden=false}
+$("mx-modal").addEventListener("input",function(e){var u=USR.ed;if(!u)return;var t=e.target;if(t.dataset.ue)u[t.dataset.ue]=t.type==="checkbox"?t.checked:t.value},true);
+$("mx-modal").addEventListener("change",function(e){var u=USR.ed;if(!u)return;var t=e.target;if(t.dataset.ue)u[t.dataset.ue]=t.type==="checkbox"?t.checked:t.value;
+  if(t.dataset.uep){var p=t.dataset.uep,a=u.perfis=(u.perfis||[]).slice();var i=a.indexOf(p);if(t.checked&&i<0)a.push(p);if(!t.checked&&i>-1)a.splice(i,1)}},true);
+$("mx-modal").addEventListener("click",function(e){var u=USR.ed;if(!u)return;var m=$("mx-modal"),b=e.target.closest("[data-uex]");
+  if(e.target===m||(b&&b.dataset.uex==="n")){e.stopImmediatePropagation();USR.ed=null;m.hidden=true;mxRender();return}if(!b)return;e.stopImmediatePropagation();
+  if(b.dataset.uex==="desv"){askDel("Desfazer o vínculo de "+u.nome+"?","No próximo acesso a pessoa escolhe o nome de novo.",function(){PR.db.doc("usuarios/"+u.id).update({uid:"",vinculadoEm:0}).then(function(){u.uid="";usrEdHtml()})});return}
+  if(!String(u.nome||"").trim()){toast("Informe o nome.");return}if(!(u.perfis||[]).length){toast("Marque ao menos um perfil.");return}
+  if((u.perfis||[]).indexOf("posto")>-1&&!u.posto){toast("Escolha a máquina do posto.");return}
+  var t=Date.now(),id=u.id||"us-"+normTxt(u.nome).replace(/[^a-z0-9]+/g,"-").slice(0,24)+"-"+t.toString(36).slice(-4),d={nome:String(u.nome).trim(),cargo:u.cargo||"",email:String(u.email||"").trim(),emp:u.emp||"MIX",perfis:u.perfis,posto:u.posto||"",ativo:u.ativo!==false,atualizado:t};
+  if(!u.id){d.criado=t;d.uid=""}b.disabled=true;
+  (u.id?PR.db.doc("usuarios/"+id).update(d):PR.db.doc("usuarios/"+id).set(d)).then(function(){USR.ed=null;m.hidden=true;toast("Usuário gravado.");mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gravar.")})},true);
+$("v-mx").addEventListener("click",function(e){if(!/^m-(usr|perm)$/.test(S.tab))return;var b=e.target.closest("[data-us]");if(!b)return;e.stopPropagation();e.preventDefault();var a=b.dataset.us;
+  if(a==="aba"){USR.aba=b.dataset.a;mxRender();return}
+  if(a==="novo"){USR.ed={perfis:[],ativo:true,emp:"MIX"};usrEdHtml();return}
+  if(a==="editar"){var u=USR.list.filter(function(x){return x.id===b.dataset.id})[0];if(u){USR.ed=JSON.parse(JSON.stringify(u));usrEdHtml()}return}
+  if(a==="como"){USR.como=b.dataset.id;usrAplica();showTab("home");toast("Agora você vê o MISTA como esse usuário. Use \"Voltar ao meu perfil\" no topo.");return}
+  if(a==="padrao"){askDel("Voltar as permissões ao padrão?","A matriz volta ao que veio de fábrica no MISTA.",function(){PR.db.doc("config/permissoes").set({perfis:PERM_DEF,atualizado:Date.now(),uid:AG.uid||""}).then(function(){toast("Permissões no padrão.")})});return}
+},true);
+$("v-mx").addEventListener("change",function(e){if(!/^m-(usr|perm)$/.test(S.tab))return;var t=e.target;
+  if(t.dataset.fbst){e.stopPropagation();PR.db.doc("feedback/"+t.dataset.fbst).update({status:t.value});return}
+  if(!t.dataset.pm)return;e.stopPropagation();var cur=JSON.parse(JSON.stringify((USR.perm&&USR.perm.perfis)||PERM_DEF)),p=t.dataset.p,k=t.dataset.k,campo=t.dataset.pm==="a"?"areas":"acoes";
+  var o=cur[p]=cur[p]||{areas:[],acoes:[]},arr=o[campo]=(o[campo]||[]).slice();
+  if(campo==="areas"){var mod=k.split("|")[0];var w=arr.indexOf(mod+"|*");if(w>-1){arr.splice(w,1);(MSM.def.modulos.filter(function(m){return m.nome===mod})[0].areas||[]).forEach(function(x){if(!x.gestor)arr.push(mod+"|"+x.nome)})}}
+  var i=arr.indexOf(k);if(t.checked&&i<0)arr.push(k);if(!t.checked&&i>-1)arr.splice(i,1);o[campo]=arr;
+  USR.perm={perfis:cur};PR.db.doc("config/permissoes").set({perfis:cur,atualizado:Date.now(),uid:AG.uid||""}).catch(function(){toast("Não consegui gravar a permissão.")})},true);
+
+/* ---------- feedback dos testadores (botão em todas as telas) ---------- */
+(function(){var b=document.createElement("button");b.type="button";b.id="fb-btn";b.className="fb-btn";b.textContent="Feedback";b.title="Mandar um erro, sugestão ou dúvida sobre esta tela";document.body.appendChild(b);
+  b.addEventListener("click",function(){USR.fbOpen={tipo:"Sugestão",txt:""};var m=$("mx-modal"),area=MSM.cur?MSM.cur.replace("|"," › "):($("crumb-t")&&$("crumb-t").textContent)||S.tab;USR.fbOpen.area=area;
+    m.innerHTML='<div class="card cm-mod fb-mod" role="dialog" aria-modal="true" aria-label="Feedback"><h3>Feedback sobre: '+esc(area)+'</h3><div class="us-pf">'+["Erro","Sugestão","Dúvida"].map(function(x){return'<label class="mx-chk"><input type="radio" name="fbt" value="'+x+'"'+(x==="Sugestão"?" checked":"")+'> '+x+'</label>'}).join("")+'</div>'+
+     '<label class="f"><span class="lb">O que aconteceu ou o que você sugere?</span><textarea id="fb-txt" rows="5" placeholder="Descreva com suas palavras. Se for erro, diga o que você clicou e o que esperava."></textarea></label>'+
+     '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-fbx="n">Cancelar</button><button class="btn pri" type="button" data-fbx="y">Enviar</button></div></div>';m.hidden=false;setTimeout(function(){var x=$("fb-txt");if(x)x.focus()},50)})})();
+$("mx-modal").addEventListener("click",function(e){var f=USR.fbOpen;if(!f)return;var m=$("mx-modal"),b=e.target.closest("[data-fbx]");
+  if(e.target===m||(b&&b.dataset.fbx==="n")){e.stopImmediatePropagation();USR.fbOpen=null;m.hidden=true;return}if(!b)return;e.stopImmediatePropagation();
+  var txt=String(($("fb-txt")||{}).value||"").trim();if(!txt){toast("Escreva a mensagem.");return}var tp=(m.querySelector('input[name="fbt"]:checked')||{}).value||"Sugestão",eu=usrReal(),t=Date.now();b.disabled=true;
+  PR.db.doc("feedback/fb-"+t.toString(36)+"-"+rid().slice(0,4)).set({txt:txt,tipo:tp,area:f.area,tela:S.tab,uid:AG.uid||"",nome:eu?eu.nome:(MSM.nome||""),comoTeste:USR.como?usrNome((USR.list.filter(function(u){return u.id===USR.como})[0]||{}).uid)||USR.como:"",at:t,status:"novo"})
+   .then(function(){USR.fbOpen=null;m.hidden=true;toast("Obrigado! Feedback enviado.")}).catch(function(){b.disabled=false;toast("Não consegui enviar.")})},true);
+
+/* ---------- menu ---------- */
+["usr","perm"].forEach(function(k){MODS[k]={n:k==="usr"?"Usuários":"Permissões",fase:"",et:[],txt:"",plan:[]};MX_TABS.push("m-"+k)});
+var _rmUs=renderMod;renderMod=function(box,k){if(k==="usr"){renderUsr(box,USR.abaTab||null);USR.abaTab=null;return}if(k==="perm"){renderUsr(box,"perm");return}return _rmUs.apply(this,arguments)};
+var _stUs=showTab;showTab=function(t){if(t==="m-usr"&&MSM.going&&MSM.cur==="Configurações|Usuários")USR.aba="usr";var r=_stUs.apply(this,arguments);
+  if(t==="m-usr"){$("crumb").innerHTML="Configurações › <b>Usuários</b>";$("crumb-t").textContent="Usuários"}
+  if(t==="m-perm"){$("crumb").innerHTML="Configurações › <b>Permissões</b>";$("crumb-t").textContent="Permissões"}
+  return r};
 
 })();
 </script>

@@ -1201,7 +1201,7 @@ body.sd-min .side.peek{width:236px;padding:24px 14px!important;overflow:auto;box
 #mx-modal .card.op-det{width:min(1000px,96vw)!important;max-width:min(1000px,96vw)!important;max-height:92vh;overflow:auto}
 
 /* ===== v100: máquinas, programação, apontamento e monitor ===== */
-.mq-r{display:grid;grid-template-columns:100px minmax(200px,2fr) 170px 170px 80px 70px 130px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;min-width:900px;cursor:pointer}
+.mq-r{display:grid;grid-template-columns:110px minmax(190px,2fr) 160px 150px 170px 70px 60px 120px 44px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;min-width:1080px;cursor:pointer}
 .mq-r:hover{background:var(--surface2)}
 .mq-r.fh,.pg-r.fh{cursor:default;border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .mq-r small,.pg-r small{display:block;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -7122,40 +7122,63 @@ function opFechaPedido(op){var p=PD.list.filter(function(x){return x.id===op.ped
   if(its.every(function(y){return/^produzido/.test(y.situacao||"")})&&(p.etapa==="os"||p.etapa==="producao"||p.etapa==="compras")){patch.etapa="qualidade";txt+=" Todos os itens produzidos: etapa → Qualidade."}
   return pdSet(p,patch,txt)}
 
-/* ---------- PCP › Máquinas ---------- */
+/* ---------- PCP › Máquinas (v101: código da casa, comando livre, capacidade, lixeira) ---------- */
+var MQ_COD={"Torno CNC":"TCN","Centro de usinagem":"CUV","Torno mecânico (convencional)":"TMC","Fresadora":"FRE","Serra de fita":"SER","Bancada (rebarba/montagem)":"BAN","Inspeção de qualidade":"INS","Terceiro":"TER"};
+var MQ_CMDS=["FANUC","FANUC 0i-TF","FANUC 0i-TD","FANUC 0i-MF","Mitsubishi M70","Siemens Sinumerik 802D","Siemens Sinumerik 828D","ROMI Mach 9","GSK 980TDi","Heidenhain","MCS","Convencional (sem CNC)"];
+function mqTorno(t){return/torno/i.test(t||"")}
+function mqFresa(t){return/centro|fresadora/i.test(t||"")}
+function mqSugCod(tipo,emp,exceto){var pre=(emp==="STAR"?"ST":"MIX")+"-"+(MQ_COD[tipo]||"POS"),max=0;MQ.list.forEach(function(m){if(m.id===exceto)return;var c=String(m.codigo||"").replace(/\s+/g,"").toUpperCase();if(c.indexOf(pre)===0){var n=parseInt(c.slice(pre.length),10);if(n>max)max=n}});return pre+("0"+(max+1)).slice(-2)}
+function mqCap(m){function n(v){return String(v||"").trim()}
+  if(mqTorno(m.tipo)){var a=n(m.diamTorn),b=n(m.compTorn);return a||b?"Ø"+(a||"?")+" x "+(b||"?")+" mm"+(n(m.passBarra)?" · barra Ø"+n(m.passBarra):""):""}
+  if(mqFresa(m.tipo)){var x=n(m.cursoX),y=n(m.cursoY),z=n(m.cursoZ);return x||y||z?(x||"?")+" x "+(y||"?")+" x "+(z||"?")+" mm":""}return""}
 function renderMaq(box){
   mqSub();
   if(MQ.edId){var m=MQ.edId==="novo"?{}:mqById(MQ.edId);if(m||MQ.edId==="novo"){mqEdHtml(box,m||{});return}MQ.edId=""}
   var porEmp={MIX:[],STAR:[]};MQ.list.forEach(function(m){(porEmp[m.emp]||(porEmp[m.emp]=[])).push(m)});
+  Object.keys(porEmp).forEach(function(k){porEmp[k].sort(function(a,b){return String(a.codigo||"").localeCompare(String(b.codigo||""))})});
   box.innerHTML='<div class="mh"><div><h2>Máquinas e postos de trabalho</h2><p>Cada máquina ou setor é um posto: recebe as operações da programação, aparece no monitor e tem a sua tela de apontamento no tablet. O tipo do posto liga com o roteiro do item.</p></div><div class="acts2"><button class="btn sm pri" type="button" data-mq="novo">+ Posto</button></div></div>'+
-   Object.keys(porEmp).filter(function(k){return porEmp[k].length}).map(function(k){return'<div class="card"><h3>'+esc(k)+' · '+porEmp[k].length+' postos</h3><div class="tbx"><div class="mq-r fh"><span>Código</span><span>Posto</span><span>Tipo</span><span>Comando CNC</span><span class="r">Horas/dia</span><span class="r">Fila</span><span>Situação</span></div>'+
-     porEmp[k].map(function(m){var c=cnCmd(m.comando);return'<div class="mq-r" data-mq="abrir" data-id="'+esc(m.id)+'" title="Editar"><span class="idtag">'+esc(m.codigo||"")+'</span><span><b>'+esc(m.nome||"")+'</b><small>'+esc(m.obs||"")+'</small></span><span>'+esc(m.tipo||"")+'</span><span>'+esc(c?c.n:"–")+'</span><span class="r mono">'+esc(m.horasDia||"–")+'</span><span class="r mono">'+fmtH(mqCarga(m.id))+'</span><span><span class="stp '+(m.status==="ativa"?"g":m.status==="manutencao"?"b":"n")+'">'+esc(MQ_ST[m.status]||"Ativa")+'</span></span></div>'}).join("")+'</div></div>'}).join("")+
+   Object.keys(porEmp).filter(function(k){return porEmp[k].length}).map(function(k){return'<div class="card"><h3>'+esc(k)+' · '+porEmp[k].length+' postos</h3><div class="tbx"><div class="mq-r fh"><span>Código</span><span>Posto</span><span>Tipo</span><span>Comando</span><span>Capacidade</span><span class="r">Horas/dia</span><span class="r">Fila</span><span>Situação</span><span></span></div>'+
+     porEmp[k].map(function(m){return'<div class="mq-r" data-mq="abrir" data-id="'+esc(m.id)+'" title="Editar"><span class="idtag">'+esc(m.codigo||"")+'</span><span><b>'+esc(m.nome||"")+'</b><small>'+esc(m.obs||"")+'</small></span><span>'+esc(m.tipo||"")+'</span><span>'+esc(m.comando||"–")+'</span><span class="mono">'+esc(mqCap(m)||"–")+'</span><span class="r mono">'+esc(m.horasDia||"–")+'</span><span class="r mono">'+fmtH(mqCarga(m.id))+'</span><span><span class="stp '+(m.status==="ativa"?"g":m.status==="manutencao"?"b":"n")+'">'+esc(MQ_ST[m.status]||"Ativa")+'</span></span><span>'+ibtn("trash","Excluir este posto",'data-mq="del" data-id="'+esc(m.id)+'"',"danger")+'</span></div>'}).join("")+'</div></div>'}).join("")+
    (MQ.list.length?'':'<div class="mx-empty">Nenhum posto cadastrado.</div>');
 }
 function mqEdHtml(box,m){
-  var e=MQ.ed||(MQ.ed={codigo:m.codigo||"",nome:m.nome||"",tipo:m.tipo||"Torno CNC",emp:m.emp||"MIX",comando:m.comando||"",horasDia:m.horasDia||"18",status:m.status||"ativa",obs:m.obs||"",ordem:m.ordem||99});
-  function inp(k,l,ph){return'<label class="f"><span class="lb">'+l+'</span><input data-mqf="'+k+'" value="'+esc(e[k])+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'></label>'}
-  box.innerHTML='<div class="mx-bar"><button class="btn sm" type="button" data-mq="voltar">‹ Máquinas</button><span class="sp"></span>'+(m.id?'<button class="btn danger" type="button" data-mq="del" data-id="'+esc(m.id)+'">Excluir</button>':'')+'</div>'+
-   '<div class="card"><h3>'+(m.id?"Editar posto":"Novo posto")+'</h3><div class="it-g">'+inp("codigo","Código","ex.: MIX-TC03")+inp("nome","Nome","ex.: Torno CNC GL280 #1")+
+  var novo=!m.id,e=MQ.ed;
+  if(!e){e=MQ.ed={};["codigo","nome","tipo","emp","comando","dialeto","horasDia","status","obs","diamTorn","compTorn","passBarra","cursoX","cursoY","cursoZ","mesa"].forEach(function(k){e[k]=m[k]==null?"":String(m[k])});
+    if(novo){e.tipo="Torno CNC";e.emp="MIX";e.horasDia="18";e.status="ativa"}if(!e.codigo)e.codigo=mqSugCod(e.tipo,e.emp,m.id);e._sug=novo?e.codigo:""}
+  function inp(k,l,ph,cls){return'<label class="f'+(cls?" "+cls:"")+'"><span class="lb">'+l+'</span><input data-mqf="'+k+'" value="'+esc(e[k])+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'></label>'}
+  var tor=mqTorno(e.tipo),fre=mqFresa(e.tipo);
+  box.innerHTML='<div class="mx-bar"><button class="btn sm" type="button" data-mq="voltar">‹ Máquinas</button><span class="sp"></span>'+(!novo?'<button class="btn danger" type="button" data-mq="del" data-id="'+esc(m.id)+'">Excluir posto</button>':'')+'</div>'+
+   '<div class="card"><h3>'+(novo?"Novo posto":"Editar posto")+'</h3><div class="it-g">'+
    '<label class="f"><span class="lb">Tipo (liga com o roteiro)</span><select data-mqf="tipo">'+MQ_TIPOS.map(function(t){return'<option'+(e.tipo===t?" selected":"")+'>'+esc(t)+'</option>'}).join("")+'</select></label>'+
    '<label class="f"><span class="lb">Empresa</span><select data-mqf="emp"><option'+(e.emp!=="STAR"?" selected":"")+'>MIX</option><option'+(e.emp==="STAR"?" selected":"")+'>STAR</option></select></label>'+
-   '<label class="f"><span class="lb">Comando CNC</span><select data-mqf="comando"><option value="">–</option>'+CN_CMDS.map(function(c){return'<option value="'+c.k+'"'+(e.comando===c.k?" selected":"")+'>'+esc(c.n)+'</option>'}).join("")+'</select></label>'+
+   inp("codigo","Código","ex.: MIX-TCN01")+inp("nome","Nome","ex.: Torno CNC GL280 ROMI #1")+
+   '<label class="f"><span class="lb">Comando</span><input data-mqf="comando" list="mq-cmd-l" value="'+esc(e.comando)+'" placeholder="ex.: FANUC 0i-TF"><datalist id="mq-cmd-l">'+MQ_CMDS.map(function(c){return'<option value="'+esc(c)+'">'}).join("")+'</datalist></label>'+
+   (fre?'<label class="f"><span class="lb">Dialeto do Agente CNC</span><select data-mqf="dialeto"><option value="">–</option>'+CN_CMDS.map(function(c){return'<option value="'+c.k+'"'+(e.dialeto===c.k?" selected":"")+'>'+esc(c.n)+' · '+esc(c.maq)+'</option>'}).join("")+'</select></label>':'')+
    inp("horasDia","Horas disponíveis por dia","ex.: 18 (2 turnos de 9 h)")+
-   '<label class="f"><span class="lb">Situação</span><select data-mqf="status">'+Object.keys(MQ_ST).map(function(k){return'<option value="'+k+'"'+(e.status===k?" selected":"")+'>'+MQ_ST[k]+'</option>'}).join("")+'</select></label>'+inp("obs","Observações")+
-   '</div><div class="acts2"><button class="btn pri" type="button" data-mq="salvar">Salvar</button><button class="btn" type="button" data-mq="voltar">Cancelar</button></div></div>';
+   '<label class="f"><span class="lb">Situação</span><select data-mqf="status">'+Object.keys(MQ_ST).map(function(k){return'<option value="'+k+'"'+(e.status===k?" selected":"")+'>'+MQ_ST[k]+'</option>'}).join("")+'</select></label>'+
+   inp("obs","Observações","",'it-w')+'</div>'+
+   (tor?'<h3>Capacidade do torno</h3><div class="it-g">'+inp("diamTorn","Diâmetro torneável (mm)","ex.: 400")+inp("compTorn","Comprimento torneável (mm)","ex.: 600")+inp("passBarra","Passagem de barra (mm)","ex.: 52")+'</div>':'')+
+   (fre?'<h3>Cursos</h3><div class="it-g">'+inp("cursoX","Curso X · comprimento (mm)","ex.: 1000")+inp("cursoY","Curso Y · largura (mm)","ex.: 500")+inp("cursoZ","Curso Z · altura (mm)","ex.: 560")+inp("mesa","Mesa","ex.: 1100 x 500, carga 500 kg",'it-w')+'</div>':'')+
+   '<div class="acts2"><button class="btn pri" type="button" data-mq="salvar">Salvar</button><button class="btn" type="button" data-mq="voltar">Cancelar</button></div></div>';
 }
-$("v-mx").addEventListener("input",function(ev){if(S.tab!=="m-maq"||!MQ.ed)return;var k=ev.target.dataset.mqf;if(k)MQ.ed[k]=ev.target.value});
+$("v-mx").addEventListener("input",function(ev){if(S.tab!=="m-maq"||!MQ.ed)return;var k=ev.target.dataset.mqf;if(!k)return;var e=MQ.ed;e[k]=ev.target.value;
+  if(k==="tipo"||k==="emp"){if(!e.codigo||e.codigo===e._sug){e.codigo=e._sug=mqSugCod(e.tipo,e.emp,MQ.edId==="novo"?"":MQ.edId)}mxRender()}});
 $("v-mx").addEventListener("click",function(ev){
   if(S.tab!=="m-maq")return;var b=ev.target.closest("[data-mq]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.mq;
   if(a==="novo"){MQ.edId="novo";MQ.ed=null;mxRender();return}
   if(a==="abrir"){MQ.edId=b.dataset.id;MQ.ed=null;mxRender();return}
   if(a==="voltar"){MQ.edId="";MQ.ed=null;mxRender();return}
-  if(a==="salvar"){var e=MQ.ed;if(!e||!String(e.nome).trim()){toast("Dê um nome ao posto.");return}var d={codigo:e.codigo,nome:e.nome,tipo:e.tipo,emp:e.emp,comando:e.comando,horasDia:e.horasDia,status:e.status,obs:e.obs,ordem:+e.ordem||99,atualizado:Date.now()};
-    var id=MQ.edId==="novo"?"mq-"+normTxt(e.nome).replace(/[^a-z0-9]+/g,"-").slice(0,30)+"-"+rid().slice(0,3):MQ.edId;
-    PR.db.doc("maquinas/"+id)[MQ.edId==="novo"?"set":"update"](d).then(function(){MQ.edId="";MQ.ed=null;toast("Posto salvo.");mxRender()}).catch(function(){toast("Não consegui salvar.")});return}
-  if(a==="del"){var m=mqById(b.dataset.id),n=mqFila(b.dataset.id).length;askDel("Excluir o posto "+(m&&m.nome||"")+"?",n?"Ele tem "+n+" operações na fila; elas voltam para programar.":"Esta ação não pode ser desfeita.",function(){
-    var pr=Promise.resolve();mqFila(b.dataset.id).forEach(function(t){pr=pr.then(function(){return opPatchRot(t.op,t.j,{maq:undefined,fila:undefined},"Operação "+t.r.seq+" saiu do posto excluído.")})});
-    pr.then(function(){return PR.db.doc("maquinas/"+b.dataset.id).delete()}).then(function(){MQ.edId="";MQ.ed=null;toast("Posto excluído.");mxRender()}).catch(function(){toast("Não consegui excluir.")})});return}
+  if(a==="salvar"){var e=MQ.ed;if(!e||!String(e.nome).trim()){toast("Dê um nome ao posto.");return}
+    var cod=String(e.codigo||"").replace(/\s+/g,"").toUpperCase();if(!cod){toast("Informe o código.");return}
+    var dup=MQ.list.filter(function(m){return m.id!==MQ.edId&&String(m.codigo||"").replace(/\s+/g,"").toUpperCase()===cod})[0];if(dup){toast("O código "+cod+" já é do posto "+dup.nome+".");return}
+    var d={codigo:cod,nome:String(e.nome).trim(),tipo:e.tipo,emp:e.emp,comando:String(e.comando||"").trim(),dialeto:mqFresa(e.tipo)?e.dialeto||"":"",horasDia:e.horasDia,status:e.status,obs:e.obs,
+      diamTorn:mqTorno(e.tipo)?e.diamTorn:"",compTorn:mqTorno(e.tipo)?e.compTorn:"",passBarra:mqTorno(e.tipo)?e.passBarra:"",cursoX:mqFresa(e.tipo)?e.cursoX:"",cursoY:mqFresa(e.tipo)?e.cursoY:"",cursoZ:mqFresa(e.tipo)?e.cursoZ:"",mesa:mqFresa(e.tipo)?e.mesa:"",atualizado:Date.now()};
+    var id=MQ.edId==="novo"?"mq-"+cod.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-"+rid().slice(0,3):MQ.edId;
+    PR.db.doc("maquinas/"+id)[MQ.edId==="novo"?"set":"update"](d).then(function(){MQ.edId="";MQ.ed=null;toast("Posto "+cod+" salvo.");mxRender()}).catch(function(){toast("Não consegui salvar.")});return}
+  if(a==="del"){var m=mqById(b.dataset.id),n=mqFila(b.dataset.id).length;if(!m)return;
+    askDel("Excluir o posto "+(m.codigo||"")+" · "+(m.nome||"")+"?","Use quando a máquina for descontinuada ou vendida. "+(n?"Ela tem "+n+" operações na fila; elas voltam para Programação de máquinas.":"Os apontamentos antigos continuam no histórico das OPs.")+" Esta ação não pode ser desfeita.",function(){
+    var pr=Promise.resolve();mqFila(m.id).forEach(function(t){pr=pr.then(function(){return opPatchRot(t.op,t.j,{maq:undefined,fila:undefined},"Operação "+t.r.seq+" saiu do posto "+(m.codigo||m.nome)+" (excluído).")})});
+    pr.then(function(){return PR.db.doc("maquinas/"+m.id).delete()}).then(function(){if(MQ.posto===m.id){MQ.posto="";try{localStorage.removeItem("mista-posto")}catch(er){}}MQ.edId="";MQ.ed=null;toast("Posto excluído.");mxRender()}).catch(function(){toast("Não consegui excluir.")})});return}
 },true);
 
 /* ---------- PCP › Programação de máquinas ---------- */

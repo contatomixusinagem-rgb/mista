@@ -1275,6 +1275,7 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .op-cab>div{border:1px solid var(--line);border-radius:8px;padding:6px 10px}.op-cab small{display:block;color:var(--muted);font-size:11px}
 .op-mat select{max-width:300px}
 @media(max-width:640px){.op-cab{grid-template-columns:1fr 1fr}}
+.pd-sit{display:flex;flex-direction:column;gap:3px;align-items:flex-start;min-width:120px}
 </style>
 
 <div class="shell">
@@ -7635,6 +7636,33 @@ var _stCm=showTab;showTab=function(t){var r=_stCm.apply(this,arguments);
   if(t==="m-estmp"){$("crumb").innerHTML="Estoque › <b>Matéria-prima</b>";$("crumb-t").textContent="Matéria-prima"}
   if(t==="m-estmv"){$("crumb").innerHTML="Estoque › <b>Movimentações</b>";$("crumb-t").textContent="Movimentações"}
   return r};
+
+
+/* v106: gerar a OP direto do pedido interno (coluna Situação) e abrir a OP para requisitar o lote */
+var _rpOp=renderPed;renderPed=function(box){
+  _rpOp.apply(this,arguments);
+  if(!PD.open)return;var p=PD.list.filter(function(x){return x.id===PD.open})[0];if(!p||p.cancelado)return;ppSub();
+  var tb=null;Array.prototype.forEach.call(box.querySelectorAll(".card h3"),function(x){if(x.textContent==="Itens")tb=x.closest(".card")});if(!tb)return;
+  var trs=tb.querySelectorAll("tbody tr");
+  (p.itens||[]).forEach(function(x,i){var tr=trs[i];if(!tr)return;var td=tr.lastElementChild,c=itById(x.itemId)||itFind(p.cliente,x.cod),h;
+    if(x.opId){var o=(PP.ops||[]).filter(function(y){return y.id===x.opId})[0];h='<button type="button" class="btn sm" data-x="opver" data-id="'+esc(x.opId)+'">'+esc(x.opNum||"OP")+'</button><small class="hint">'+esc(o?(OP_ST[o.status]||o.status):(x.situacao||""))+'</small>'}
+    else if(!c)h='<span class="hint">cadastre o item</span>';
+    else if(rtOk(c)&&esOk(c))h='<button type="button" class="btn sm pri" data-x="opgerar" data-i="'+i+'">Gerar OP</button>';
+    else h='<span class="stp w">Falta liberar '+(!rtOk(c)&&!esOk(c)?"roteiro e estrutura":!rtOk(c)?"o roteiro":"a estrutura")+'</span>';
+    td.innerHTML='<div class="pd-sit">'+h+'</div>'});
+  var hn=tb.querySelector("p.hint");if(hn)hn.textContent="Gerar OP: o item precisa ter roteiro e estrutura liberados (Engenharia › Cadastro de itens). A OP abre em seguida para você requisitar o lote do material e imprimir a ficha.";
+};
+function pdOpAbrir(id,tent){var o=(PP.ops||[]).filter(function(x){return x.id===id})[0];if(!o){if((tent||0)<20)setTimeout(function(){pdOpAbrir(id,(tent||0)+1)},300);else toast("OP gerada; abra em PCP › Ordens de produção.");return}
+  PP.aba="ops";showTab("m-prod");setTimeout(function(){opAbrir(id)},150)}
+$("v-mx").addEventListener("click",function(e){
+  if(S.tab!=="ped")return;var b=e.target.closest('[data-x="opgerar"],[data-x="opver"]');if(!b)return;e.stopPropagation();e.preventDefault();
+  if(b.dataset.x==="opver"){pdOpAbrir(b.dataset.id);return}
+  var p=PD.list.filter(function(x){return x.id===PD.open})[0];if(!p)return;var i=+b.dataset.i,r=ppDemanda().filter(function(y){return y.p.id===p.id&&y.i===i})[0];
+  if(!r||!r.ok){toast("O item ainda não tem roteiro e estrutura liberados.");return}
+  askDel("Gerar a OP de "+(r.x.cod||"")+"?",r.qtd+" pç · pedido "+p.num+" · entrega "+(r.ent?dStr(r.ent):"–")+". Depois a OP abre para você requisitar o lote do material.",function(){
+    opGerar([r]).then(function(){var n=PD.list.filter(function(x){return x.id===p.id})[0],it=n&&n.itens&&n.itens[i];
+      (function w(k){var q=PD.list.filter(function(x){return x.id===p.id})[0],y=q&&q.itens&&q.itens[i];if(y&&y.opId){pdOpAbrir(y.opId);return}if(k<20)setTimeout(function(){w(k+1)},300)})(0)})});
+},true);
 
 })();
 </script>

@@ -1358,6 +1358,19 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 /* v116 */
 .ibn.pc-ok.on{background:#17803D;color:#fff;border-color:#17803D}.ibn.pc-ok.on:disabled{opacity:.55}
 tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp,tr.nf-canc td.pc-ic{text-decoration:none}.rev-det{margin:0 0 6px;line-height:1.5}
+
+/* v117: listas padrão (uma linha, ícones, detalhe em janela) */
+.ls-row{cursor:pointer}.ls-row:hover{background:var(--surface2)}
+.ls-ir,.ls-nf,.ls-rc,.ls-lt{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px}
+.ls-ir{grid-template-columns:90px minmax(180px,1.6fr) 90px minmax(150px,1.2fr) 100px 60px 150px 84px;min-width:980px}
+.ls-nf{grid-template-columns:80px 90px minmax(150px,1.2fr) 80px minmax(180px,1.6fr) 100px 100px 120px;min-width:980px}
+.ls-rc{grid-template-columns:80px minmax(150px,1fr) minmax(260px,2.4fr) 110px 84px;min-width:800px}
+.ls-lt{grid-template-columns:90px minmax(180px,1.6fr) minmax(140px,1fr) 90px 60px 110px 100px 100px 44px;min-width:1000px}
+.ls-ir.fh,.ls-nf.fh,.ls-rc.fh,.ls-lt.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;cursor:default}
+.ls-ir small,.ls-nf small,.ls-rc small,.ls-lt small{display:block;color:var(--muted);font-size:11.5px}
+.ls-nf.canc>span:not(.pc-ic){color:var(--muted);text-decoration:line-through}.ls-nf.canc .stp{text-decoration:none}
+.op-r{grid-template-columns:110px minmax(200px,2fr) 130px 50px 110px minmax(160px,1.4fr) 60px 170px 84px!important}
+.card>.tbx+.pg-bar{margin-top:-1px}
 </style>
 
 <div class="shell">
@@ -8594,10 +8607,98 @@ function irDesfazer(l){if(!pode("qual.inspecao")){usrNega("qual.inspecao");retur
   revMotivo("Desfazer a inspeção do lote "+l.lote+"?","O lote volta para \"aguardando inspeção\"."+(ops.length?" Os empenhos em "+esc(ops.join(", "))+" são estornados.":""),function(mot){var t=Date.now(),ant=JSON.parse(JSON.stringify(l.inspecao||{}));
     ltEstornaEmp([l.id],"inspeção do lote "+l.lote+" desfeita ("+mot+")").then(function(){return PR.db.doc("lotes/"+l.id).update({status:"aguardando inspeção",empenhado:0,inspecao:{status:"pendente",instr:ant.instr||"",anterior:ant,desfeitaEm:t,desfeitaPor:AG.uid||"",motivoDesfazer:mot}})}).then(function(){IR.aba="pend";toast("Inspeção desfeita. O lote "+l.lote+" voltou para a fila.");mxRender()})})}
 
+/* ===== v117: saída padrão de listas — tabela de uma linha por registro, ações em ícones, clique na linha abre o detalhe em janela ===== */
+IC.clip='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12l2 2 4-4"/></svg>';
+IC.down='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+IC.play='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+IC.user='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
+function lsChipLote(l){return'<span class="stp '+(l.status==="liberado"?"g":l.status==="reprovado"?"b":l.status==="cancelado"?"n":"w")+'">'+esc(l.status==="aguardando inspeção"?"aguardando":l.inspecao&&l.inspecao.status==="concessao"&&l.status==="liberado"?"concessão":l.status)+'</span>'}
+function lsCert(l){return l.cert?ibtn("pdf","Abrir certificado: "+(l.cert.nome||""),'data-ls="cert" data-id="'+esc(l.id)+'"'):'<span class="stp b">sem</span>'}
+function lsBaixaCert(l){var u=l.cert.url||("/_blob/"+l.cert.id);fetch(u).then(function(r){return r.blob()}).then(function(bl){cnSave(l.cert.nome||"certificado.pdf",bl)}).catch(function(){toast("Não consegui abrir o certificado.")})}
+
+/* ---------- Qualidade › Inspeção de recebimento: tabela ---------- */
+renderInspRec=function(box){
+  cmSub();insSub();var P=irLotes("pend"),F=irLotes("feito").sort(function(a,b){return(b.inspecao.em||0)-(a.inspecao.em||0)}),L=IR.aba==="pend"?P:F,pg=pgSlice("m-insprec:"+IR.aba,L);
+  box.innerHTML='<div class="mh"><div><h2>Inspeção de recebimento</h2></div></div>'+
+   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-ir="aba" data-a="pend" aria-selected="'+(IR.aba==="pend")+'">Aguardando ('+P.length+')</button><button type="button" role="tab" data-ir="aba" data-a="feito" aria-selected="'+(IR.aba==="feito")+'">Inspecionados ('+F.length+')</button></div>'+
+   '<div class="tbx"><div class="ls-ir fh"><span>Lote</span><span>Material</span><span class="r">Qtd</span><span>Fornecedor · NF</span><span>Corrida</span><span>Cert.</span><span>Situação</span><span></span></div>'+
+   (pg.rows.length?pg.rows.map(function(l){var i=l.inspecao||{};return'<div class="ls-ir ls-row" data-ls="'+(IR.aba==="pend"?"insp":"ver")+'" data-id="'+esc(l.id)+'"><span class="idtag">'+esc(l.lote)+'</span><span><b>'+esc(l.material)+'</b><small>'+esc((l.forma||"")+" "+(l.medida||""))+'</small></span><span class="r mono">'+cmUn(l.qtdRec,l.un)+'</span><span>'+esc(l.fornecedor||"–")+'<small>NF '+esc(l.nf||"–")+'</small></span><span>'+esc(l.corrida||"–")+'</span><span>'+lsCert(l)+'</span><span>'+lsChipLote(l)+(i.em&&IR.aba!=="pend"?'<small>'+esc(nowStr(i.em).slice(0,8)+" · "+(i.nome||usrNome(i.por)||""))+'</small>':'')+'</span>'+
+     '<span class="pc-ic">'+(IR.aba==="pend"?ibtn("clip","Inspecionar",'data-ls="insp" data-id="'+esc(l.id)+'"',"pri"):ibtn("eye","Ver registro da inspeção",'data-ls="ver" data-id="'+esc(l.id)+'"')+ibtn("undo","Desfazer inspeção",'data-ir="desfaz" data-id="'+esc(l.id)+'"'))+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum lote.</div>')+'</div>'+pg.bar};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-insprec")return;if(e.target.closest('[data-ir="desfaz"]'))return;var b=e.target.closest("[data-ls]");if(!b)return;e.stopPropagation();e.preventDefault();var l=CM.lotes.filter(function(x){return x.id===b.dataset.id})[0];if(!l)return;
+  var a=b.dataset.ls;if(a==="cert"){lsBaixaCert(l);return}if(a==="insp"){if(!pode("qual.inspecao")){usrNega("qual.inspecao");return}irAbrir(l,false);return}if(a==="ver")irAbrir(l,true)},true);
+
+/* ---------- detalhe da NF de entrada em janela (Recebimento e Fiscal) ---------- */
+function nfVer(n){var m=$("mx-modal");CM.nfv=n.id;
+  m.innerHTML='<div class="card cm-mod pc-mod" role="dialog" aria-modal="true" aria-label="NF de entrada"><div class="mx-bar"><h3 style="margin:0">NF '+esc(n.nf)+(n.serie?" / "+esc(n.serie):"")+'</h3>'+(n.cancelada?'<span class="stp n">cancelada</span>':'<span class="stp g">lançada</span>')+'<span class="sp"></span><button class="btn sm" type="button" data-nv="x">Fechar</button></div>'+
+   '<dl class="cn-dl pv-dl"><dt>Fornecedor</dt><dd><b>'+esc(n.fornecedor)+'</b> '+esc(n.cnpj||"")+'</dd><dt>Pedido</dt><dd>'+esc(n.pcNum)+'</dd><dt>Emissão</dt><dd>'+esc(dStr(n.emissao)||"–")+'</dd><dt>Entrada</dt><dd>'+esc(dStr(n.entrada)||"–")+'</dd><dt>Chave</dt><dd class="mono">'+esc(n.chave||"–")+'</dd><dt>Total</dt><dd>'+brl(+n.vNF||0)+(n.vFrete?" · frete "+brl(n.vFrete):"")+'</dd>'+(n.cancelada?'<dt>Cancelamento</dt><dd>'+esc(nowStr(n.canceladaEm)+" · "+(n.canceladaNome||"")+" · "+(n.motivoCanc||""))+'</dd>':'')+'</dl>'+
+   '<div class="tbx"><table class="itb"><thead><tr><th>Código</th><th>Item</th><th>Tipo (SPED)</th><th>NCM</th><th>CFOP</th><th class="r">Qtd</th><th class="r">Valor un.</th><th class="r">Total</th><th class="r">IPI</th><th>Lote</th></tr></thead><tbody>'+
+   n.itens.map(function(l){var lt=l.loteId?CM.lotes.filter(function(x){return x.id===l.loteId})[0]:null;return'<tr><td class="mono">'+esc(l.codigo||"–")+'</td><td>'+esc(l.desc)+'</td><td>'+esc(pcTipoNome(l.tipo)+" ("+(l.sped||"")+")")+'</td><td class="mono">'+esc(l.ncm||"–")+'</td><td class="mono">'+esc(l.cfop)+'</td><td class="r">'+cmUn(l.qtd,l.un)+'</td><td class="r">'+brl(+l.preco||0)+'</td><td class="r">'+brl(+l.total||0)+'</td><td class="r">'+(l.ipiV?brl(l.ipiV):"–")+'</td><td>'+(lt?esc(lt.lote)+" "+lsChipLote(lt):"–")+'</td></tr>'}).join("")+'</tbody></table></div>'+
+   '<div class="acts2" style="justify-content:flex-end">'+(n.xmlAsset?'<button class="btn" type="button" data-nv="xml">Baixar XML</button>':'')+(n.cancelada?'':'<button class="btn danger" type="button" data-nv="canc">Cancelar recebimento</button>')+'</div></div>';m.hidden=false}
+$("mx-modal").addEventListener("click",function(e){if(!CM.nfv)return;var m=$("mx-modal"),b=e.target.closest("[data-nv]");if(e.target===m||(b&&b.dataset.nv==="x")){e.stopImmediatePropagation();CM.nfv="";m.hidden=true;return}if(!b)return;e.stopImmediatePropagation();
+  var n=CM.nfs.filter(function(x){return x.id===CM.nfv})[0];if(!n)return;
+  if(b.dataset.nv==="xml"){fetch("/_blob/"+n.xmlAsset).then(function(r){return r.blob()}).then(function(bl){cnSave(n.xmlNome||("NF-"+n.nf+".xml"),bl)}).catch(function(){toast("Não consegui baixar o XML.")});return}
+  if(b.dataset.nv==="canc"){if(!pode("compras.receber")){usrNega("compras.receber");return}CM.nfv="";m.hidden=true;nfeCancelar(n)}},true);
+function lsNfRow(n,k){var tot=n.vNF||n.itens.reduce(function(s,l){return s+(+l.total||0)+(+l.ipiV||0)},0)+(+n.vFrete||0);
+  return'<div class="ls-nf ls-row'+(n.cancelada?' canc':'')+'" data-ls="nf" data-id="'+esc(n.id)+'"><span>'+esc(dStr(n.entrada))+'</span><span class="mono">'+esc(n.nf)+(n.serie?" / "+esc(n.serie):"")+'</span><span>'+esc(n.fornecedor)+'</span><span><span class="idtag">'+esc(n.pcNum)+'</span></span><span>'+esc(n.itens.map(function(l){return l.desc}).join(", "))+'</span><span class="r mono">'+brl(tot)+'</span><span>'+(n.cancelada?'<span class="stp n">cancelada</span>':'<span class="stp g">lançada</span>')+'</span>'+
+   '<span class="pc-ic">'+ibtn("eye","Ver a nota",'data-ls="nf" data-id="'+esc(n.id)+'"')+(n.xmlAsset?ibtn("down","Baixar XML",'data-ls="xml" data-id="'+esc(n.id)+'"'):'')+(n.cancelada?'':ibtn("trash","Cancelar este recebimento (estorno)",'data-ls="cancnf" data-id="'+esc(n.id)+'"',"danger"))+'</span></div>'}
+var LS_NFH='<div class="ls-nf fh"><span>Entrada</span><span>NF</span><span>Fornecedor</span><span>Pedido</span><span>Itens</span><span class="r">Total</span><span>Situação</span><span></span></div>';
+function lsNfAcao(a,id){var n=CM.nfs.filter(function(x){return x.id===id})[0];if(!n)return;if(a==="nf"){nfVer(n);return}
+  if(a==="xml"){fetch("/_blob/"+n.xmlAsset).then(function(r){return r.blob()}).then(function(bl){cnSave(n.xmlNome||("NF-"+n.nf+".xml"),bl)}).catch(function(){toast("Não consegui baixar o XML.")});return}
+  if(a==="cancnf"){if(!pode("compras.receber")){usrNega("compras.receber");return}nfeCancelar(n)}}
+
+/* ---------- Administrativo › Fiscal ---------- */
+renderNfe=function(box){nfsSub();cmSub();var pg=pgSlice("m-nfe",CM.nfs);
+  box.innerHTML='<div class="mh"><div><h2>Notas fiscais de entrada</h2></div></div><div class="tbx">'+LS_NFH+(pg.rows.length?pg.rows.map(lsNfRow).join(""):'<div class="mx-empty">Nenhuma NF de entrada.</div>')+'</div>'+pg.bar};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-nfe"&&S.tab!=="m-receb")return;var b=e.target.closest('[data-ls="nf"],[data-ls="xml"],[data-ls="cancnf"]');if(!b)return;e.stopPropagation();e.preventDefault();lsNfAcao(b.dataset.ls,b.dataset.id)},true);
+
+/* ---------- Estoque › Recebimento ---------- */
+renderReceb=function(box){
+  cmSub();insSub();nfsSub();
+  var abertos=CM.pcs.filter(function(p){return p.status!=="cancelado"&&nfePend(p).length&&pcVal(p)==="validado"}).sort(function(a,b){return String(a.prazo||"9").localeCompare(String(b.prazo||"9"))}),pa=pgSlice("m-receb:a",abertos),pn=pgSlice("m-receb:n",CM.nfs);
+  box.innerHTML='<div class="mh"><div><h2>Recebimento</h2></div></div>'+
+   '<div class="card"><h3>A receber ('+abertos.length+')</h3><div class="tbx"><div class="ls-rc fh"><span>Pedido</span><span>Fornecedor</span><span>Itens pendentes</span><span>Prazo</span><span></span></div>'+
+   (pa.rows.length?pa.rows.map(function(p){var pend=nfePend(p);return'<div class="ls-rc ls-row" data-ls="rcnfe" data-id="'+esc(p.id)+'"><span class="idtag">'+esc(p.num)+'</span><span><b>'+esc(p.fornecedor)+'</b><small>'+esc(p.emp)+'</small></span><span>'+esc(pend.map(function(r){return r.x.desc+(r.x.medida?" "+r.x.medida:"")+" · "+cmUn(r.falta,r.x.un)}).join("; "))+(pend.some(function(r){return pcReqInsp(r.x)})?' <span class="stp w">inspeção</span>':'')+'</span><span>'+(p.prazo?ppEnt(p.prazo):"–")+'</span><span class="pc-ic">'+ibtn("nfe","Dar entrada da NF",'data-ls="rcnfe" data-id="'+esc(p.id)+'"',"pri")+ibtn("eye","Ver o pedido",'data-ls="rcver" data-id="'+esc(p.id)+'"')+'</span></div>'}).join(""):'<div class="mx-empty">Nada a receber.</div>')+'</div>'+pa.bar+'</div>'+
+   '<div class="card"><h3>Entradas</h3><div class="tbx">'+LS_NFH+(pn.rows.length?pn.rows.map(lsNfRow).join(""):'<div class="mx-empty">Nenhuma entrada.</div>')+'</div>'+pn.bar+'</div>'};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-receb")return;var b=e.target.closest('[data-ls="rcnfe"],[data-ls="rcver"]');if(!b)return;e.stopPropagation();e.preventDefault();var p=CM.pcs.filter(function(x){return x.id===b.dataset.id})[0];if(!p)return;
+  if(b.dataset.ls==="rcver"){pcVer(p);return}if(!pode("compras.receber")){usrNega("compras.receber");return}nfeAbrir(p.id)},true);
+
+/* ---------- Estoque › Matéria-prima: lote abre em janela ---------- */
+function ltVer(l){var m=$("mx-modal"),mv=CM.movs.filter(function(x){return x.loteId===l.id}),i=l.inspecao||{};CM.ltv=l.id;
+  var uso=[];(PP.ops||[]).forEach(function(o){(o.materiais||[]).forEach(function(mm){(mm.empenhos||[]).forEach(function(e){if(e.loteId===l.id)uso.push(o.num+" "+cmUn(e.qtd,mm.un)+(e.baixado?" (baixado)":" (empenhado)"))})})});
+  m.innerHTML='<div class="card cm-mod pc-mod" role="dialog" aria-modal="true" aria-label="Lote"><div class="mx-bar"><h3 style="margin:0">Lote '+esc(l.lote)+'</h3>'+lsChipLote(l)+'<span class="sp"></span><button class="btn sm" type="button" data-lv="x">Fechar</button></div>'+
+   '<dl class="cn-dl pv-dl"><dt>Material</dt><dd><b>'+esc(l.material)+'</b> '+esc((l.forma||"")+" "+(l.medida||""))+'</dd><dt>Fornecedor</dt><dd>'+esc(l.fornecedor||"–")+'</dd><dt>Pedido</dt><dd>'+esc(l.pcNum||"avulso")+'</dd><dt>NF</dt><dd>'+esc(l.nf||"–")+'</dd><dt>Corrida</dt><dd>'+esc(l.corrida||"–")+'</dd><dt>Certificado</dt><dd>'+(l.cert?'<button class="btn sm" type="button" data-lv="cert">'+esc(l.cert.nome||"abrir")+'</button>':"–")+'</dd>'+
+   '<dt>Recebido</dt><dd>'+cmUn(l.qtdRec,l.un)+' · '+esc(new Date(l.recebidoEm||l.criado).toLocaleDateString("pt-BR"))+'</dd><dt>Saldo</dt><dd><b>'+cmUn(l.saldo,l.un)+'</b> · empenhado '+cmUn(ltEmp(l),l.un)+' · livre '+cmUn(ltDisp(l),l.un)+'</dd><dt>Inspeção</dt><dd>'+esc(i.status||"–")+(i.nome?" · "+esc(i.nome):"")+(i.obs?" · "+esc(i.obs):"")+'</dd><dt>Uso</dt><dd>'+esc(uso.join(", ")||"–")+'</dd></dl>'+
+   (l.status!=="cancelado"?'<div class="acts2"><label class="mx-chk">Ajustar saldo para <input id="lt-aj" style="width:90px" inputmode="decimal" placeholder="'+esc(nf(+l.saldo||0,3))+'"> '+esc(l.un)+'</label><button class="btn sm" type="button" data-lv="ajuste">Ajustar</button></div>':'')+
+   '<div class="tbx"><table class="itb"><thead><tr><th>Data</th><th>Tipo</th><th class="r">Quantidade</th><th>Documento</th></tr></thead><tbody>'+(mv.map(function(x){return'<tr><td>'+esc(nowStr(x.at))+'</td><td>'+esc({entrada:"Entrada",saida:"Baixa para OP",ajuste:"Ajuste"}[x.tipo]||x.tipo)+'</td><td class="r mono">'+(x.tipo==="saida"||(x.tipo==="ajuste"&&x.qtd<0)?"−":"+")+cmUn(Math.abs(x.qtd),x.un)+'</td><td>'+esc(x.doc||x.opNum||"")+'</td></tr>'}).join("")||'<tr><td colspan="4" class="hint">Sem movimentos.</td></tr>')+'</tbody></table></div></div>';m.hidden=false}
+$("mx-modal").addEventListener("click",function(e){if(!CM.ltv)return;var m=$("mx-modal"),b=e.target.closest("[data-lv]");if(e.target===m||(b&&b.dataset.lv==="x")){e.stopImmediatePropagation();CM.ltv="";m.hidden=true;return}if(!b)return;e.stopImmediatePropagation();
+  var l=CM.lotes.filter(function(x){return x.id===CM.ltv})[0];if(!l)return;
+  if(b.dataset.lv==="cert"){lsBaixaCert(l);return}
+  if(b.dataset.lv==="ajuste"){if(!pode("estoque.ajuste")){usrNega("estoque.ajuste");return}var v=+parse(($("lt-aj")||{}).value);if(!(v>=0)){toast("Informe o saldo correto.");return}var d=Math.round((v-(+l.saldo||0))*1000)/1000;if(!d){toast("O saldo já é esse.");return}if(v<ltEmp(l)-0.0005){toast("Há "+cmUn(ltEmp(l),l.un)+" empenhados em OPs; estorne o empenho antes.");return}
+    CM.ltv="";m.hidden=true;askDel("Ajustar o saldo do lote "+l.lote+"?",cmUn(l.saldo,l.un)+" → "+cmUn(v,l.un)+".",function(){var t=Date.now();Promise.all([PR.db.doc("lotes/"+l.id).update({saldo:v}),PR.db.doc("movimentos/mv-"+t.toString(36)+"-"+rid().slice(0,3)).set({tipo:"ajuste",loteId:l.id,lote:l.lote,material:l.material,qtd:d,un:l.un,doc:"Ajuste de inventário",at:t,uid:AG.uid||""})]).then(function(){toast("Saldo ajustado.")})})}},true);
+renderEstMp=function(box){
+  cmSub();var ft=CM.ltTipo||"mp",grp=function(l){var t=l.tipo||"mp";return t==="mp"||t==="comp"?"mp":t==="ferr"?"ferr":"out"},L=CM.lotes.filter(function(l){return(CM.ltTodos||ltSaldo(l)>0)&&(ft==="todos"||grp(l)===ft)}),pg=pgSlice("m-estmp:"+ft,L);
+  box.innerHTML='<div class="mh"><div><h2>Estoque por lote</h2></div><div class="acts2"><button class="btn sm" type="button" data-lt="avulso">+ Entrada avulsa</button></div></div>'+
+   '<div class="mx-bar"><span class="cadtabs" role="tablist" style="margin:0">'+[["mp","Matéria-prima"],["ferr","Ferramentas"],["out","Outros"],["todos","Todos"]].map(function(x){return'<button type="button" role="tab" data-lt="tipo" data-t="'+x[0]+'" aria-selected="'+(ft===x[0])+'">'+x[1]+'</button>'}).join("")+'</span><span class="sp"></span><label class="mx-chk"><input type="checkbox" id="lt-todos"'+(CM.ltTodos?" checked":"")+'> Mostrar zerados</label></div>'+
+   '<div class="tbx"><div class="ls-lt fh"><span>Lote</span><span>Material</span><span>Fornecedor · NF</span><span>Corrida</span><span>Cert.</span><span>Situação</span><span class="r">Saldo</span><span class="r">Livre</span><span></span></div>'+
+   (pg.rows.length?pg.rows.map(function(l){return'<div class="ls-lt ls-row" data-ls="lt" data-id="'+esc(l.id)+'"><span class="idtag">'+esc(l.lote)+'</span><span><b>'+esc(l.material)+'</b><small>'+esc((l.forma||"")+" "+(l.medida||""))+'</small></span><span>'+esc(l.fornecedor||"–")+'<small>NF '+esc(l.nf||"–")+'</small></span><span>'+esc(l.corrida||"–")+'</span><span>'+lsCert(l)+'</span><span>'+lsChipLote(l)+'</span><span class="r mono">'+cmUn(l.saldo,l.un)+'</span><span class="r mono">'+cmUn(ltDisp(l),l.un)+'</span><span class="pc-ic">'+ibtn("eye","Ver o lote",'data-ls="lt" data-id="'+esc(l.id)+'"')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum lote.</div>')+'</div>'+pg.bar};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-estmp")return;var b=e.target.closest('[data-ls="lt"],[data-ls="cert"]');if(!b)return;e.stopPropagation();e.preventDefault();var l=CM.lotes.filter(function(x){return x.id===b.dataset.id})[0];if(!l)return;if(b.dataset.ls==="cert"){lsBaixaCert(l);return}ltVer(l)},true);
+
+/* ---------- PCP › Ordens: ícones na linha ---------- */
+var _rProdLs=renderProd;renderProd=function(box){_rProdLs.apply(this,arguments);
+  Array.prototype.forEach.call(box.querySelectorAll('.op-r[data-id]'),function(row){row.insertAdjacentHTML("beforeend",'<span class="pc-ic">'+ibtn("eye","Abrir a OP",'data-pp="opopen" data-id="'+esc(row.dataset.id)+'"')+ibtn("pdf","Ficha da OP (PDF)",'data-ls="ficha" data-id="'+esc(row.dataset.id)+'"')+'</span>')});
+  var h=box.querySelector(".op-r.fh");if(h)h.insertAdjacentHTML("beforeend","<span></span>")};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-prod")return;var b=e.target.closest('[data-ls="ficha"]');if(!b)return;e.stopPropagation();e.preventDefault();var o=PP.ops.filter(function(x){return x.id===b.dataset.id})[0];if(o)opFicha(o)},true);
+
+/* ---------- botões com texto dentro das linhas das listas antigas viram ícones ---------- */
+var LS_ICO={"Ver item":["open","Ver o item"],"Abrir na engenharia":["open","Abrir na engenharia"],"Gerar OP":["play","Gerar OP"],"Abrir":["open","Abrir"],"Ver como":["user","Ver o MISTA como esta pessoa"],"Editar":["edit","Editar"],"Ver registro":["eye","Ver registro"],"Desfazer inspeção":["undo","Desfazer inspeção"],"Inspecionar":["clip","Inspecionar"],"Dar entrada da NF":["nfe","Dar entrada da NF"],"XML":["down","Baixar XML"],"Receber":["nfe","Receber"],"Excluir":["trash","Excluir"],"Ver":["eye","Ver"],"Baixar":["down","Baixar"]};
+function lsIcones(box){Array.prototype.forEach.call(box.querySelectorAll(".tbx button.btn:not(.ibn)"),function(b){if(b.closest(".fh,.mx-bar,.acts2,thead"))return;var t=b.textContent.trim(),k=LS_ICO[t];if(!k||!IC[k[0]])return;
+  b.classList.add("ibn");b.title=k[1];b.setAttribute("aria-label",k[1]);b.innerHTML=IC[k[0]];if(/pri/.test(b.className)||t==="Gerar OP"||t==="Dar entrada da NF"||t==="Inspecionar")b.classList.add("pri");if(t==="Excluir")b.classList.add("danger");var p=b.parentNode;if(p&&p.tagName==="SPAN")p.classList.add("pc-ic")})}
+
 /* v114: paginação nas listas antigas (fica por último para valer em todas as telas) */
-var PG_DOM={"m-estmp":[".lt-r:not(.fh)"],"m-estmv":[".tbx tbody>tr"],"m-nfe":["tr.nf-r","tr.nf-d"],"m-itens":[".it-r:not(.fh)"],"m-insprec":[".ir-c"],"m-eng":[".eg-r:not(.fh)"],"m-qpi":[".qi-r:not(.fh)"],"m-cnc":[".cn-r:not(.fh)"]};
+var PG_DOM={"m-estmp":[".lt-r:not(.fh)"],"m-estmv":[".tbx tbody>tr"],"m-nfe":["tr.nf-r","tr.nf-d"],"m-itens":[".it-r:not(.fh)"],"m-insprec":[".ir-c"],"m-eng":[".eg-r:not(.fh)"],"m-qpi":[".qi-r:not(.fh)"],"m-cnc":[".cn-r:not(.fh)"],"m-usr":[".us-r:not(.fh)"],"m-maq":[".mq-r"]};
 var _rmPg=renderMod;renderMod=function(box,k){var r=_rmPg.apply(this,arguments),t="m-"+k;
   try{if(t==="m-prod")pgDom(box,"m-prod:"+PP.aba,PP.aba==="ops"?".op-r:not(.fh)":".pp-r:not(.fh)");else if(PG_DOM[t]&&!box.querySelector(".pg-bar"))pgDom(box,t+(t==="m-insprec"?":"+IR.aba:t==="m-estmp"?":"+(CM.ltTipo||"mp"):""),PG_DOM[t][0],PG_DOM[t][1])}catch(e){}
+  try{lsIcones(box)}catch(e){}
   return r};
 
 })();

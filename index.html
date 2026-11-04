@@ -1305,6 +1305,27 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .pc-it small,.nfe-it small{display:block;color:var(--muted);font-size:11.5px}.nfe-x{color:#1F5F9E!important}.nfe-it tr.off{opacity:.5}
 .pc-tot{font-size:13px}.cm-n0{display:flex;align-items:center;gap:4px}.nfe-xml{display:flex;gap:10px;align-items:center;margin:4px 0 10px}.nfe-ch{grid-column:span 2}
 .nf-r{cursor:pointer}.nf-r:hover{background:var(--surface2)}.nf-r small{display:block;color:var(--muted);font-size:11px}.nf-d>td{background:var(--surface2)}
+
+/* v110: painéis mais evidentes (borda, sombra e cabeçalho com faixa) e abas do cadastro de item */
+:root{--card-line:#CDD3E8;--card-head:#F4F6FD;--card-sh:0 1px 2px rgba(16,24,64,.05),0 6px 18px rgba(16,24,64,.06)}
+.card,.panel{border:1px solid var(--card-line)!important;box-shadow:var(--card-sh);border-radius:12px}
+#v-mx .card{padding:14px 18px 16px}
+#v-mx .card>h3:first-child,#v-mx .card>.mx-bar:first-child,#v-mx .card>.dh2:first-child{margin:-14px -18px 6px;padding:11px 18px;background:var(--card-head);border-bottom:1px solid var(--card-line);border-radius:12px 12px 0 0}
+#v-mx .card>.mx-bar:first-child h3{margin:0}
+#v-mx .card>h3:first-child{position:relative;padding-left:30px}
+#v-mx .card>h3:first-child::before{content:"";position:absolute;left:18px;top:50%;width:4px;height:16px;margin-top:-8px;border-radius:2px;background:var(--accent)}
+#v-mx>.card+.card,#v-mx .card+.card{margin-top:4px}
+#v-mx .tbx{border:1px solid var(--card-line)!important;border-radius:10px}
+.it-tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--card-line);margin:6px 0 2px;position:sticky;top:0;z-index:4;background:var(--bg);padding-top:4px}
+.it-tabs button{display:flex;align-items:center;gap:6px;border:1px solid transparent;border-bottom:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:13.5px;padding:9px 14px;border-radius:10px 10px 0 0;cursor:pointer;margin-bottom:-2px}
+.it-tabs button:hover{color:var(--ink);background:var(--surface2)}
+.it-tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);border-color:var(--card-line);border-bottom:2px solid var(--surface);box-shadow:inset 0 3px 0 var(--accent)}
+.it-tb-s{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
+.it-tb-s.g{background:var(--good-bg,#E3F5EA);color:var(--good,#17803D)}.it-tb-s.w{background:#FFF1D6;color:#8A5A00}.it-tb-s.b{background:#FDE7E7;color:#A61B1B}
+.it-tb-n{font-size:11px;color:var(--muted);background:var(--surface2);border-radius:999px;padding:1px 7px}
+.it-pane{border-top-left-radius:0!important}
+.it-savebar{position:sticky;bottom:10px;z-index:5;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--card-line);border-radius:12px;padding:10px 14px;box-shadow:0 8px 24px rgba(16,24,64,.14);margin-top:8px}
+.it-savebar.sujo{border-color:#E8B44A;background:#FFFBF0}.it-sv-t{font-size:13px;color:var(--muted);font-weight:600}.it-savebar.sujo .it-sv-t{color:#8A5A00}
 </style>
 
 <div class="shell">
@@ -7968,7 +7989,7 @@ $("mx-modal").addEventListener("click",function(e){if(!PP.open)return;var b=e.ta
 /* PCP › Ordens: sinaliza falta de matéria-prima */
 var _rProd7=renderProd;renderProd=function(box){_rProd7.apply(this,arguments);
   Array.prototype.forEach.call(box.querySelectorAll('.op-r[data-id]'),function(row){var o=PP.ops.filter(function(x){return x.id===row.dataset.id})[0];if(!o||o.status==="cancelada"||o.status==="concluida")return;var c=row.children[5];if(!c)return;
-    c.insertAdjacentHTML("beforeend",opFaltaMp(o)?'<span class="stp b">Falta MP'+(function(){var r=(o.materiais||[]).filter(function(m){return m.req&&m.req.status!=="atendida"&&m.req.status!=="cancelada"})[0];return r?" · "+esc(r.req.num):""})()+'</span>':opMatOk(o)?'<span class="stp g">Material empenhado</span>':'')})};
+    c.insertAdjacentHTML("beforeend",opFaltaMp(o)?'<span class="stp b">Falta MP'+(function(){var r=(o.materiais||[]).filter(function(m){return m.req&&m.req.status!=="atendida"&&m.req.status!=="cancelada"})[0];return r?" · "+esc(r.req.num):""})()+'</span>':opMatOk(o)&&(o.materiais||[]).some(function(m){return m.tipo==="mp"})?'<span class="stp g">Material empenhado</span>':'')})};
 
 /* ---------- código de barras (Code 128-C) ---------- */
 var C128="212222 222122 222221 121223 121322 131222 122213 122312 132212 221213 221312 231212 112232 122132 122231 113222 123122 123221 223211 221132 221231 213212 223112 312131 311222 321122 321221 312212 322112 322211 212123 212321 232121 111323 131123 131321 112313 132113 132311 211313 231113 231311 112133 112331 132131 113123 113321 133121 313121 211331 231131 213113 213311 213131 311123 311321 331121 312113 312311 332111 314111 221411 431111 111224 111422 121124 121421 141122 141221 112214 112412 122114 122411 142112 142211 241211 221114 413111 241112 134111 111242 121142 121241 114212 124112 124211 411212 421112 421211 212141 214121 412121 111143 111341 131141 114113 114311 411113 411311 113141 114131 311141 411131 211412 211214 211232 2331112".split(" ");
@@ -8174,6 +8195,29 @@ var _stUs=showTab;showTab=function(t){if(t==="m-usr"&&MSM.going&&MSM.cur==="Conf
   if(t==="m-usr"){$("crumb").innerHTML="Configurações › <b>Usuários</b>";$("crumb-t").textContent="Usuários"}
   if(t==="m-perm"){$("crumb").innerHTML="Configurações › <b>Permissões</b>";$("crumb-t").textContent="Permissões"}
   return r};
+
+
+/* ===== v110: cadastro de item em abas (Dados · Fiscal · Roteiro · Estrutura · Vínculos · Histórico) com barra de salvar fixa ===== */
+IT.tab=IT.tab||"dados";
+var _itDetTab=itDetail;itDetail=function(box,x){
+  var foco=IT.foco;if(IT.tabDe!==x.id){IT.tabDe=x.id;IT.tab="dados"}
+  _itDetTab.apply(this,arguments);var e=itEdOf(x);
+  if(foco==="it-rt"){IT.tab=rtOk(e)&&!esOk(e)?"es":"rt"}
+  var cards=Array.prototype.slice.call(box.querySelectorAll(":scope > .card"));if(cards.length<3)return;
+  var cab=cards[0],acha=function(t){return cards.filter(function(c){var h=c.querySelector("h3");return h&&h.textContent.trim()===t})[0]};
+  var C={dados:acha("Identificação"),fiscal:acha("Dados fiscais")||cards.filter(function(c){return c.querySelector('[data-it="sugncm"]')})[0],rt:box.querySelector("#it-rt"),es:box.querySelector("#it-es"),vinc:acha("Vínculos")},sv=cards.filter(function(c){return c.querySelector('[data-it="salvar"]')})[0];
+  /* histórico vira aba própria; os botões Salvar/Desfazer ficam numa barra fixa embaixo */
+  if(sv){var hi=document.createElement("div");hi.className="card";while(sv.firstChild){var n=sv.firstChild;if(n.classList&&n.classList.contains("acts2")&&n.querySelector('[data-it="salvar"]')){sv.removeChild(n);n.className="acts2 it-savebar"+(e.dirty?" sujo":"");n.insertAdjacentHTML("afterbegin",'<span class="it-sv-t">'+(e.dirty?'Alterações não salvas':'Tudo salvo')+'</span><span class="sp" style="flex:1"></span>');sv.parentNode.appendChild(n)}else hi.appendChild(n)}sv.parentNode.replaceChild(hi,sv);C.hist=hi}
+  var f=itFalta(e),rt=e.roteiro||{},es=e.estrutura||{};
+  var chip=function(ok,txtOk,txtNo,warn){return'<span class="it-tb-s '+(ok?"g":warn?"w":"b")+'">'+(ok?txtOk:txtNo)+'</span>'};
+  var T=[["dados","Dados do item",""],["fiscal","Fiscal",chip(!f.length,"completo",f.length+" pendente"+(f.length>1?"s":""))],["rt","Roteiro",chip(rtOk(e),"liberado",(rt.ops||[]).length?"em elaboração":"pendente",(rt.ops||[]).length)],["es","Estrutura",chip(esOk(e),"liberada",(es.mats||[]).length?"em elaboração":"pendente",(es.mats||[]).length)],["vinc","Vínculos",""],["hist","Histórico",'<span class="it-tb-n">'+((x.hist||[]).length)+'</span>']].filter(function(t){return C[t[0]]});
+  if(!C[IT.tab])IT.tab="dados";
+  var nav=document.createElement("div");nav.className="it-tabs";nav.setAttribute("role","tablist");nav.setAttribute("aria-label","Seções do item");
+  nav.innerHTML=T.map(function(t){return'<button type="button" role="tab" data-ittab="'+t[0]+'" aria-selected="'+(IT.tab===t[0])+'">'+t[1]+t[2]+'</button>'}).join("");
+  cab.parentNode.insertBefore(nav,cab.nextSibling);
+  T.forEach(function(t){var c=C[t[0]];c.classList.add("it-pane");c.hidden=IT.tab!==t[0]});
+};
+$("v-mx").addEventListener("click",function(ev){if(S.tab!=="m-itens")return;var b=ev.target.closest("[data-ittab]");if(!b)return;ev.stopPropagation();ev.preventDefault();IT.tab=b.dataset.ittab;mxRender()},true);
 
 })();
 </script>

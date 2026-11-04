@@ -1376,6 +1376,37 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
 .ft-box{display:inline-flex;align-items:center;gap:6px}.ft-btn{display:inline-flex;align-items:center;gap:6px}.ft-box.on .ft-btn{background:var(--accent);color:#fff;border-color:var(--accent)}
 .ft-in{width:220px!important;min-height:34px;border:1px solid var(--card-line);border-radius:8px;padding:4px 10px;background:var(--surface);color:var(--ink)}
 #v-mx .mh .acts2{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+/* v119: monitor de produção — gestão à vista */
+.mon.mv{background:#0B1020;color:#F8FAFC;border-radius:18px;padding:20px;min-height:80vh;font-family:var(--f-body)}
+.mon.mv:fullscreen{border-radius:0;min-height:100vh;overflow:auto;padding:24px 28px}
+.mv-top{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.mv-tit{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}.mv-tit h2{margin:0;font-size:26px;color:#fff;letter-spacing:.01em}
+.mv-clock{font-size:40px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff}.mv-date{font-size:15px;color:#94A3B8;text-transform:capitalize}
+.mv-k{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap}.mv-k>div{min-width:96px;border-radius:12px;padding:8px 14px;background:#1E293B;display:flex;flex-direction:column;align-items:flex-start}
+.mv-k b{font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}.mv-k span{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#CBD5E1;font-weight:700}
+.mv-k .k-prod{background:#16A34A}.mv-k .k-setup{background:#EAB308;color:#1C1600}.mv-k .k-setup span{color:#3B2F00}.mv-k .k-parada{background:#DC2626}.mv-k .k-livre{background:#334155}.mv-k .k-atr.on{background:#B91C1C}
+.mv-ctl{display:flex;gap:6px}.mv-fb{border:1px solid #334155;background:#111827;color:#E2E8F0;border-radius:10px;padding:8px 12px;font:inherit;font-weight:700;cursor:pointer}.mv-fb.on{background:#F8FAFC;color:#0B1020}
+.mv-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.mv-c{border-radius:16px;padding:14px 16px 12px;display:flex;flex-direction:column;gap:6px;min-height:200px;box-shadow:0 6px 18px rgba(0,0,0,.35);border:2px solid transparent}
+.mv-h{display:flex;justify-content:space-between;align-items:center}.mv-cod{font-weight:800;font-size:13px;letter-spacing:.04em;background:rgba(0,0,0,.25);padding:3px 8px;border-radius:6px}.mv-emp{font-size:12px;font-weight:800;opacity:.85}
+.mv-n{font-size:19px;font-weight:800;line-height:1.2}
+.mv-s{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.mv-s b{font-size:26px;font-weight:900;letter-spacing:.02em}.mv-s span{font-size:15px;font-weight:700;opacity:.9}
+.mv-mot{font-size:15px;font-weight:700;background:rgba(0,0,0,.22);border-radius:8px;padding:4px 8px;align-self:flex-start}
+.mv-op{display:flex;align-items:center;gap:8px;font-size:17px;margin-top:2px}.mv-opn{font-family:var(--f-mono);font-size:13px;font-weight:800;background:rgba(255,255,255,.18);padding:2px 7px;border-radius:6px}
+.mv-det{font-size:14px;opacity:.92}
+.mv-bar{height:12px;border-radius:999px;background:rgba(0,0,0,.28);overflow:hidden;margin-top:4px}.mv-bar i{display:block;height:100%;background:#fff;border-radius:999px}.mv-bar.atr i{background:#FCA5A5}
+.mv-t{display:flex;justify-content:space-between;font-size:14px;font-weight:700}.mv-t b{font-size:16px}
+.mv-f{margin-top:auto;font-size:13px;opacity:.85;border-top:1px solid rgba(255,255,255,.18);padding-top:6px}
+.mv-prod{background:linear-gradient(160deg,#22C55E,#15803D);color:#fff}
+.mv-setup{background:linear-gradient(160deg,#FDE047,#EAB308);color:#1C1600}.mv-setup .mv-f{border-top-color:rgba(0,0,0,.18)}.mv-setup .mv-bar i{background:#1C1600}.mv-setup .mv-opn{background:rgba(0,0,0,.12)}
+.mv-parada,.mv-man{background:linear-gradient(160deg,#EF4444,#B91C1C);color:#fff;animation:mvpulse 2s ease-in-out infinite}
+@keyframes mvpulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.65)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+@media (prefers-reduced-motion:reduce){.mv-parada,.mv-man{animation:none}}
+.mv-esp{background:#1D4ED8;color:#fff}.mv-espant{background:#334155;color:#E2E8F0}.mv-livre{background:#1E293B;color:#CBD5E1}.mv-off{background:#111827;color:#64748B}
+.mv-leg{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-size:13px;color:#CBD5E1;align-items:center}.mv-leg span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.l-prod::before{background:#22C55E}.l-setup::before{background:#EAB308}.l-parada::before{background:#EF4444}.l-esp::before{background:#1D4ED8}.l-livre::before{background:#1E293B;border:1px solid #475569}.mv-upd{margin-left:auto}.mv-upd::before{display:none!important}
+.ap-b.set{background:#EAB308;color:#1C1600}.ap-card.setup{border-color:#EAB308}.ap-setmsg{background:#FEF3C7;color:#713F12}
 </style>
 
 <div class="shell">
@@ -8380,7 +8411,7 @@ var USR_ACAO=[
  ["eng.liberar",'[data-rtb="liberar"],[data-esb="liberar"],[data-rtb="reabrir"],[data-esb="reabrir"]'],
  ["pcp.op",'[data-pp="op"],[data-pp="optodos"],[data-x="opgerar"],[data-op7="editar"],[data-op2="cancel"],[data-gx="y"]'],
  ["pcp.material",'[data-op3="empenhar"],[data-op3="estorno"],[data-op3="baixar"],[data-op3="requisitar"]'],
- ["apont",'[data-ap="iniciar"],[data-ap="pausar"],[data-ap="terminar"]'],
+ ["apont",'[data-ap="iniciar"],[data-ap="pausar"],[data-ap="terminar"],[data-ap="setup"],[data-ap="producao"]'],
  ["cad.maquinas",'[data-mq="novo"],[data-mq="salvar"],[data-mq="del"]']
 ];
 function usrNega(acao){var a=ACOES.filter(function(x){return x[0]===acao})[0];toast("Seu perfil não permite: "+(a?a[2].charAt(0).toLowerCase()+a[2].slice(1):acao)+".")}
@@ -8707,6 +8738,54 @@ var LS_ICO={"Ver item":["open","Ver o item"],"Abrir na engenharia":["open","Abri
 function lsIcones(box){Array.prototype.forEach.call(box.querySelectorAll(".tbx button.btn:not(.ibn)"),function(b){if(b.closest(".fh,.mx-bar,.acts2,thead"))return;var t=b.textContent.trim(),k=LS_ICO[t];if(!k||!IC[k[0]])return;
   b.classList.add("ibn");b.title=k[1];b.setAttribute("aria-label",k[1]);b.innerHTML=IC[k[0]];if(/pri/.test(b.className)||t==="Gerar OP"||t==="Dar entrada da NF"||t==="Inspecionar")b.classList.add("pri");if(t==="Excluir")b.classList.add("danger");var p=b.parentNode;if(p&&p.tagName==="SPAN")p.classList.add("pc-ic")})}
 $("v-mx").addEventListener("change",function(e){if(S.tab==="m-nfe"&&e.target.id==="nf-canc"){e.stopPropagation();CM.rcCanc=e.target.checked;mxRender()}},true);
+
+/* ===== v119: setup como etapa própria no apontamento + Monitor de produção para gestão à vista (verde usinando, amarelo setup, vermelho parada) ===== */
+mqFila=function(id){return mqTarefas().filter(function(t){return t.maq===id&&t.st!=="concluida"}).sort(function(a,b){var at=function(s){return s==="execucao"||s==="pausa"||s==="setup"?0:1},ea=at(a.st),eb=at(b.st);if(ea!==eb)return ea-eb;return(a.fila||1e9)-(b.fila||1e9)||(a.op.prio||0)-(b.op.prio||0)})};
+function apMinSetup(r,now){var m=+r.minSetup||0;if(r.status==="setup"&&r.ultIni)m+=(now-r.ultIni)/60000;return m}
+/* botões do apontamento: aguardando → [Iniciar setup] [Iniciar produção]; setup → [Iniciar produção] [Pausar] */
+var _rAptMon=renderApt;renderApt=function(box){_rAptMon.apply(this,arguments);var m=mqById(MQ.posto);if(!m)return;var t=apFila(m.id)[0];if(!t)return;var r=t.r,bt=box.querySelector(".ap-btns"),card=box.querySelector(".ap-card");if(!bt)return;
+  if((r.status||"aguardando")==="aguardando")bt.innerHTML='<button type="button" class="ap-b set" data-ap="setup"'+(t.liberada?'':' disabled')+'>Iniciar setup</button><button type="button" class="ap-b ini" data-ap="producao"'+(t.liberada?'':' disabled')+'>Iniciar produção</button>';
+  else if(r.status==="setup"){bt.innerHTML='<button type="button" class="ap-b pausa" data-ap="pausar">Pausar</button><button type="button" class="ap-b ini" data-ap="producao">Iniciar produção</button>';if(card){card.classList.add("setup");var g=card.querySelector(".ap-grid");if(g)g.insertAdjacentHTML("afterend",'<div class="ap-msg ap-setmsg">Em setup há '+fmtH(apMinSetup(r,Date.now())/60)+(r.setup?' · previsto '+fmtH(r.setup/60):'')+'</div>')}}
+  else if(r.status==="pausa"&&r.pausaDe==="setup"){var b1=bt.querySelector('[data-ap="iniciar"]');if(b1)b1.textContent="Retomar setup"}};
+function apAgora(){var t=apFila(MQ.posto)[0];return t}
+document.addEventListener("click",function(ev){if(S.tab!=="m-apt"||!ev.target.closest)return;var b=ev.target.closest('[data-ap="setup"],[data-ap="producao"],[data-ap="pausar"],[data-ap="iniciar"]');if(!b||b.disabled)return;
+  if(typeof pode==="function"&&!usrLivre()&&!pode("apont")){ev.stopImmediatePropagation();ev.preventDefault();usrNega("apont");return}
+  var t=apAgora();if(!t)return;var r=t.r,now=Date.now(),a=b.dataset.ap,nm=(mqById(MQ.posto)||{}).nome||"";ev.stopImmediatePropagation();ev.preventDefault();
+  if(a==="setup"){opPatchRot(t.op,t.j,{status:"setup",ultIni:now,iniciadoEm:r.iniciadoEm||now,setupIni:now,motivo:undefined},"Início do setup da operação "+r.seq+" "+r.op+" no posto "+nm+".");apEvento(t,"setup");return}
+  if(a==="producao"){var p={status:"execucao",ultIni:now,iniciadoEm:r.iniciadoEm||now,motivo:undefined,pausaDe:undefined,pausaEm:undefined};if(r.status==="setup")p.minSetup=Math.round(apMinSetup(r,now)*10)/10;
+    opPatchRot(t.op,t.j,p,(r.status==="setup"?"Fim do setup ("+fmtH(apMinSetup(r,now)/60)+") e i":"I")+"nício da produção da operação "+r.seq+" "+r.op+" no posto "+nm+".");apEvento(t,"inicio");return}
+  if(a==="iniciar"){var volta=r.pausaDe==="setup"?"setup":"execucao",pp={status:volta,ultIni:now,iniciadoEm:r.iniciadoEm||now,motivo:undefined,pausaDe:undefined,pausaEm:undefined};if(r.pausaEm)pp.minParada=Math.round(((+r.minParada||0)+(now-r.pausaEm)/60000)*10)/10;
+    opPatchRot(t.op,t.j,pp,"Retomada "+(volta==="setup"?"do setup":"da produção")+" na operação "+r.seq+" "+r.op+".");apEvento(t,"retomada");return}
+  if(a==="pausar"){var de=r.status;apModal('<h3>Parar a máquina</h3><p class="hint">Motivo da parada:</p><div class="ap-mots">'+AP_MOT.filter(function(x){return!/^Setup/.test(x)}).map(function(x,i){return'<label class="ap-mot"><input type="radio" name="apmot" value="'+esc(x)+'"'+(i?'':' checked')+'> '+esc(x)+'</label>'}).join("")+'</div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y">Parar</button></div>',function(m){
+      var mot=(m.querySelector('input[name="apmot"]:checked')||{}).value||"Outro",t2=Date.now(),q={status:"pausa",ultIni:undefined,motivo:mot,pausaDe:de,pausaEm:t2};
+      if(de==="setup")q.minSetup=Math.round(apMinSetup(r,t2)*10)/10;else q.minReal=Math.round(((+r.minReal||0)+(r.ultIni?(t2-r.ultIni)/60000:0))*10)/10;
+      opPatchRot(t.op,t.j,q,"Parada na operação "+r.seq+" ("+(de==="setup"?"durante o setup":"em produção")+"): "+mot+".");apEvento(t,"pausa",{motivo:mot})});return}
+},true);
+
+/* ---------- Monitor: gestão à vista ---------- */
+var MON={emp:"",clk:null};
+function monEstado(m,t){if(m.status==="manutencao")return"man";if(m.status&&m.status!=="ativa")return"off";if(!t)return"livre";var s=t.r.status||"aguardando";
+  if(s==="execucao")return"prod";if(s==="setup")return"setup";if(s==="pausa")return/^Setup/i.test(t.r.motivo||"")?"setup":"parada";return t.liberada?"esp":"espant"}
+var MON_TXT={prod:"PRODUZINDO",setup:"SETUP",parada:"PARADA",man:"MANUTENÇÃO",off:"DESLIGADA",livre:"LIVRE",esp:"AGUARDANDO INÍCIO",espant:"AGUARDA OPERAÇÃO ANTERIOR"};
+function monHa(ms){if(!ms)return"";var m=Math.max(0,Math.round((Date.now()-ms)/60000));return m<60?m+" min":Math.floor(m/60)+"h"+("0"+m%60).slice(-2)}
+renderMon=function(box){
+  mqSub();ppSub();var now=Date.now(),maqs=MQ.list.filter(function(m){return m.tipo!=="Terceiro"&&(!MON.emp||m.emp===MON.emp)}).sort(function(a,b){return String(a.emp).localeCompare(String(b.emp))||String(a.codigo||a.nome).localeCompare(String(b.codigo||b.nome))});
+  var cont={prod:0,setup:0,parada:0,livre:0},cards=maqs.map(function(m){var f=mqFila(m.id),t=f[0],st=monEstado(m,t);if(st==="prod")cont.prod++;else if(st==="setup")cont.setup++;else if(st==="parada"||st==="man")cont.parada++;else cont.livre++;
+    var r=t&&t.r,h='<div class="mv-c mv-'+st+'"><div class="mv-h"><span class="mv-cod">'+esc(m.codigo||"")+'</span><span class="mv-emp">'+esc(m.emp||"")+'</span></div><div class="mv-n">'+esc(m.nome||"")+'</div>';
+    var desde=st==="prod"||st==="setup"&&r&&r.status==="setup"?r.ultIni:st==="parada"||(st==="setup"&&r&&r.status==="pausa")?r.pausaEm:0;
+    h+='<div class="mv-s"><b>'+MON_TXT[st]+'</b>'+(desde?'<span>há '+monHa(desde)+'</span>':'')+'</div>';
+    if((st==="parada"||st==="setup")&&r&&r.motivo)h+='<div class="mv-mot">'+esc(r.motivo)+'</div>';
+    if(t){var real=st==="setup"&&r.status==="setup"?apMinSetup(r,now):t.real,prev=st==="setup"?(+r.setup||0):(+r.min||0),pct=prev?Math.round(real/prev*100):0,atr=prev&&real>prev;
+      h+='<div class="mv-op"><span class="mv-opn">'+esc(t.op.num)+'</span><b>'+esc(t.op.codigo)+'</b></div><div class="mv-det">'+esc(r.seq+" "+r.op+" · "+t.op.qtd+" pç · entrega "+(t.op.entrega?dStr(t.op.entrega):"–"))+'</div>';
+      if(st==="prod"||st==="setup"||st==="parada")h+='<div class="mv-bar'+(atr?" atr":"")+'"><i style="width:'+Math.min(100,pct)+'%"></i></div><div class="mv-t"><span>'+fmtH(real/60)+' de '+fmtH(prev/60)+(st==="setup"?" de setup":"")+'</span><b>'+pct+'%</b></div>'}
+    h+='<div class="mv-f">Fila: '+f.length+' op. · '+fmtH(mqCarga(m.id))+'</div></div>';return h}).join("");
+  var abertas=(PP.ops||[]).filter(function(o){return o.status!=="concluida"&&o.status!=="cancelada"}),atr=abertas.filter(function(o){var d=ppDias(o.entrega);return d!=null&&d<0}).length,d=new Date();
+  box.innerHTML='<div class="mon mv"><div class="mv-top"><div class="mv-tit"><h2>Monitor de produção</h2><span class="mv-clock" id="mv-clock">'+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+'</span><span class="mv-date">'+d.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"})+'</span></div>'+
+   '<div class="mv-k"><div class="k-prod"><b>'+cont.prod+'</b><span>usinando</span></div><div class="k-setup"><b>'+cont.setup+'</b><span>setup</span></div><div class="k-parada"><b>'+cont.parada+'</b><span>paradas</span></div><div class="k-livre"><b>'+cont.livre+'</b><span>livres</span></div><div class="k-op"><b>'+abertas.length+'</b><span>OPs abertas</span></div><div class="k-atr'+(atr?" on":"")+'"><b>'+atr+'</b><span>atrasadas</span></div></div>'+
+   '<div class="mv-ctl">'+["","MIX","STAR"].map(function(e){return'<button type="button" class="mv-fb'+(MON.emp===e?" on":"")+'" data-mon="emp" data-e="'+e+'">'+(e||"Todas")+'</button>'}).join("")+'<button type="button" class="mv-fb" data-mon="cheia">Tela cheia</button></div></div>'+
+   '<div class="mv-g">'+(cards||'<div class="mx-empty">Cadastre as máquinas em PCP › Máquinas.</div>')+'</div><div class="mv-leg"><span class="l-prod">Usinando</span><span class="l-setup">Setup</span><span class="l-parada">Parada / manutenção</span><span class="l-esp">Aguardando início</span><span class="l-livre">Livre</span><span class="mv-upd">Atualiza sozinho</span></div></div>';
+  clearInterval(MON.clk);MON.clk=setInterval(function(){var c=$("mv-clock");if(!c){clearInterval(MON.clk);return}c.textContent=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})},10000)};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-mon")return;var b=e.target.closest('[data-mon="emp"]');if(!b)return;e.stopPropagation();MON.emp=b.dataset.e;mxRender()},true);
 
 /* v114: paginação nas listas antigas (fica por último para valer em todas as telas) */
 var PG_DOM={"m-estmp":[".lt-r:not(.fh)"],"m-estmv":[".tbx tbody>tr"],"m-nfe":["tr.nf-r","tr.nf-d"],"m-itens":[".it-r:not(.fh)"],"m-insprec":[".ir-c"],"m-eng":[".eg-r:not(.fh)"],"m-qpi":[".qi-r:not(.fh)"],"m-cnc":[".cn-r:not(.fh)"],"m-usr":[".us-r:not(.fh)"],"m-maq":[".mq-r"]};

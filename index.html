@@ -1336,7 +1336,8 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 /* v112 validação do pedido de compra */
 .pc-val{display:block;margin-top:4px;font-size:11.5px;font-weight:600;line-height:1.3}.pc-val.g{color:#17803D}.pc-val.w{color:#8A5A00}.pc-val.b{color:#B42318}
 .pc-acs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.cm-p{grid-template-columns:90px minmax(150px,1fr) minmax(320px,2.6fr) 90px 170px 44px!important}
+.cm-p{grid-template-columns:90px minmax(150px,1fr) minmax(300px,2.4fr) 90px 170px 214px!important;align-items:center!important}
+.pc-ic{display:flex;gap:4px;justify-content:flex-end;flex-wrap:nowrap}.pc-ic .ibn.pc-ok{color:#17803D;border-color:#9ED3B2}.pc-ic .ibn.pc-semval{color:#B42318}
 </style>
 
 <div class="shell">
@@ -7691,8 +7692,8 @@ function renderComp(box){
   }else{
     h+='<div class="tbx"><div class="cm-p fh"><span>Pedido / lote</span><span>Fornecedor</span><span>Itens</span><span>Prazo</span><span>Situação</span><span></span></div>'+
      (CM.pcs.length?CM.pcs.map(function(p){var tot=p.total||0;if(!tot)p.itens.forEach(function(x){tot+=(+x.qtd||0)*(+x.preco||0)});var pend=p.status!=="cancelado"&&nfePend(p).length;
-       return'<div class="cm-p"><span class="idtag big">'+esc(p.num)+'</span><span><b>'+esc(p.fornecedor)+'</b><small>'+esc(p.emp)+(tot?" · "+brl(tot):"")+'</small></span><span>'+p.itens.map(function(x,i){var falta=(+x.qtd||0)-(+x.recebido||0);return'<div class="cm-pi"><span class="stp n">'+esc(pcTipoNome(x.tipo||"mp"))+'</span> '+esc(x.desc+" "+(x.medida||""))+' · '+cmUn(x.qtd,x.un)+(x.recebido?' <small>(recebido '+cmUn(x.recebido,x.un)+')</small>':'')+(x.dest?' <small>→ '+esc(x.dest)+'</small>':'')+'</div>'}).join("")+(pend?'<button type="button" class="btn sm pri" data-cm="nfe" data-id="'+esc(p.id)+'">Dar entrada da NF</button>':'')+pcAcoes(p)+'</span>'+
-        '<span>'+(p.prazo?dStr(p.prazo):"–")+'</span><span><span class="stp '+({aberto:"i",parcial:"w",recebido:"g",cancelado:"b"}[p.status]||"i")+'">'+esc({aberto:"Aberto",parcial:"Recebido em parte",recebido:"Recebido",cancelado:"Cancelado"}[p.status]||p.status)+'</span>'+pcValChip(p)+'</span><span>'+(p.status==="aberto"?ibtn("trash","Cancelar pedido",'data-cm="cancela" data-id="'+esc(p.id)+'"',"danger"):'')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum pedido de compra.</div>')+'</div>';
+       return'<div class="cm-p"><span class="idtag big">'+esc(p.num)+'</span><span><b>'+esc(p.fornecedor)+'</b><small>'+esc(p.emp)+(tot?" · "+brl(tot):"")+'</small></span><span>'+p.itens.map(function(x,i){var falta=(+x.qtd||0)-(+x.recebido||0);return'<div class="cm-pi"><span class="stp n">'+esc(pcTipoNome(x.tipo||"mp"))+'</span> '+esc(x.desc+" "+(x.medida||""))+' · '+cmUn(x.qtd,x.un)+(x.recebido?' <small>(recebido '+cmUn(x.recebido,x.un)+')</small>':'')+(x.dest?' <small>→ '+esc(x.dest)+'</small>':'')+'</div>'}).join("")+'</span>'+
+        '<span>'+(p.prazo?dStr(p.prazo):"–")+'</span><span><span class="stp '+({aberto:"i",parcial:"w",recebido:"g",cancelado:"b"}[p.status]||"i")+'">'+esc({aberto:"Aberto",parcial:"Recebido em parte",recebido:"Recebido",cancelado:"Cancelado"}[p.status]||p.status)+'</span>'+pcValChip(p)+'</span><span class="pc-ic">'+pcAcoes(p,pend)+(p.status==="aberto"?ibtn("trash","Cancelar pedido",'data-cm="cancela" data-id="'+esc(p.id)+'"',"danger"):'')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum pedido de compra.</div>')+'</div>';
   }
   box.innerHTML=h;
 }
@@ -7890,9 +7891,13 @@ function pcVal(p){return(p.validacao&&p.validacao.status)||"pendente"}
 function pcValChip(p){if(p.status==="cancelado")return"";var v=pcVal(p),va=p.validacao||{};
   return v==="validado"?'<small class="pc-val g">Validado por '+esc(va.nome||usrNome(va.por)||"")+'<br>'+esc(nowStr(va.em))+'</small>':v==="devolvido"?'<small class="pc-val b">Devolvido para ajuste: '+esc(va.motivo||"")+'</small>':'<small class="pc-val w">Aguardando validação</small>'}
 function pcEditavel(p){return p.status==="aberto"&&(p.itens||[]).every(function(x){return!(+x.recebido>0)})}
-function pcAcoes(p){if(p.status==="cancelado")return'';var v=pcVal(p);
-  return'<div class="pc-acs"><button type="button" class="btn sm" data-cm="pdf" data-id="'+esc(p.id)+'">PDF'+(v==="validado"?"":" (sem validade)")+'</button>'+(pcEditavel(p)?'<button type="button" class="btn sm" data-cm="editar" data-id="'+esc(p.id)+'">Editar</button>':'')+
-   (v!=="validado"&&p.status!=="recebido"?'<button type="button" class="btn sm pri" data-cm="validar" data-id="'+esc(p.id)+'">Validar</button>'+(v!=="devolvido"?'<button type="button" class="btn sm" data-cm="devolver" data-id="'+esc(p.id)+'">Devolver</button>':''):'')+'</div>'}
+IC.check='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+IC.undo='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
+IC.nfe='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>';
+function pcAcoes(p,pend){if(p.status==="cancelado")return'';var v=pcVal(p),id='data-id="'+esc(p.id)+'"';
+  return(pend?ibtn("nfe","Dar entrada da NF (recebimento)",'data-cm="nfe" '+id,"pri"):'')+ibtn("pdf",v==="validado"?"PDF para o fornecedor":"PDF (sai com marca d'água: sem validade)",'data-cm="pdf" '+id,v==="validado"?"":"pc-semval")+
+   (pcEditavel(p)?ibtn("edit","Editar pedido",'data-cm="editar" '+id):'')+
+   (v!=="validado"&&p.status!=="recebido"?ibtn("check","Validar pedido",'data-cm="validar" '+id,"pc-ok")+(v!=="devolvido"?ibtn("undo","Devolver para ajuste",'data-cm="devolver" '+id):''):'')}
 function pcAcao(a,id){var p=CM.pcs.filter(function(x){return x.id===id})[0];if(!p)return;
   if(a==="pdf"){pcPdf(p);return}
   if(a==="editar"){if(!pcEditavel(p)){toast("Pedido com material já recebido não pode ser editado.");return}

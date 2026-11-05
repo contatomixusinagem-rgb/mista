@@ -1419,6 +1419,16 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
 .if-cadd{justify-content:flex-start;gap:8px;margin-top:6px}.if-cadd label.btn{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 .if-mod>*{flex-shrink:0}.if-mod{overflow:auto}
 .if-cadd select{width:auto;min-width:220px}
+/* v122: padrão definitivo */
+.mh .fase{display:none!important}
+#mx-q,#cn-q,#qi-q,#it-q,#pf-q.pad-hid{display:none!important}
+.mx-bar>span.hint,.cn-list>.mx-bar>.hint{display:none!important}
+.ls-cad{display:grid;grid-template-columns:minmax(220px,1.8fr) 150px 130px minmax(160px,1.2fr) minmax(130px,.9fr) 84px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;min-width:900px}
+.ls-cad.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;cursor:default}
+.ls-cad small{display:block;color:var(--muted);font-size:11.5px}
+.ls-cad .ls-ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pad-novo{margin:0 0 14px}.pad-novo .agdrop{margin:10px 0 0}
+.pad-ft.on{border-color:var(--accent);color:var(--accent)}
 </style>
 
 <div class="shell">
@@ -8986,6 +8996,73 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   if(inp.hidden){FT[k]=1;inp.hidden=false;inp.focus()}else if(!inp.value){FT[k]=0;inp.hidden=true}else inp.focus()},true);
 document.addEventListener("input",function(e){var t=e.target;if(!t.matches||!t.matches('[data-ft="in"]'))return;e.stopPropagation();FT[S.tab]=t.value;FT["_open_"+S.tab]=1;clearTimeout(FT._t);FT._t=setTimeout(function(){mxRender();var i=document.querySelector('[data-ft="in"]');if(i){i.focus();var n=i.value.length;try{i.setSelectionRange(n,n)}catch(er){}}},250)},true);
 document.addEventListener("keydown",function(e){var t=e.target;if(t.matches&&t.matches('[data-ft="in"]')&&e.key==="Escape"){FT[S.tab]="";FT["_open_"+S.tab]=0;mxRender()}},true);
+
+/* ===== v122: PADRÃO DEFINITIVO de tela (gestor, 05/11/2026: "padronizar as páginas definitivamente").
+   Fica no FIM do arquivo e vale para toda tela: título + [Filtrar] [+ Novo] · linha única · ícones · popup · paginação · sem texto.
+   padAplica(box) roda depois de todo desenho de tela (mxRender, lista de propostas); telas antigas fora do padrão foram reescritas aqui. ===== */
+IC.sobe='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';IC.desce='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+IC.go='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8l4 4-4 4"/></svg>';
+(function(){var a={"Conferir":["check","Conferir e validar"],"Manual":["play","Cadastrar"],"Gerar pedido":["go","Cliente aprovou: gerar pedido"],"Definir":["edit","Definir roteiro e estrutura"],"CNC":["down","Baixar o programa CNC"],"Folha":["pdf","Baixar a folha de processo"],"PDF":["pdf","Baixar o PDF"],"Gerar de novo":["undo","Gerar de novo"],"↑":["sobe","Subir"],"↓":["desce","Descer"]};for(var k in a)LS_ICO[k]=a[k]})();
+var PAD={novo:{}};
+/* "+ Novo" é o rótulo padrão do botão de criar; o nome completo fica no title */
+function padNovo(root){Array.prototype.forEach.call(root.querySelectorAll(".mh button, .pc-bar > button, .mh .acts2 button"),function(b){var t=b.textContent.trim();if(/^\+\s*\S/.test(t)&&!/^\+\s*Novo$/.test(t)){b.title=b.title||t.replace(/^\+\s*/,"");b.textContent="+ Novo"}})}
+function padAplica(box){if(!box)return;try{lsIcones(box)}catch(e){}try{ftBarra(box)}catch(e){}try{padNovo(box)}catch(e){}}
+var PAD_DOM={ped:[".fr"]};
+var _mxRPad=mxRender;mxRender=function(){
+  if(S.tab==="sv"||S.tab==="in"){try{renderList()}catch(e){}return}
+  if(S.tab==="ped"){PD.q=""}
+  var r=_mxRPad.apply(this,arguments),box=$("mx-box");
+  try{if(PAD_DOM[S.tab]&&box&&!box.querySelector(".pg-bar")&&!PD.open)pgDom(box,S.tab,PAD_DOM[S.tab][0])}catch(e){}
+  padAplica(box);return r};
+
+/* ---------- Clientes e fornecedores: lista padrão ---------- */
+function agFaltam(col,c){var d=c.status==="aguardando"&&c.pend?c.pend.dados:c,f=[];
+  if(!cnpjOk(d.cnpj))f.push("CNPJ");if(!d.rua||!d.cidade||!d.uf)f.push("endereço");if(!String(d.email||d.emailNf||"").trim())f.push("e-mail");if(col==="cli"&&!String(d.pagamento||"").trim())f.push("pagamento");return f}
+function agSit(col,c){if(c.status==="aguardando")return{c:"w",t:"validar",s:"lido da ficha"};if(c.pend)return{c:"w",t:"validar",s:"atualização"};var f=agFaltam(col,c);return f.length?{c:"b",t:"incompleto",s:"falta "+f.join(", ")}:{c:"g",t:"ok",s:""}}
+agListView=function(box){
+  var col=PD.cadTab==="forn"?"forn":"cli",cs=col==="forn"?"fornecedores":"clientes",list=agList(col).slice(),nc=[];
+  if(col==="cli"){var seen={};(PR.list||[]).concat(IB.docs||[]).forEach(function(d){var n=String(d.cliente||"").trim();if(!n)return;var k=normTxt(n);if(seen[k]||cliRec(n))return;seen[k]=1;nc.push(n)})}
+  var L=list.map(function(c){var d=c.status==="aguardando"&&c.pend?c.pend.dados:c;return{k:"r",id:c.id,nome:c.nome||d.nome||"",razao:d.razao||"",cnpj:d.cnpj||"",cat:(col==="forn"?d.categoria:d.modalidade)||"",cont:[d.contato,d.email,d.tel].filter(Boolean).join(" · "),cid:[d.cidade,d.uf].filter(Boolean).join(" – "),sit:agSit(col,c),idt:cnIdTxt(cs,c),pend:c.status==="aguardando"||!!c.pend}})
+   .concat(nc.map(function(n){return{k:"n",nome:n,sit:{c:"b",t:"sem cadastro",s:"só nas propostas"}}}));
+  var ord={w:0,b:1,g:2};L.sort(function(a,b){return(ord[a.sit.c]-ord[b.sit.c])||normTxt(a.nome).localeCompare(normTxt(b.nome))});
+  var pg=pgSlice("cad:"+col,L),aberto=PAD.novo["cad:"+col]||AG.jobs&&AG.jobs.some(function(j){return j.st!=="ok"&&j.st!=="erro"});
+  box.innerHTML='<div class="mh"><div><h2>'+(col==="forn"?"Fornecedores":"Clientes")+'</h2></div><div class="acts2"><button class="btn sm pri" type="button" data-padn="cad:'+col+'" title="'+(col==="forn"?"Novo fornecedor":"Novo cliente")+'" aria-pressed="'+!!aberto+'">+ Novo</button></div></div>'+
+   (aberto?'<div class="card pad-novo"><div class="mx-bar"><h3 style="margin:0">'+(col==="forn"?"Novo fornecedor":"Novo cliente")+'</h3><span class="sp"></span><button class="btn sm" type="button" data-k="manual">Digitar</button>'+ibtn("ban","Fechar",'data-padn="cad:'+col+'"')+'</div>'+agDropHtml(col)+'</div>':'')+
+   '<div class="agjobs" id="ag-jobs">'+agJobsHtml()+'</div>'+
+   '<div class="tbx"><div class="ls-cad fh"><span>'+(col==="forn"?"Fornecedor":"Cliente")+'</span><span>CNPJ</span><span>'+(col==="forn"?"Categoria":"Modalidade")+'</span><span>Contato</span><span>Situação</span><span></span></div>'+
+   (pg.rows.length?pg.rows.map(function(r){
+     if(r.k==="n")return'<div class="ls-cad ls-row" data-padrow="n" data-nome="'+esc(r.nome)+'"><span><b>'+esc(r.nome)+'</b></span><span>–</span><span>–</span><span>–</span><span><span class="stp b">'+r.sit.t+'</span><small>'+r.sit.s+'</small></span><span class="pc-ic">'+ibtn("play","Cadastrar",'data-k="manual" data-nome="'+esc(r.nome)+'"',"pri")+'</span></div>';
+     return'<div class="ls-cad ls-row" data-padrow="r" data-col="'+col+'" data-id="'+esc(r.id)+'"><span><span class="idtag">'+esc(r.idt)+'</span> <b>'+esc(r.nome||"(sem nome)")+'</b><small>'+esc(r.razao&&r.razao!==r.nome?r.razao:r.cid)+'</small></span><span class="mono">'+esc(r.cnpj||"–")+'</span><span>'+esc(r.cat||"–")+'</span><span class="ls-ell">'+esc(r.cont||"–")+'</span>'+
+      '<span><span class="stp '+r.sit.c+'">'+r.sit.t+'</span>'+(r.sit.s?'<small>'+esc(r.sit.s)+'</small>':'')+'</span><span class="pc-ic">'+(r.pend?ibtn("check","Conferir e validar",'data-k="open" data-col="'+col+'" data-id="'+esc(r.id)+'"',"pri"):'')+ibtn("trash","Excluir",'data-rowdel="'+esc(r.id)+'" data-col="'+col+'"',"danger")+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum cadastro.</div>')+'</div>'+pg.bar};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="cad")return;var n=e.target.closest("[data-padn]");if(n){e.stopPropagation();e.preventDefault();PAD.novo[n.dataset.padn]=!PAD.novo[n.dataset.padn];mxRender();return}
+  if(e.target.closest("button,[data-rowdel],input,select,a"))return;var r=e.target.closest("[data-padrow]");if(!r)return;e.stopPropagation();e.preventDefault();
+  if(r.dataset.padrow==="n"){AG.open={col:"cli",id:"",nome:r.dataset.nome||""};AG.draft={};AG.force=true;mxRender();return}
+  AG.open={col:r.dataset.col,id:r.dataset.id};AG.draft={};AG.force=true;mxRender()},true);
+
+/* área de soltar a ficha: só o essencial */
+var _agDropPad=agDropHtml;agDropHtml=function(col){var on=!!(AG.ready&&PR.db);if(!on)return _agDropPad.apply(this,arguments);
+  return'<div class="agdrop" role="button" tabindex="0" data-k="pick"><span class="ai" aria-hidden="true">'+IC.down+'</span><span class="tx"><b>Arraste a ficha cadastral ou clique para escolher</b></span><input type="file" id="ag-file" hidden multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.docx,.xlsx,.xls,.txt,.csv,image/*,application/pdf"></div>'};
+
+/* ---------- Propostas (Caixa de entrada · Propostas): Filtrar, + Novo, paginação, ícones ---------- */
+function padPc(){var bar=document.querySelector("#v-pc .pc-bar");if(!bar)return;var q=$("pf-q"),bn=$("b-new"),lista=S.tab==="sv"||S.tab==="in";
+  if(bn){bn.textContent="+ Novo";bn.title="Nova proposta"}var pid=$("pid-badge");if(pid)pid.hidden=lista;
+  if(q&&!bar.querySelector(".pad-ft")){var w=document.createElement("button");w.type="button";w.className="btn sm ft-btn pad-ft";w.title="Filtrar";w.innerHTML=IC.busca+"<span>Filtrar</span>";bar.insertBefore(w,bn||null)}
+  var f=bar.querySelector(".pad-ft");if(f){f.hidden=!lista;f.classList.toggle("on",!!(q&&q.value))}if(q)q.classList.toggle("pad-hid",!(q.value||PAD.pcq));
+  if(S.tab==="sv"){var box=$("v-sv"),old=box.querySelector(".pg-bar");if(old)old.remove();try{pgDom(box,"sv",".pl-row:not(.pl-h)")}catch(e){}}}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".pad-ft");if(!b)return;e.stopPropagation();var q=$("pf-q");PAD.pcq=!PAD.pcq||!!(q&&q.value);if(q){q.classList.toggle("pad-hid",!PAD.pcq);if(PAD.pcq)q.focus()}},true);
+var _pRPad=pRender;pRender=function(){var r=_pRPad.apply(this,arguments);
+  Array.prototype.forEach.call(document.querySelectorAll("#pf-list [data-gp]"),function(b){if(b.classList.contains("ibn"))return;var t=b.textContent.trim(),g=t==="Gerar pedido";b.className="btn sm ibn"+(g?" pri":"");b.title=g?"Cliente aprovou: gerar pedido":"Abrir o pedido "+t;b.setAttribute("aria-label",b.title);b.innerHTML=g?IC.go:IC.open});
+  padPc();return r};
+var _rlPad=renderList;renderList=function(){var r=_rlPad.apply(this,arguments);try{padPc()}catch(e){}return r};
+var _stPad=showTab;showTab=function(t){var r=_stPad.apply(this,arguments);try{padPc()}catch(e){}return r};
+
+/* ---------- Programas CNC e Planos de inspeção: o gerador fica atrás do "+ Novo" ---------- */
+var _rmPad=renderMod;renderMod=function(box,k){var r=_rmPad.apply(this,arguments);
+  if((k==="cnc"&&!CN.open)||(k==="qpi"&&!QI.open)){var w=box.querySelector(".cn-wrap"),ab=PAD.novo[k]||(k==="cnc"?!!CN.file:!!QI.file);if(w)w.hidden=!ab;
+    var mh=box.querySelector(".mh");if(mh&&!mh.querySelector("[data-padn]")){var ac=mh.querySelector(".acts2");if(!ac){ac=document.createElement("div");ac.className="acts2";mh.appendChild(ac)}
+      ac.insertAdjacentHTML("beforeend",'<button class="btn sm pri" type="button" data-padn="'+k+'" aria-pressed="'+!!ab+'" title="'+(k==="cnc"?"Novo programa CNC":"Novo plano de inspeção")+'">+ Novo</button>')}}
+  return r};
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-cnc"&&S.tab!=="m-qpi")return;var n=e.target.closest("[data-padn]");if(!n)return;e.stopPropagation();e.preventDefault();PAD.novo[n.dataset.padn]=!PAD.novo[n.dataset.padn];mxRender()},true);
 
 })();
 </script>

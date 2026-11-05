@@ -1361,13 +1361,13 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
 
 /* v117: listas padrão (uma linha, ícones, detalhe em janela) */
 .ls-row{cursor:pointer}.ls-row:hover{background:var(--surface2)}
-.ls-ir,.ls-nf,.ls-rc,.ls-lt,.ls-if,.ls-pa,.ls-etq{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px}
+.ls-ir,.ls-nf,.ls-rc,.ls-lt,.ls-if,.ls-pa,.ls-etq,.ls-cot{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px}
 .ls-ir{grid-template-columns:90px minmax(180px,1.6fr) 90px minmax(150px,1.2fr) 100px 60px 150px 84px;min-width:980px}
 .ls-nf{grid-template-columns:80px 90px minmax(150px,1.2fr) 80px minmax(180px,1.6fr) 100px 100px 120px;min-width:980px}
 .ls-rc{grid-template-columns:80px minmax(150px,1fr) minmax(260px,2.4fr) 110px 84px;min-width:800px}
 .ls-lt{grid-template-columns:90px minmax(180px,1.6fr) minmax(140px,1fr) 90px 60px 110px 100px 100px 44px;min-width:1000px}
-.ls-ir.fh,.ls-nf.fh,.ls-rc.fh,.ls-lt.fh,.ls-if.fh,.ls-pa.fh,.ls-etq.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;cursor:default}
-.ls-ir small,.ls-nf small,.ls-rc small,.ls-lt small,.ls-if small,.ls-pa small,.ls-etq small{display:block;color:var(--muted);font-size:11.5px}
+.ls-ir.fh,.ls-nf.fh,.ls-rc.fh,.ls-lt.fh,.ls-if.fh,.ls-pa.fh,.ls-etq.fh,.ls-cot.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;cursor:default}
+.ls-ir small,.ls-nf small,.ls-rc small,.ls-lt small,.ls-if small,.ls-pa small,.ls-etq small,.ls-cot small{display:block;color:var(--muted);font-size:11.5px}
 .ls-nf.canc>span:not(.pc-ic){color:var(--muted);text-decoration:line-through}.ls-nf.canc .stp{text-decoration:none}
 .op-r{grid-template-columns:110px minmax(200px,2fr) 130px 50px 110px minmax(160px,1.4fr) 60px 170px 84px!important}
 .card>.tbx+.pg-bar{margin-top:-1px}
@@ -1461,6 +1461,33 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
 #editor .pricebox{display:grid!important;grid-template-columns:220px 220px;gap:12px}
 #editor .pricebox input{text-align:right}
 #editor .sec>h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin:4px 0 8px}
+/* v128: pedido de compra e cotação numa linha por item */
+#mx-modal .card.cm-mod.pcf,#mx-modal .card.cm-mod.cot-mod{max-width:min(1300px,97vw)!important;width:min(1300px,97vw)!important}#mx-modal .card.cm-mod.if-mod{max-width:min(1240px,96vw)!important;width:min(1240px,96vw)!important}#mx-modal .card.cm-mod.etq-mod{max-width:min(1100px,96vw)!important;width:min(1100px,96vw)!important}.pcf>*,.cot-mod>*{flex-shrink:0}.pcf,.cot-mod{overflow:auto}
+.pcf-row{display:grid;gap:10px;align-items:start;margin:4px 0 12px}
+.pcf-r1{grid-template-columns:120px minmax(220px,1.6fr) 100px 160px minmax(120px,1fr) 200px}
+.cot-r1{grid-template-columns:110px 160px 1fr}
+.pcf-row input,.pcf-row select{width:100%;height:38px}
+.pcf-row .cm-n0{display:flex;gap:6px;align-items:center}.pcf-row .cm-n0 b{font-weight:600;color:var(--muted)}
+.pcf-row .cm-n0 select{width:80px;flex:0 0 80px}
+.pc-ln,.cot-ln{display:grid;gap:6px;align-items:center;padding:6px 10px;border-top:1px solid var(--line)}
+.pc-ln{grid-template-columns:130px minmax(160px,1.4fr) 190px 96px 70px 62px 84px 52px 88px 34px 34px minmax(90px,.7fr) 34px;min-width:1180px}
+.cot-ln{grid-template-columns:150px minmax(220px,1.8fr) 210px 86px 66px minmax(150px,1fr) 34px;min-width:980px}
+.pc-ln.fh,.cot-ln.fh{border-top:0;background:var(--card-head,#f3f5fa);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.pc-ln input,.pc-ln select,.cot-ln input,.cot-ln select{width:100%;min-width:0;height:36px}
+.pc-ln .r,.cot-ln .r{text-align:right}.pc-ln .c{text-align:center}.pc-ln .c input{width:18px;height:18px}
+.pc-bit{display:grid;grid-template-columns:1fr 84px;gap:4px}.cot-cmp td small{display:block}.pc-nb{color:var(--muted);text-align:center}
+.cot-fl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.cot-fl input{flex:1;min-width:180px;height:38px}
+.cot-chip{display:inline-flex;align-items:center;gap:4px;background:#e7f1fb;border:1px solid #b9d4ef;border-radius:999px;padding:4px 6px 4px 12px;font-weight:600;font-size:13px}
+.cot-chip button{border:0;background:transparent;font-size:16px;cursor:pointer;line-height:1;padding:0 4px}
+.ls-cot{grid-template-columns:130px minmax(220px,1.6fr) minmax(180px,1.2fr) 120px minmax(120px,.8fr) 84px;min-width:960px}
+.cot-cmp table{min-width:760px}.cot-cmp td,.cot-cmp th{vertical-align:middle;padding:6px 8px}
+.cot-fh div{display:flex;align-items:center;gap:6px;justify-content:space-between}.cot-fh small{font-weight:400}
+.cot-in{display:flex;gap:4px;align-items:center}.cot-in input{width:100%;min-width:0;height:34px}.cot-in .cot-ipi{width:56px;flex:0 0 56px}.cot-in select{width:74px;flex:0 0 74px;height:34px}
+.cot-win{display:flex;align-items:center;padding:0 4px}.cot-win input{width:18px;height:18px}
+.cot-c small{display:block;color:var(--muted);text-align:right}
+.cot-c.best{background:#eef8ee}.cot-c.win{background:#d9f0dc;box-shadow:inset 3px 0 0 #1E7A4A}
+.cot-tr td{background:#fafbfd}.cot-tr input{width:100%;height:34px}.cot-tot td{font-size:14px}.cot-tot small{display:block;color:#1E7A4A}
+.ls-canc{opacity:.6}.ls-canc .idtag{text-decoration:line-through}
 </style>
 
 <div class="shell">
@@ -7695,7 +7722,7 @@ function pcGravar(p,its,n,ano,b){
   b.disabled=true;
   /* catálogo de itens de compra: cria os que ainda não existem e guarda o último preço */
   var temCod=function(x){return x.codigo&&CM.ins.some(function(i){return i.codigo===x.codigo})};var novos=its.filter(function(x){return!temCod(x)&&!insAchar(x)});
-  (novos.length?cnNextIdN("insumos",novos.length):Promise.resolve(0)).then(function(n0){
+  return (novos.length?cnNextIdN("insumos",novos.length):Promise.resolve(0)).then(function(n0){
     var k=0,ws=[];its.forEach(function(x){var ins=(x.codigo?CM.ins.filter(function(i){return i.codigo===x.codigo})[0]:null)||insAchar(x),pr=+parse(x.preco)||0;
       if(!ins){var seq=n0+k++;ins={id:"ins-"+pad(seq,4),codigo:"INS-"+pad(seq,4),idSeq:seq,tipo:x.tipo,desc:String(x.desc).trim(),forma:x.tipo==="mp"?x.forma:"",medida:x.tipo==="mp"?x.medida:"",ncm:String(x.ncm||"").trim(),un:x.un,estoque:!!x.estoque,inspecao:!!x.insp,inspObs:"",ativo:true,criado:t};ws.push(PR.db.doc("insumos/"+ins.id).set(ins))}
       x.codigo=ins.codigo;x.inspObs=ins.inspObs||"";var up={ultPreco:pr||ins.ultPreco||0,ultForn:p.fornecedor,ultData:t};if(!ins.ncm&&x.ncm)up.ncm=String(x.ncm).trim();if(ins.id&&CM.ins.some(function(i){return i.id===ins.id}))ws.push(PR.db.doc("insumos/"+ins.id).update(up))});
@@ -9272,6 +9299,217 @@ MODS.etq={n:"Etiquetas",fase:"",et:[],txt:"",plan:[]};MX_TABS.push("m-etq");
 (function(){var q=MODS_DEF.modulos.filter(function(m){return m.nome==="Qualidade"})[0];if(q&&!q.areas.some(function(a){return a.nome==="Etiquetas"}))q.areas.push({nome:"Etiquetas",tela:"#t-etq"})})();
 var _rmEtq=renderMod;renderMod=function(box,k){if(k==="etq"){renderEtq(box);return}return _rmEtq.apply(this,arguments)};
 var _stEtq=showTab;showTab=function(t){var r=_stEtq.apply(this,arguments);if(t==="m-etq"){$("crumb").innerHTML="Qualidade › <b>Etiquetas</b>";$("crumb-t").textContent="Etiquetas"}return r};
+
+/* ===== v128: COMPRAS — solicitação de cotação (gestor, 05/11/2026): requisição → comprador agrupa → solicitação de cotação aos fornecedores → lança os preços e compara → aprova → vira pedido(s) de compra.
+   E o formulário do pedido de compra refeito numa linha por item (tabulação padrão). ===== */
+IDP.cotacoes="SC";
+var COT={list:[],sub:false,ed:null,ver:null,sel:{}};
+function cotSub(){if(COT.sub||!PR.db)return;COT.sub=true;PR.db.collection("cotacoes").onSnapshot(function(sn){COT.list=sn.docs.map(function(x){var o=x.data()||{},c={};for(var k in o)c[k]=o[k];c.id=x.id;return c}).sort(function(a,b){return(b.criado||0)-(a.criado||0)});
+  if(S.tab==="m-comp"&&!COT.ed&&!COT.ver&&!CM.novo)mxRender();if(COT.ver&&!$("mx-modal").hidden&&!COT.edp){var c=cotById(COT.ver);if(c)cotVer(c)}},function(){})}
+(function wct(){if(typeof PR!=="undefined"&&PR&&PR.db){cotSub();return}setTimeout(wct,900)})();
+function cotById(id){return COT.list.filter(function(c){return c.id===id})[0]}
+function cotAtivas(){return COT.list.filter(function(c){return c.status==="aberta"||c.status==="aprovada"})}
+var COT_ST={aberta:["i","em cotação"],aprovada:["g","aprovada"],convertida:["n","virou pedido"],cancelada:["n","cancelada"]};
+function cotChip(c){var s=COT_ST[c.status]||["i",c.status];return'<span class="stp '+s[0]+'">'+s[1]+'</span>'}
+function cotHist(c,txt){return(c.hist||[]).slice(-199).concat([{at:Date.now(),uid:AG.uid||"",txt:txt}])}
+function cotSet(c,patch,txt){var p={};for(var k in patch)p[k]=patch[k];p.hist=cotHist(c,txt);p.atualizado=Date.now();return PR.db.doc("cotacoes/"+c.id).update(p)}
+function cotNum(v){var n=+parse(String(v==null?"":v));return isFinite(n)?n:0}
+
+/* ---------- linhas das requisições: as que estão numa cotação ativa deixam de ser pendentes ---------- */
+var _cmLinCot=cmLinhas;cmLinhas=function(){var L=_cmLinCot.apply(this,arguments),m={};cotAtivas().forEach(function(c){(c.itens||[]).forEach(function(x){(x.keys||[]).forEach(function(k){m[k]=c})})});
+  L.forEach(function(r){var c=m[r.k];if(c&&r.pend){r.pend=false;r.st="em cotação · "+c.num}});return L};
+/* itens da cotação a partir das linhas marcadas (mesma regra do pedido: material e bitola iguais viram um item) */
+function cotItensDe(sel){var g={},out=[];
+  sel.filter(function(r){return r.op}).forEach(function(R){var r=R.op,bit=esBitola(r.m),k=cmKey(r.m.desc,r.m.forma,bit),x=g[k];if(!x){x=g[k]={tipo:"mp",codigo:"",desc:r.m.desc,forma:r.m.forma,medida:bit,ncm:"",un:r.m.un,qtd:0,estoque:true,dest:"",ops:[],rq:[],keys:[],mm:0};out.push(x)}
+    x.qtd+=r.falta;var c=esComp(r.m);if(isFinite(c))x.mm+=(+r.o.qtd||0)*(c+3);x.ops.push({opId:r.o.id,opNum:r.o.num,i:r.i,req:r.req?r.req.num:""});x.keys.push(R.k)});
+  out.forEach(function(x){x.qtd=Math.ceil(x.qtd*100)/100;if(x.mm)x.barra="≈ "+nf(x.mm/1000,2)+" m de barra";delete x.mm;x.dest=x.ops.map(function(o){return o.opNum}).join(", ");var i=insAchar(x)||insPorMp(x);if(i){x.codigo=i.codigo;x.desc=i.desc;x.medida=i.medida||x.medida;x.ncm=i.ncm||"";x.insp=!!i.inspecao}else x.insp=true});
+  sel.filter(function(r){return r.g}).forEach(function(r){var it=r.g.it,ins=it.codigo?(CM.ins||[]).filter(function(x){return x.codigo===it.codigo})[0]:(CM.ins||[]).filter(function(x){return normTxt(x.desc)===normTxt(it.desc)})[0],tp=pcTipo(it.tipo);
+    out.push({tipo:tp[0],codigo:ins?ins.codigo:"",desc:it.desc,forma:"",medida:"",ncm:ins?ins.ncm||"":"",un:it.un,qtd:+it.qtd||0,estoque:ins?!!ins.estoque:tp[3],insp:ins?!!ins.inspecao:false,dest:r.g.q.num+" · "+(r.g.q.setor||r.quem),ops:[],rq:[{id:r.g.q.id,i:r.g.i,num:r.g.q.num}],keys:[r.k]})});
+  return out}
+
+/* ---------- criar / editar a solicitação ---------- */
+function cotNova(sel){var its=cotItensDe(sel);var d=new Date(Date.now()+3*864e5).toISOString().slice(0,10);
+  COT.ed={id:"",num:"",emp:(sel[0]&&sel[0].op&&sel[0].op.o.emp)||"MIX",ate:d,obs:"",itens:its.length?its:[cotItVazio()],forn:[],fq:""};cotEdHtml()}
+function cotItVazio(){var x=pcItVazio("mp");x.qtd="";x.keys=[];x.rq=[];return x}
+function cotEdHtml(){var e=COT.ed,m=$("mx-modal"),fs=(AG.forn||[]).map(function(f){return'<option value="'+esc(f.nome)+'">'}).join("");
+  m.innerHTML='<div class="card cm-mod cot-mod" role="dialog" aria-modal="true" aria-label="Solicitação de cotação"><div class="mx-bar"><h3 style="margin:0">'+(e.id?"Solicitação de cotação "+esc(e.num):"Nova solicitação de cotação")+'</h3><span class="sp"></span></div>'+
+   '<div class="pcf-row cot-r1"><label class="f"><span class="lb">Empresa</span><select id="ct-emp"><option'+(e.emp!=="STAR"?" selected":"")+'>MIX</option><option'+(e.emp==="STAR"?" selected":"")+'>STAR</option></select></label>'+
+   '<label class="f"><span class="lb">Responder até</span><input type="date" id="ct-ate" value="'+esc(e.ate)+'"></label>'+
+   '<label class="f cot-fadd"><span class="lb">Fornecedores</span><span class="cot-fl">'+e.forn.map(function(f,k){return'<span class="cot-chip">'+esc(f.nome)+'<button type="button" data-ctx="frm" data-k="'+k+'" aria-label="Tirar '+esc(f.nome)+'">×</button></span>'}).join("")+'<input id="ct-fq" list="ct-forn-l" value="'+esc(e.fq)+'" placeholder="adicionar fornecedor…"><datalist id="ct-forn-l">'+fs+'</datalist><button class="btn sm" type="button" data-ctx="fadd">+</button></span></label></div>'+
+   '<div class="tbx"><div class="cot-ln fh"><span>Tipo</span><span>Item</span><span>Bitola</span><span class="r">Qtd</span><span>Un.</span><span>Destino</span><span></span></div>'+
+   e.itens.map(function(x,i){return'<div class="cot-ln"><select data-cti="'+i+':tipo" aria-label="Tipo">'+PC_TIPOS.map(function(t){return'<option value="'+t[0]+'"'+(x.tipo===t[0]?" selected":"")+'>'+esc(pcTipoNome(t[0]))+'</option>'}).join("")+'</select>'+
+     '<input data-cti="'+i+':desc" list="pc-ins-l" value="'+esc(x.desc)+'" placeholder="item" aria-label="Item">'+
+     (x.tipo==="mp"?'<span class="pc-bit"><select data-cti="'+i+':forma" aria-label="Forma">'+ES_FORMAS.map(function(f){return'<option'+(x.forma===f?" selected":"")+'>'+esc(f)+'</option>'}).join("")+'</select><input data-cti="'+i+':medida" value="'+esc(x.medida)+'" placeholder="Ø25,4" aria-label="Bitola"></span>':'<span>–</span>')+
+     '<input class="r" data-cti="'+i+':qtd" value="'+esc(String(x.qtd).replace(".",","))+'" inputmode="decimal" aria-label="Quantidade"'+(x.barra?' title="'+esc(x.barra)+'"':'')+'>'+
+     '<select data-cti="'+i+':un" aria-label="Unidade">'+["kg","m","mm","pç","un","cx","l","jg","sv"].map(function(u){return'<option'+(x.un===u?" selected":"")+'>'+u+'</option>'}).join("")+'</select>'+
+     '<input data-cti="'+i+':dest" value="'+esc(x.dest)+'" placeholder="OP, máquina, setor" aria-label="Destino">'+
+     '<span class="pc-ic">'+(e.itens.length>1?ibtn("trash","Tirar",'data-ctx="rm" data-i="'+i+'"',"danger"):'')+'</span></div>'}).join("")+'</div>'+
+   '<datalist id="pc-ins-l">'+(CM.ins||[]).map(function(i){return'<option value="'+esc(i.desc)+'">'}).join("")+'</datalist>'+
+   '<div class="acts2"><button class="btn sm" type="button" data-ctx="add">+ Item</button></div>'+
+   '<label class="f"><span class="lb">Observações para o fornecedor</span><textarea id="ct-obs" rows="2">'+esc(e.obs)+'</textarea></label>'+
+   '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-ctx="n">Cancelar</button><button class="btn pri" type="button" data-ctx="y">Gravar solicitação</button></div></div>';m.hidden=false}
+$("mx-modal").addEventListener("input",function(ev){var e=COT.ed;if(!e)return;var t=ev.target;if(t.id==="ct-ate")e.ate=t.value;else if(t.id==="ct-obs")e.obs=t.value;else if(t.id==="ct-fq")e.fq=t.value;
+  else if(t.dataset.cti){var q=t.dataset.cti.split(":"),x=e.itens[+q[0]];if(!x)return;x[q[1]]=t.value;if(q[1]==="desc"){var hit=(CM.ins||[]).filter(function(i){return i.desc===t.value})[0];if(hit){x.codigo=hit.codigo;x.tipo=hit.tipo;x.un=hit.un||x.un;x.ncm=hit.ncm||"";x.insp=!!hit.inspecao;x.estoque=!!hit.estoque;if(hit.tipo==="mp"){x.forma=hit.forma||x.forma;x.medida=hit.medida||x.medida}setTimeout(cotEdHtml,0)}else x.codigo=""}}},true);
+$("mx-modal").addEventListener("change",function(ev){var e=COT.ed;if(!e)return;var t=ev.target;if(t.id==="ct-emp")e.emp=t.value;if(t.dataset.cti){var q=t.dataset.cti.split(":"),x=e.itens[+q[0]];if(!x)return;x[q[1]]=t.value;if(q[1]==="tipo"){var tp=pcTipo(t.value);x.estoque=tp[3];x.insp=tp[0]==="mp"||tp[0]==="comp";if(tp[0]==="mp"){x.forma=x.forma||"Barra redonda";if(x.un==="pç")x.un="kg"}else if(tp[0]==="serv")x.un="sv";else if(x.un==="kg")x.un="pç";setTimeout(cotEdHtml,0)}}},true);
+$("mx-modal").addEventListener("keydown",function(ev){if(COT.ed&&ev.target.id==="ct-fq"&&ev.key==="Enter"){ev.preventDefault();cotFAdd()}},true);
+function cotFAdd(){var e=COT.ed,n=String(e.fq||"").trim();if(!n)return;if(e.forn.some(function(f){return normTxt(f.nome)===normTxt(n)})){toast("Já está na lista.");return}var F=(AG.forn||[]).filter(function(f){return normTxt(f.nome)===normTxt(n)})[0];
+  e.forn.push({nome:F?F.nome:n,fornId:F?F.id:"",email:F?(F.emailCompras||F.email||""):"",precos:{},prazo:"",condPag:"",frete:"CIF",vFrete:"",obs:""});e.fq="";cotEdHtml();var i=$("ct-fq");if(i)i.focus()}
+$("mx-modal").addEventListener("click",function(ev){var e=COT.ed;if(!e)return;var m=$("mx-modal"),b=ev.target.closest("[data-ctx]");if(ev.target!==m&&!b)return;ev.stopImmediatePropagation();
+  if(ev.target===m||b.dataset.ctx==="n"){COT.ed=null;m.hidden=true;mxRender();return}var a=b.dataset.ctx;
+  if(a==="fadd"){cotFAdd();return}if(a==="frm"){e.forn.splice(+b.dataset.k,1);cotEdHtml();return}
+  if(a==="add"){var u=e.itens[e.itens.length-1];var x=cotItVazio();if(u){x.tipo=u.tipo;x.un=u.un}e.itens.push(x);cotEdHtml();return}if(a==="rm"){e.itens.splice(+b.dataset.i,1);cotEdHtml();return}
+  if(a==="y"){var its=e.itens.filter(function(x){return String(x.desc).trim()&&cotNum(x.qtd)>0});if(!its.length){toast("Informe item e quantidade.");return}if(!e.forn.length){toast("Adicione pelo menos um fornecedor.");return}
+    b.disabled=true;var t=Date.now(),ano=new Date().getFullYear()%100;
+    var pr=e.id?Promise.resolve(null):cnNextIdN("cotacoes",1);
+    pr.then(function(n){var itens=its.map(function(x){return{tipo:x.tipo,codigo:x.codigo||"",desc:String(x.desc).trim(),forma:x.tipo==="mp"?x.forma:"",medida:x.tipo==="mp"?x.medida:"",ncm:x.ncm||"",qtd:cotNum(x.qtd),un:x.un,estoque:!!x.estoque,insp:!!x.insp,dest:x.dest||"",ops:x.ops||[],rq:x.rq||[],keys:x.keys||[],barra:x.barra||""}});
+      if(e.id){var c=cotById(e.id);return cotSet(c,{emp:e.emp,ate:e.ate,obs:e.obs,itens:itens,forn:e.forn},"Solicitação editada ("+itens.length+" itens, "+e.forn.length+" fornecedores).")}
+      var num="SC-"+pad(n,4)+"/"+pad(ano,2),doc={num:num,idSeq:n,emp:e.emp,ate:e.ate,obs:e.obs,itens:itens,forn:e.forn,venc:{},status:"aberta",criado:t,atualizado:t,uid:AG.uid||"",hist:[{at:t,uid:AG.uid||"",txt:"Solicitação de cotação "+num+" criada: "+itens.length+(itens.length===1?" item":" itens")+" para "+e.forn.map(function(f){return f.nome}).join(", ")+"."}]};
+      return PR.db.doc("cotacoes/cot-"+pad(ano,2)+"-"+pad(n,4)).set(doc).then(function(){COT.criada="cot-"+pad(ano,2)+"-"+pad(n,4)})}).then(function(){COT.ed=null;m.hidden=true;CM.aba="cot";CM.sel={};toast("Solicitação de cotação gravada.");mxRender();
+      if(COT.criada){var id=COT.criada;COT.criada=null;setTimeout(function(){var c=cotById(id);if(c)cotVer(c)},400)}}).catch(function(){b.disabled=false;toast("Não consegui gravar a solicitação.")})}},true);
+
+/* ---------- janela da cotação: preços por fornecedor, comparação, vencedor por item, aprovação, gerar pedidos ---------- */
+function cotPU(c,f,i){var p=(c.forn[f].precos||{})[i];return p?cotNum(p.preco):0}
+function cotIpi(c,f,i){var p=(c.forn[f].precos||{})[i];return p?cotNum(p.ipi):0}
+function cotLinhaV(c,f,i){var x=c.itens[i],pu=cotPU(c,f,i);return pu?pu*(+x.qtd||0)*(1+cotIpi(c,f,i)/100):0}
+function cotMelhor(c,i){var b=-1,bv=0;c.forn.forEach(function(F,f){var v=cotLinhaV(c,f,i);if(v>0&&(b<0||v<bv)){b=f;bv=v}});return b}
+function cotTotForn(c,f,soVenc){var t=0;c.itens.forEach(function(x,i){if(soVenc&&+(c.venc||{})[i]!==f)return;t+=cotLinhaV(c,f,i)});var F=c.forn[f];if(t&&F.frete!=="FOB")t+=cotNum(F.vFrete);return t}
+function cotPodeEditar(c){return c.status==="aberta"}
+function cotVer(c){COT.ver=c.id;COT.edp=null;var m=$("mx-modal"),ed=cotPodeEditar(c),V=c.venc||{},nF=c.forn.length,dis=ed?"":" disabled";
+  var h='<div class="card cm-mod cot-mod" role="dialog" aria-modal="true" aria-label="Cotação"><div class="mx-bar"><h3 style="margin:0">Cotação '+esc(c.num)+'</h3>'+cotChip(c)+'<span class="sp"></span>'+
+    (ed?'<button class="btn sm" type="button" data-cvx="menor">Escolher menor preço</button><button class="btn sm" type="button" data-cvx="editar">'+IC.edit+' Itens e fornecedores</button>':'')+
+    (c.status==="aberta"||c.status==="aprovada"?'<button class="btn sm'+(c.status==="aprovada"?" pc-ok on":"")+'" type="button" data-cvx="aprovar" title="'+(c.status==="aprovada"?"Aprovada: clique para desaprovar":"Aprovar a cotação")+'">'+IC.check+(c.status==="aprovada"?" Aprovada":" Aprovar")+'</button>':'')+
+    (c.status==="aprovada"?'<button class="btn sm pri" type="button" data-cvx="gerar">Gerar pedido de compra</button>':'')+
+    (c.status==="convertida"?'<button class="btn sm" type="button" data-cvx="desfazer">'+IC.undo+' Desfazer pedidos</button>':'')+
+    '<button class="btn sm" type="button" data-cvx="n">Fechar</button></div>'+
+   '<dl class="cn-dl pv-dl"><dt>Empresa</dt><dd>'+esc(c.emp)+'</dd><dt>Responder até</dt><dd>'+(c.ate?dStr(c.ate):"–")+'</dd>'+(c.pcs&&c.pcs.length?'<dt>Pedidos</dt><dd>'+c.pcs.map(function(p){return esc(p.num+" · "+p.forn)}).join(", ")+'</dd>':'')+(c.obs?'<dt>Observações</dt><dd>'+esc(c.obs)+'</dd>':'')+'</dl>'+
+   '<div class="tbx cot-cmp"><table class="itb"><thead><tr><th>Item</th><th class="r">Qtd</th>'+c.forn.map(function(F,f){return'<th class="cot-fh"><div><b>'+esc(F.nome)+'</b><span class="pc-ic">'+ibtn("pdf","Solicitação em PDF para "+F.nome,'data-cvx="pdf" data-f="'+f+'"')+(F.email?ibtn("mail","Rascunho de e-mail para "+F.email,'data-cvx="mail" data-f="'+f+'"'):'')+'</span></div><small>preço un. · IPI %</small></th>'}).join("")+'</tr></thead><tbody>'+
+   c.itens.map(function(x,i){var best=cotMelhor(c,i);return'<tr><td><b>'+esc(x.desc+(x.medida?" "+x.medida:""))+'</b><small>'+esc((x.codigo?x.codigo+" · ":"")+(x.dest||""))+'</small></td><td class="r mono">'+cmUn(x.qtd,x.un)+'</td>'+
+     c.forn.map(function(F,f){var p=(F.precos||{})[i]||{},v=cotLinhaV(c,f,i),win=+V[i]===f&&V[i]!=null&&V[i]!=="";return'<td class="cot-c'+(win?" win":"")+(f===best&&v?" best":"")+'"><div class="cot-in"><input class="r" data-cvp="'+f+':'+i+':preco" value="'+esc(p.preco||"")+'" inputmode="decimal" placeholder="R$"'+dis+' aria-label="Preço '+esc(F.nome)+'"><input class="r cot-ipi" data-cvp="'+f+':'+i+':ipi" value="'+esc(p.ipi||"")+'" inputmode="decimal" placeholder="%"'+dis+' aria-label="IPI"><label class="cot-win" title="Vencedor deste item"><input type="radio" name="cv-'+i+'" data-cvw="'+i+'" value="'+f+'"'+(win?" checked":"")+dis+'></label></div><small>'+(v?brl(v):"–")+'</small></td>'}).join("")+'</tr>'}).join("")+
+   '<tr class="cot-tr"><td>Prazo (dias)</td><td></td>'+c.forn.map(function(F,f){return'<td><input class="r" data-cvf="'+f+':prazo" value="'+esc(F.prazo||"")+'" inputmode="numeric"'+dis+'></td>'}).join("")+'</tr>'+
+   '<tr class="cot-tr"><td>Pagamento</td><td></td>'+c.forn.map(function(F,f){return'<td><input data-cvf="'+f+':condPag" value="'+esc(F.condPag||"")+'" placeholder="28 dias"'+dis+'></td>'}).join("")+'</tr>'+
+   '<tr class="cot-tr"><td>Frete</td><td></td>'+c.forn.map(function(F,f){return'<td><div class="cot-in"><select data-cvf="'+f+':frete"'+dis+'><option'+(F.frete!=="FOB"?" selected":"")+'>CIF</option><option'+(F.frete==="FOB"?" selected":"")+'>FOB</option></select>'+(F.frete==="FOB"?'':'<input class="r" data-cvf="'+f+':vFrete" value="'+esc(F.vFrete||"")+'" placeholder="R$"'+dis+'>')+'</div></td>'}).join("")+'</tr>'+
+   '<tr class="cot-tot"><td>Total cotado</td><td></td>'+c.forn.map(function(F,f){var t=cotTotForn(c,f,false),tv=cotTotForn(c,f,true);return'<td class="r mono"><b>'+(t?brl(t):"–")+'</b>'+(tv&&tv!==t?'<small>vencedor: '+brl(tv)+'</small>':'')+'</td>'}).join("")+'</tr></tbody></table></div>'+
+   (ed?'<div class="acts2" style="justify-content:flex-end"><button class="btn pri" type="button" data-cvx="gravar">Gravar preços</button></div>':'')+
+   '<h4 class="if-h4">Histórico</h4><div class="pa-hist">'+(c.hist||[]).slice().reverse().map(function(x){return'<div><small>'+esc(nowStr(x.at))+'</small> '+esc(x.txt)+' <small>'+esc(histQuem(x))+'</small></div>'}).join("")+'</div></div>';
+  m.innerHTML=h;m.hidden=false}
+function cotColeta(c){var m=$("mx-modal"),F=JSON.parse(JSON.stringify(c.forn)),V=JSON.parse(JSON.stringify(c.venc||{}));
+  Array.prototype.forEach.call(m.querySelectorAll("[data-cvp]"),function(el){var q=el.dataset.cvp.split(":"),f=+q[0],i=q[1];F[f].precos=F[f].precos||{};F[f].precos[i]=F[f].precos[i]||{};F[f].precos[i][q[2]]=el.value.trim()});
+  Array.prototype.forEach.call(m.querySelectorAll("[data-cvf]"),function(el){var q=el.dataset.cvf.split(":");F[+q[0]][q[1]]=el.value.trim()});
+  Array.prototype.forEach.call(m.querySelectorAll("[data-cvw]:checked"),function(el){V[el.dataset.cvw]=+el.value});return{forn:F,venc:V}}
+$("mx-modal").addEventListener("change",function(ev){if(!COT.ver||COT.ed)return;var t=ev.target;if(t.dataset.cvf&&/frete$/.test(t.dataset.cvf)||t.dataset.cvw!=null){var c=cotById(COT.ver);if(!c)return;var d=cotColeta(c),cc={};for(var k in c)cc[k]=c[k];cc.forn=d.forn;cc.venc=d.venc;COT.rasc=cc;setTimeout(function(){cotVer(cc);COT.ver=c.id},0)}},true);
+$("mx-modal").addEventListener("input",function(ev){if(!COT.ver||COT.ed)return;var t=ev.target;if(!t.dataset.cvp&&!t.dataset.cvf)return;var c=cotById(COT.ver);if(!c)return;var d=cotColeta(c),cc={};for(var k in c)cc[k]=c[k];cc.forn=d.forn;cc.venc=d.venc;COT.rasc=cc;
+  if(t.dataset.cvp){var q=t.dataset.cvp.split(":"),td=t.closest("td"),v=cotLinhaV(cc,+q[0],q[1]);if(td){var s=td.querySelector("small");if(s)s.textContent=v?brl(v):"–"}}},true);
+$("mx-modal").addEventListener("click",function(ev){if(!COT.ver||COT.ed)return;var m=$("mx-modal"),b=ev.target.closest("[data-cvx]");if(ev.target!==m&&!b)return;ev.stopImmediatePropagation();
+  var c=cotById(COT.ver);if(!c)return;var cur=COT.rasc&&COT.rasc.id===c.id?COT.rasc:c;
+  if(ev.target===m||b.dataset.cvx==="n"){COT.ver=null;COT.rasc=null;m.hidden=true;mxRender();return}var a=b.dataset.cvx;
+  if(a==="pdf"){cotPdf(c,+b.dataset.f);return}
+  if(a==="mail"){var F=c.forn[+b.dataset.f];cotMail(c,F);return}
+  if(a==="menor"){var d=cotColeta(c),cc={};for(var k in c)cc[k]=c[k];cc.forn=d.forn;cc.venc={};c.itens.forEach(function(x,i){var bst=cotMelhor(cc,i);if(bst>-1)cc.venc[i]=bst});COT.rasc=cc;cotVer(cc);COT.ver=c.id;return}
+  if(a==="gravar"){if(!pode("compras.pedido")){usrNega("compras.pedido");return}var d2=cotColeta(c),resp=d2.forn.filter(function(F){return Object.keys(F.precos||{}).some(function(i){return cotNum(F.precos[i].preco)>0})}).length;
+    cotSet(c,{forn:d2.forn,venc:d2.venc},"Preços gravados ("+resp+" de "+d2.forn.length+" fornecedores responderam).").then(function(){COT.rasc=null;toast("Preços gravados.")});return}
+  if(a==="editar"){if(!pode("compras.pedido")){usrNega("compras.pedido");return}COT.ver=null;COT.ed={id:c.id,num:c.num,emp:c.emp,ate:c.ate||"",obs:c.obs||"",itens:JSON.parse(JSON.stringify(c.itens)),forn:JSON.parse(JSON.stringify(c.forn)),fq:""};cotEdHtml();return}
+  if(a==="aprovar"){if(!pode("compras.validar")){usrNega("compras.validar");return}
+    if(c.status==="aprovada"){revMotivo("Desaprovar a cotação "+c.num+"?","Ela volta para \"em cotação\" e os preços podem ser alterados.",function(mot){cotSet(c,{status:"aberta",aprov:null},"Cotação desaprovada: "+mot+".").then(function(){toast("Cotação desaprovada.")})});return}
+    var d3=cotColeta(c),cc2={};for(var k2 in c)cc2[k2]=c[k2];cc2.forn=d3.forn;cc2.venc=d3.venc;var falta=c.itens.filter(function(x,i){var w=cc2.venc[i];return w==null||w===""||!(cotPU(cc2,+w,i)>0)}).length;
+    if(falta){toast("Escolha o vencedor (com preço) de todos os itens: faltam "+falta+".");return}
+    var fs={};c.itens.forEach(function(x,i){fs[cc2.forn[+cc2.venc[i]].nome]=1});
+    askDel("Aprovar a cotação "+c.num+"?","Vencedores: "+Object.keys(fs).join(", ")+". Depois é só gerar o pedido de compra.",function(){var eu=usrReal();cotSet(c,{forn:d3.forn,venc:d3.venc,status:"aprovada",aprov:{por:AG.uid||"",nome:eu?eu.nome:"",em:Date.now()}},"Cotação aprovada. Vencedores: "+Object.keys(fs).join(", ")+".").then(function(){COT.rasc=null;toast("Cotação aprovada.")})});return}
+  if(a==="gerar"){if(!pode("compras.pedido")){usrNega("compras.pedido");return}cotGerarPcs(c,b);return}
+  if(a==="desfazer"){if(!pode("compras.pedido")){usrNega("compras.pedido");return}cotDesfazer(c);return}},true);
+/* vira pedido(s) de compra: um por fornecedor vencedor, com os preços, prazo, pagamento e frete cotados */
+function cotGerarPcs(c,b){var grupos={};c.itens.forEach(function(x,i){var f=+c.venc[i];(grupos[f]=grupos[f]||[]).push(i)});var fs=Object.keys(grupos);
+  askDel("Gerar "+(fs.length>1?fs.length+" pedidos de compra":"o pedido de compra")+" da cotação "+c.num+"?",fs.map(function(f){return c.forn[f].nome+" ("+grupos[f].length+(grupos[f].length===1?" item":" itens")+")"}).join(" · ")+". Os pedidos nascem aguardando validação.",function(){
+    b.disabled=true;var ano=new Date().getFullYear(),feitos=[],fake={disabled:false};
+    pcProx().then(function(n0){var ch=Promise.resolve(),k=0;fs.forEach(function(f){var F=c.forn[f],n=n0+(k++);while(CM.pcs.some(function(p){return p.ano===ano&&p.n===n}))n++;
+      ch=ch.then(function(){var dias=parseInt(F.prazo,10),prazo=dias>0?new Date(Date.now()+dias*864e5).toISOString().slice(0,10):"";
+        var its=grupos[f].map(function(i){var x=c.itens[i],p=(F.precos||{})[i]||{};return{tipo:x.tipo,codigo:x.codigo,desc:x.desc,forma:x.forma,medida:x.medida,ncm:x.ncm,qtd:String(x.qtd).replace(".",","),un:x.un,preco:String(p.preco||""),ipi:String(p.ipi||""),estoque:x.estoque,insp:x.insp,dest:x.dest,ops:x.ops||[],rq:x.rq||[],barra:x.barra||""}});
+        var p={fornecedor:F.nome,emp:c.emp,prazo:prazo,condPag:F.condPag||"",frete:F.frete||"CIF",vFrete:F.vFrete||"",obs:("Cotação "+c.num+". "+(c.obs||"")).trim(),itens:its};
+        return pcGravar(p,its,n,ano,fake).then(function(){feitos.push({id:"pc-"+pad(ano%100,2)+"-"+pad(n,4),num:n+"/"+pad(ano%100,2),forn:F.nome})})})});return ch})
+     .then(function(){var pm={};fs.forEach(function(f,k){if(feitos[k])grupos[f].forEach(function(i){pm[i]=feitos[k]})});return cotRqAjusta(c,function(it,ci){var p=pm[ci];if(p){it.status="em compra";it.pcId=p.id;it.pcNum=p.num}})})
+     .then(function(){return cotSet(c,{status:"convertida",pcs:feitos},"Virou pedido de compra: "+feitos.map(function(p){return p.num+" ("+p.forn+")"}).join(", ")+".")})
+     .then(function(){COT.ver=null;$("mx-modal").hidden=true;CM.aba="pcs";toast(feitos.length+" pedido(s) de compra gerado(s). Falta a validação.");mxRender()}).catch(function(){b.disabled=false;toast("Não consegui gerar todos os pedidos. Confira a aba Pedidos de compra.")})})}
+function cotDesfazer(c){var P=(c.pcs||[]).map(function(x){return CM.pcs.filter(function(p){return p.id===x.id})[0]}).filter(Boolean),vivos=P.filter(function(p){return p.status!=="cancelado"});
+  var trava=vivos.filter(function(p){return pcVal(p)==="validado"||(p.itens||[]).some(function(x){return+x.recebido>0})});
+  if(trava.length){toast("Não dá para desfazer: o pedido "+trava.map(function(p){return p.num}).join(", ")+" já está validado ou recebido. Desaprove/cancele o recebimento antes.");return}
+  revMotivo("Desfazer os pedidos da cotação "+c.num+"?","Os pedidos "+vivos.map(function(p){return p.num}).join(", ")+" são cancelados e a cotação volta para aprovada.",function(mot){var ch=Promise.resolve();
+    vivos.forEach(function(p){ch=ch.then(function(){var h=(p.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"Pedido cancelado (cotação "+c.num+" desfeita): "+mot+"."});
+      return PR.db.doc("pedidos_compra/"+p.id).update({status:"cancelado",atualizado:Date.now(),hist:h}).then(function(){return Promise.all(PP.ops.filter(function(o){return(o.materiais||[]).some(function(m){return m.pcId===p.id})}).map(function(o){var mats=JSON.parse(JSON.stringify(o.materiais));mats.forEach(function(m){if(m.pcId===p.id){delete m.pcId;delete m.pcNum;if(m.req&&m.req.status==="em compra"){m.req.status="aberta";delete m.req.pcNum;delete m.req.pcId}}});return opSet(o,{materiais:mats},"Pedido de compra "+p.num+" cancelado (cotação "+c.num+" desfeita).")}))})})});
+    var ids=vivos.map(function(p){return p.id});ch.then(function(){return cotRqAjusta(c,function(it){if(ids.indexOf(it.pcId)>-1){it.status="aberta";delete it.pcId;delete it.pcNum}})}).then(function(){return cotSet(c,{status:"aprovada",pcs:[]},"Pedidos desfeitos ("+vivos.map(function(p){return p.num}).join(", ")+"): "+mot+".")}).then(function(){toast("Pedidos cancelados. A cotação voltou para aprovada.")})})}
+/* requisições gerais da cotação: grava a situação item a item, lendo do banco (evita uma gravação apagar a outra) */
+function cotRqAjusta(c,fn){var por={};(c.itens||[]).forEach(function(x,i){(x.rq||[]).forEach(function(r){(por[r.id]=por[r.id]||[]).push({i:r.i,ci:i})})});var ch=Promise.resolve();
+  Object.keys(por).forEach(function(id){ch=ch.then(function(){return PR.db.doc("requisicoes/"+id).get().then(function(sn){if(!sn||!sn.exists)return;var d=sn.data()||{},it=JSON.parse(JSON.stringify(d.itens||[]));por[id].forEach(function(r){if(it[r.i])fn(it[r.i],r.ci)});return PR.db.doc("requisicoes/"+id).update({itens:it})})})});return ch.catch(function(){})}
+function cotMail(c,F){var E=empData(c.emp==="STAR"?"STAR":"MIX"),ass="Solicitação de cotação "+c.num+" - "+(E.nome||E.razao);
+  var corpo="Prezados,\n\nSolicitamos cotação dos itens abaixo"+(c.ate?" até "+dStr(c.ate):"")+":\n\n"+c.itens.map(function(x,i){return(i+1)+". "+x.desc+(x.medida?" "+x.medida:"")+" - "+cmUn(x.qtd,x.un)}).join("\n")+"\n\nFavor informar preço unitário, IPI, prazo de entrega, condição de pagamento e frete."+(c.itens.some(function(x){return x.tipo==="mp"})?" Material com certificado de qualidade (corrida).":"")+(c.obs?"\n\n"+c.obs:"")+"\n\nAtenciosamente,\n"+(usrNome(AG.uid)||"Compras")+"\n"+(E.razao||"");
+  var a=document.createElement("a");a.href="mailto:"+encodeURIComponent(F.email)+"?subject="+encodeURIComponent(ass)+"&body="+encodeURIComponent(corpo);a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
+  var cc={};for(var k in c)cc[k]=c[k];var fs=JSON.parse(JSON.stringify(c.forn));fs.forEach(function(x){if(x.nome===F.nome)x.enviadoEm=Date.now()});cotSet(c,{forn:fs},"Rascunho de e-mail aberto para "+F.nome+".")}
+/* PDF da solicitação para o fornecedor (mesma identidade do pedido de compra, sem preços) */
+function cotPdf(c,f){var F0=c.forn[f]||{},F=(AG.forn||[]).filter(function(x){return x.id===F0.fornId||normTxt(x.nome)===normTxt(F0.nome)})[0]||{},E=empData(c.emp==="STAR"?"STAR":"MIX"),cor=QI_COR[c.emp]||QI_COR.MIX,X=12,W=186;
+  function Tx(x,y,t,pt,o){return qiT(x,y,t,pt,o)}function bx(x,y,w,h,fl){return'<rect x="'+x.toFixed(2)+'" y="'+y.toFixed(2)+'" width="'+w.toFixed(2)+'" height="'+h.toFixed(2)+'" fill="'+(fl||"none")+'" stroke="#9AA0B4" stroke-width="0.2"/>'}
+  var endF=[[F.rua,F.num].filter(Boolean).join(", "),F.bairro,[F.cidade,F.uf].filter(Boolean).join("/")].filter(Boolean).join(" - ");
+  var cols=[["Item",10],["Código",22],["Descrição",76],["Qtd",18],["Un.",10],["Valor un.",22],["IPI %",12],["Prazo",16]],s='<rect x="0" y="0" width="210" height="297" fill="#fff"/>',y=10;
+  s+=bx(X,y,W,24)+'<image x="'+(X+2)+'" y="'+(y+3)+'" width="40" height="18" preserveAspectRatio="xMinYMid meet" href="'+fx(E.logoPng)+'"/>'+Tx(X+W/2+6,y+11,"SOLICITAÇÃO DE COTAÇÃO",14,{bold:true,c:cor.a,a:"middle"})+Tx(X+W/2+6,y+17,E.razao,7,{c:"#555A70",a:"middle"})+Tx(X+W-2,y+10,c.num,13,{bold:true,c:cor.p,a:"end"})+Tx(X+W-2,y+16,"Emissão "+new Date(c.criado||Date.now()).toLocaleDateString("pt-BR"),7,{c:"#555A70",a:"end"});y+=27;
+  var hw=W/2-1.5;s+=bx(X,y,hw,30,"#F6F7FA")+bx(X+hw+3,y,hw,30,"#F6F7FA")+Tx(X+2,y+4.5,"SOLICITANTE",6.5,{bold:true,c:cor.a})+Tx(X+hw+5,y+4.5,"FORNECEDOR",6.5,{bold:true,c:cor.a});
+  [[E.razao,8,1],["CNPJ "+E.cnpj,7],[E.end,6.5],["Tel. "+(E.tel||"")+"   "+(E.email||""),6.5]].forEach(function(l,k){s+=Tx(X+2,y+10+k*5,qiCut(l[0],hw-4,l[1]),l[1],{bold:!!l[2]})});
+  [[F.razao||F0.nome,8,1],["CNPJ "+(F.cnpj||"–"),7],[endF||"–",6.5],["Tel. "+(F.tel||"–")+"   "+(F0.email||F.email||""),6.5]].forEach(function(l,k){s+=Tx(X+hw+5,y+10+k*5,qiCut(l[0],hw-4,l[1]),l[1],{bold:!!l[2]})});y+=33;
+  [["Responder até",c.ate?dStr(c.ate):"o quanto antes"],["Local de entrega",E.nome||E.razao],["Comprador",usrNome(c.uid)||"Compras"]].forEach(function(t,k){var cx=X+k*(W/3);s+=bx(cx,y,W/3,10)+Tx(cx+1.5,y+3.6,t[0],6,{c:"#555A70"})+Tx(cx+1.5,y+8,qiCut(t[1],W/3-3,8),8,{bold:true})});y+=13;
+  s+='<rect x="'+X+'" y="'+y+'" width="'+W+'" height="6" fill="'+cor.a+'"/>';var x0=X;cols.forEach(function(cc,ci){s+=Tx(x0+1.2,y+4.2,cc[0],6.5,{bold:true,c:"#fff"});x0+=cc[1]});y+=6;
+  c.itens.forEach(function(x,k){x0=X;var l=[String(k+1),x.codigo||"",x.desc+(x.medida?" "+x.medida:""),nf(+x.qtd||0,x.un==="kg"?3:x.un==="pç"?0:2),x.un,"","",""];s+=bx(X,y,W,8,k%2?"#FAFBFD":"#fff");cols.forEach(function(cc,ci){s+=bx(x0,y,cc[1],8)+Tx(x0+1.2,y+5.2,qiCut(l[ci],cc[1]-2,7.3),7.3,{bold:ci===2});x0+=cc[1]});y+=8});
+  y+=6;var ob=["Favor informar preço unitário, IPI, prazo de entrega, condição de pagamento e frete (CIF/FOB)."].concat(c.itens.some(function(x){return x.tipo==="mp"||x.tipo==="comp"})?["Material com certificado de qualidade (corrida)."]:[]).concat(c.obs?[c.obs]:[]);
+  s+=Tx(X,y+4,"OBSERVAÇÕES",7,{bold:true,c:cor.a});y+=6;ob.forEach(function(o){var t=String(o);while(t.length){var pt=qiCut(t,W,7.5);if(pt.slice(-1)==="…")pt=pt.slice(0,-1);s+=Tx(X,y+3.5,pt,7.5);t=t.slice(pt.length).replace(/^\s+/,"");y+=4.6}});
+  s+=Tx(X,289,E.razao+" · CNPJ "+E.cnpj+" · "+(E.tel||""),6.3,{c:"#555A70"})+Tx(X+W,289,"Cotação "+c.num,6.3,{c:"#555A70",a:"end"});
+  var sv='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 210 297" width="210mm" height="297mm">'+s+'</svg>';toast("Montando a solicitação…");
+  svgToJpeg(sv,1654).then(function(j){var pdf=pdfJpegPages([j],"Solicitação de cotação "+c.num);cnSave("Cotacao_"+String(c.num).replace(/\//g,"-")+"_"+String(F0.nome||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"-").slice(0,30)+".pdf",pdf instanceof Blob?pdf:new Blob([pdf],{type:"application/pdf"}))}).catch(function(){toast("Não consegui montar o PDF.")})}
+
+/* ---------- Compras: aba Cotações + botão "Gerar cotação" nas requisições ---------- */
+var _rcCot=renderComp;renderComp=function(box){cotSub();var aba=CM.aba;if(aba==="cot")CM.aba="pcs";_rcCot.apply(this,arguments);CM.aba=aba;
+  var tabs=box.querySelector(".cadtabs");if(tabs&&!tabs.querySelector('[data-a="cot"]')){var at=cotAtivas().length,bt=document.createElement("button");bt.type="button";bt.setAttribute("role","tab");bt.dataset.cm="aba";bt.dataset.a="cot";bt.textContent="Cotações ("+at+" em andamento)";
+    var ref=tabs.querySelector('[data-a="pcs"]');tabs.insertBefore(bt,ref);Array.prototype.forEach.call(tabs.querySelectorAll("[role=tab]"),function(x){x.setAttribute("aria-selected",String(x.dataset.a===aba))})}
+  var g=box.querySelector('[data-cm="gerar"]');if(g&&!box.querySelector('[data-cot="gerar"]')){var n=(g.textContent.match(/\((\d+)\)/)||[0,0])[1];g.classList.remove("pri");g.insertAdjacentHTML("beforebegin",'<button class="btn sm pri" type="button" data-cot="gerar"'+(+n?'':' disabled')+'>Gerar cotação ('+n+')</button>')}
+  if(aba==="cot"){Array.prototype.forEach.call(box.querySelectorAll(".pc-flt,.tbx,.pg-bar"),function(x){x.remove()});var L=COT.list.filter(function(c){return COT.todas||c.status!=="cancelada"}),pg=pgSlice("comp:cot",L);
+    box.insertAdjacentHTML("beforeend",'<div class="mx-bar"><label class="mx-chk"><input type="checkbox" id="cot-todas"'+(COT.todas?" checked":"")+'> Mostrar canceladas</label></div><div class="tbx"><div class="ls-cot fh"><span>Cotação</span><span>Itens</span><span>Fornecedores</span><span>Responder até</span><span>Situação</span><span></span></div>'+
+     (pg.rows.length?pg.rows.map(function(c){var resp=(c.forn||[]).filter(function(F){return Object.keys(F.precos||{}).some(function(i){return cotNum(F.precos[i].preco)>0})}).length;
+       return'<div class="ls-cot ls-row'+(c.status==="cancelada"?" ls-canc":"")+'" data-cot="ver" data-id="'+esc(c.id)+'"><span class="idtag">'+esc(c.num)+'</span><span>'+esc((c.itens||[]).slice(0,2).map(function(x){return x.desc+(x.medida?" "+x.medida:"")}).join(" · "))+(c.itens.length>2?'<small>+'+(c.itens.length-2)+' itens</small>':'<small>'+esc(c.emp)+'</small>')+'</span>'+
+        '<span>'+esc((c.forn||[]).map(function(F){return F.nome}).join(", "))+'<small>'+resp+' de '+(c.forn||[]).length+' com preço</small></span><span>'+(c.ate?ppEnt(c.ate):"–")+'</span><span>'+cotChip(c)+(c.pcs&&c.pcs.length?'<small>'+esc(c.pcs.map(function(p){return p.num}).join(", "))+'</small>':c.motivoCanc?'<small>'+esc(c.motivoCanc)+'</small>':'')+'</span>'+
+        '<span class="pc-ic">'+ibtn("eye","Abrir a cotação",'data-cot="ver" data-id="'+esc(c.id)+'"')+(c.status==="aberta"?ibtn("trash","Cancelar a cotação",'data-cot="cancelar" data-id="'+esc(c.id)+'"',"danger"):'')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhuma cotação.</div>')+'</div>'+pg.bar);
+    var nb=box.querySelector('.mh [data-cm="novo"]');if(nb){nb.dataset.cm="";nb.dataset.cot="novo";nb.title="Nova solicitação de cotação"}}};
+$("v-mx").addEventListener("change",function(e){if(S.tab==="m-comp"&&e.target.id==="cot-todas"){e.stopPropagation();COT.todas=e.target.checked;mxRender()}},true);
+window.addEventListener("click",function(e){if(S.tab!=="m-comp"||!e.target.closest)return;var b=e.target.closest("[data-cot]");if(!b||b.disabled||!$("v-mx").contains(b))return;e.stopImmediatePropagation();e.preventDefault();var a=b.dataset.cot;
+  if(a==="gerar"||a==="novo"){if(!pode("compras.pedido")){usrNega("compras.pedido");return}var sel=a==="gerar"?cmLinhas().filter(function(r){return r.pend&&CM.sel[r.k]}):[];if(!sel.length&&a==="gerar")return;cotNova(sel);return}
+  var c=cotById(b.dataset.id);if(!c)return;if(a==="ver"){cotVer(c);return}
+  if(a==="cancelar"){if(!pode("compras.pedido")){usrNega("compras.pedido");return}revMotivo("Cancelar a cotação "+c.num+"?","As requisições voltam a ficar pendentes.",function(mot){cotSet(c,{status:"cancelada",motivoCanc:mot},"Cotação cancelada: "+mot+".").then(function(){toast("Cotação cancelada.")})})}},true);
+USR_ACAO.push(["compras.pedido",'[data-cot="gerar"],[data-cot="novo"],[data-cot="cancelar"],[data-cvx="gravar"],[data-cvx="gerar"],[data-cvx="desfazer"],[data-cvx="editar"]']);
+USR_ACAO.push(["compras.validar",'[data-cvx="aprovar"]']);
+
+/* ---------- pedido de compra: formulário numa linha por item (padrão) ---------- */
+pcNovoHtml=function(){
+  var p=CM.novo,m=$("mx-modal"),fs=(AG.forn||[]).map(function(f){return'<option value="'+esc(f.nome)+'">'}).join(""),ano=new Date().getFullYear()%100,T=pcTot(p),sc=m.querySelector(".cm-mod"),st=sc?sc.scrollTop:0;
+  m.innerHTML='<div class="card cm-mod pc-mod pcf" role="dialog" aria-modal="true" aria-label="Pedido de compra"><div class="mx-bar"><h3 style="margin:0">'+(p.edit?"Editar pedido de compra "+esc(p.numEd):"Novo pedido de compra")+'</h3><span class="sp"></span></div>'+(p.edit&&p.eraValidado?'<div class="op-alerta">Pedido validado: ao gravar a alteração ele volta para "aguardando validação".</div>':'')+
+   '<div class="pcf-row pcf-r1"><label class="f"><span class="lb">Nº (lote)</span><span class="cm-n0"><input id="pc-n" value="'+esc(p.n)+'" inputmode="numeric"'+(p.edit?" disabled":"")+'><b>/'+pad(ano,2)+'</b></span></label>'+
+   '<label class="f"><span class="lb">Fornecedor</span><input id="pc-forn" list="pc-forn-l" value="'+esc(p.fornecedor)+'" placeholder="ex.: Pasifer"><datalist id="pc-forn-l">'+fs+'</datalist></label>'+
+   '<label class="f"><span class="lb">Empresa</span><select id="pc-emp"><option'+(p.emp!=="STAR"?" selected":"")+'>MIX</option><option'+(p.emp==="STAR"?" selected":"")+'>STAR</option></select></label>'+
+   '<label class="f"><span class="lb">Prazo de entrega</span><input type="date" id="pc-prazo" value="'+esc(p.prazo)+'"></label>'+
+   '<label class="f"><span class="lb">Pagamento</span><input id="pc-cond" value="'+esc(p.condPag)+'" placeholder="28 dias"></label>'+
+   '<label class="f"><span class="lb">Frete</span><span class="cm-n0"><select id="pc-frete"><option'+(p.frete!=="FOB"?" selected":"")+'>CIF</option><option'+(p.frete==="FOB"?" selected":"")+'>FOB</option></select>'+(p.frete==="FOB"?'':'<input id="pc-vfrete" value="'+esc(p.vFrete)+'" placeholder="R$" class="r">')+'</span></label></div>'+
+   '<datalist id="pc-ins-l">'+CM.ins.map(function(i){return'<option value="'+esc(i.desc)+'">'+esc(i.codigo+" · "+pcTipoNome(i.tipo)+(i.medida?" · "+i.medida:""))+'</option>'}).join("")+'</datalist>'+
+   '<div class="tbx pcf-tb"><div class="pc-ln fh"><span>Tipo</span><span>Item</span><span>Bitola</span><span>NCM</span><span class="r">Qtd</span><span>Un.</span><span class="r">Preço un.</span><span class="r">IPI %</span><span class="r">Total</span><span class="c" title="Requer inspeção de recebimento">Insp.</span><span class="c" title="Entra no estoque">Est.</span><span>Destino</span><span></span></div>'+
+   p.itens.map(function(x,i){var v=(+parse(x.qtd)||0)*(+parse(x.preco)||0);return'<div class="pc-ln"><select data-pci="'+i+':tipo" aria-label="Tipo">'+PC_TIPOS.map(function(t){return'<option value="'+t[0]+'"'+(x.tipo===t[0]?" selected":"")+'>'+esc(pcTipoNome(t[0]))+'</option>'}).join("")+'</select>'+
+     '<span class="pc-itc"><input data-pci="'+i+':desc" list="pc-ins-l" value="'+esc(x.desc)+'" placeholder="item" aria-label="Item"'+(x.codigo?' title="'+esc(x.codigo)+'"':'')+'></span>'+
+     (x.tipo==="mp"?'<span class="pc-bit"><select data-pci="'+i+':forma" aria-label="Forma">'+ES_FORMAS.map(function(f){return'<option'+(x.forma===f?" selected":"")+'>'+esc(f)+'</option>'}).join("")+'</select><input data-pci="'+i+':medida" value="'+esc(x.medida)+'" placeholder="Ø25,4" aria-label="Bitola"'+(x.barra?' title="'+esc(x.barra)+'"':'')+'></span>':'<span class="pc-nb">–</span>')+
+     '<input data-pci="'+i+':ncm" value="'+esc(x.ncm)+'" placeholder="0000.00.00" aria-label="NCM">'+
+     '<input data-pci="'+i+':qtd" value="'+esc(x.qtd)+'" class="r" inputmode="decimal" aria-label="Quantidade"'+(x.barra?' title="'+esc(x.barra)+'"':'')+'>'+
+     '<select data-pci="'+i+':un" aria-label="Unidade">'+["kg","m","mm","pç","un","cx","l","jg","sv"].map(function(u){return'<option'+(x.un===u?" selected":"")+'>'+u+'</option>'}).join("")+'</select>'+
+     '<input data-pci="'+i+':preco" value="'+esc(x.preco)+'" class="r" inputmode="decimal" aria-label="Preço unitário">'+
+     '<input data-pci="'+i+':ipi" value="'+esc(x.ipi)+'" class="r" inputmode="decimal" aria-label="IPI">'+
+     '<span class="r mono" data-pct="'+i+'">'+(v?brl(v):"–")+'</span>'+
+     '<span class="c"><input type="checkbox" data-pci="'+i+':insp"'+(x.insp?" checked":"")+' aria-label="Requer inspeção de recebimento" title="Requer inspeção de recebimento"></span>'+
+     '<span class="c"><input type="checkbox" data-pci="'+i+':estoque"'+(x.estoque?" checked":"")+' aria-label="Entra no estoque" title="Entra no estoque"></span>'+
+     '<input data-pci="'+i+':dest" value="'+esc(x.dest)+'" placeholder="OP, máquina, setor" aria-label="Destino">'+
+     '<span class="pc-ic">'+(p.itens.length>1?ibtn("trash","Tirar",'data-pcx="rm" data-i="'+i+'"',"danger"):'')+'</span></div>'}).join("")+'</div>'+
+   '<div class="acts2"><button class="btn sm" type="button" data-pcx="add">+ Item</button><span class="sp" style="flex:1"></span><span class="pc-tot" id="pc-tot">'+pcTotHtml(T)+'</span></div>'+
+   '<label class="f"><span class="lb">Observações para o fornecedor</span><textarea id="pc-obs" rows="2">'+esc(p.obs)+'</textarea></label>'+
+   '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-pcx="n">Cancelar</button><button class="btn pri" type="button" data-pcx="y">'+(p.edit?"Gravar alterações":"Gravar pedido de compra")+'</button></div></div>';
+  m.hidden=false;var s2=m.querySelector(".cm-mod");if(s2)s2.scrollTop=st};
+/* cotação: o item escolhido no catálogo também alimenta a datalist do formulário */
 
 /* ===== v122: PADRÃO DEFINITIVO de tela (gestor, 05/11/2026: "padronizar as páginas definitivamente").
    Fica no FIM do arquivo e vale para toda tela: título + [Filtrar] [+ Novo] · linha única · ícones · popup · paginação · sem texto.

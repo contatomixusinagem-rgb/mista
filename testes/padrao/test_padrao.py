@@ -31,6 +31,18 @@ async def main():
                     await pg.evaluate("void __T(`(function(){var e=document.querySelector('"+a['tela'].replace("'","\\'")+"');if(e)e.click()})()`)")
                     await pg.wait_for_timeout(900)
                     r=await pg.evaluate(AUD); r['isenta']=a['nome'] in ISENTAS; res[nm]=r
+                    if not r['isenta'] and r['filtrar']:
+                        tab0=await pg.evaluate("__T('S.tab')")
+                        fb=pg.locator('.ft-btn:visible').first
+                        await fb.click(); await pg.wait_for_timeout(200)
+                        inp=pg.locator('[data-flt="in"]:visible, #pf-q:visible').first
+                        if await inp.count():
+                            await inp.click(); await inp.fill('zzqq'); await inp.dispatch_event('input'); await pg.wait_for_timeout(700)
+                        tab1=await pg.evaluate("__T('S.tab')")
+                        r['ftok']=(tab0==tab1) and await inp.count()>0
+                        if await inp.count():
+                            await inp.fill(''); await inp.dispatch_event('input'); await pg.wait_for_timeout(400)
+                        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(200)
                     await pg.screenshot(path='out/aud/'+nm.replace(' › ','_').replace(' ','-').replace('/','-')+'.png')
                 except Exception as e: res[nm]={'erro':str(e)[:200]}
         for k,v in res.items():
@@ -39,6 +51,7 @@ async def main():
             if v.get('erro'):prob.append('ERRO '+v['erro'])
             else:
                 if not v['filtrar']:prob.append('sem Filtrar')
+                elif v.get('ftok') is False:prob.append('Filtrar não funciona (muda de tela ou não abre o campo)')
                 if v['hint']:prob.append('texto: '+' | '.join(v['hint']))
                 if v['botoesTexto']:prob.append('%d botões com texto na linha %s'%(v['botoesTexto'],v['ex']))
                 if v['cards']>3:prob.append('%d painéis/cards'%v['cards'])

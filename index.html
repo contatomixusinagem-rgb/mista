@@ -3974,7 +3974,7 @@ $("v-mx").addEventListener("click",function(e){
     else if(p&&a==="cancela")askDel("Cancelar o pedido "+(p.num||"")+"?","O pedido sai da carteira e fica no histórico como cancelado. Dá para reativar depois.",function(){pdSet(p,{cancelado:Date.now()},"Pedido cancelado.")});
     else if(p&&a==="reativar")pdSet(p,{cancelado:0},"Pedido reativado.");
     return}
-  var r=e.target.closest("[data-ft]");
+  var r=e.target.closest(".fr[data-ft]");
   if(r){var id=r.dataset.fid;
     if(r.dataset.ft==="ped"){PD.open=id;mxRender();try{$("v-mx").scrollIntoView({block:"start"})}catch(er){}}
     else if(r.dataset.ft==="prop"){var sm=PR.list.filter(function(y){return y.id===id})[0]||{};if(sm.status==="Fechado"&&!e.shiftKey){pdAsk(id)}else pOpen(id)}
@@ -8990,12 +8990,12 @@ var _rmPg=renderMod;renderMod=function(box,k){var r=_rmPg.apply(this,arguments),
 IC.busca='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>';
 function ftBarra(box){var mh=box.querySelector(".mh");if(!mh||mh.querySelector(".ft-box")||!box.querySelector(".tbx"))return;var q=FT[S.tab]||"";
   var ac=mh.querySelector(".acts2");if(!ac){ac=document.createElement("div");ac.className="acts2";mh.appendChild(ac)}
-  var w=document.createElement("span");w.className="ft-box"+(q?" on":"");w.innerHTML='<button type="button" class="btn sm ft-btn" data-ft="tg" title="Filtrar" aria-label="Filtrar">'+IC.busca+'<span>Filtrar</span></button><input type="search" class="ft-in" data-ft="in" value="'+esc(q)+'" placeholder="Filtrar…" aria-label="Filtrar a lista"'+(q||FT["_open_"+S.tab]?'':' hidden')+'>';
+  var w=document.createElement("span");w.className="ft-box"+(q?" on":"");w.innerHTML='<button type="button" class="btn sm ft-btn" data-flt="tg" title="Filtrar" aria-label="Filtrar">'+IC.busca+'<span>Filtrar</span></button><input type="search" class="ft-in" data-flt="in" value="'+esc(q)+'" placeholder="Filtrar…" aria-label="Filtrar a lista"'+(q||FT["_open_"+S.tab]?'':' hidden')+'>';
   ac.insertBefore(w,ac.firstChild)}
-document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-ft="tg"]');if(!b)return;e.stopPropagation();var k="_open_"+S.tab,inp=b.parentNode.querySelector(".ft-in");
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-flt="tg"]');if(!b)return;e.stopPropagation();var k="_open_"+S.tab,inp=b.parentNode.querySelector(".ft-in");
   if(inp.hidden){FT[k]=1;inp.hidden=false;inp.focus()}else if(!inp.value){FT[k]=0;inp.hidden=true}else inp.focus()},true);
-document.addEventListener("input",function(e){var t=e.target;if(!t.matches||!t.matches('[data-ft="in"]'))return;e.stopPropagation();FT[S.tab]=t.value;FT["_open_"+S.tab]=1;clearTimeout(FT._t);FT._t=setTimeout(function(){mxRender();var i=document.querySelector('[data-ft="in"]');if(i){i.focus();var n=i.value.length;try{i.setSelectionRange(n,n)}catch(er){}}},250)},true);
-document.addEventListener("keydown",function(e){var t=e.target;if(t.matches&&t.matches('[data-ft="in"]')&&e.key==="Escape"){FT[S.tab]="";FT["_open_"+S.tab]=0;mxRender()}},true);
+document.addEventListener("input",function(e){var t=e.target;if(!t.matches||!t.matches('[data-flt="in"]'))return;e.stopPropagation();FT[S.tab]=t.value;FT["_open_"+S.tab]=1;clearTimeout(FT._t);FT._t=setTimeout(function(){mxRender();var i=document.querySelector('[data-flt="in"]');if(i){i.focus();var n=i.value.length;try{i.setSelectionRange(n,n)}catch(er){}}},250)},true);
+document.addEventListener("keydown",function(e){var t=e.target;if(t.matches&&t.matches('[data-flt="in"]')&&e.key==="Escape"){FT[S.tab]="";FT["_open_"+S.tab]=0;mxRender()}},true);
 
 /* ===== v122: PADRÃO DEFINITIVO de tela (gestor, 05/11/2026: "padronizar as páginas definitivamente").
    Fica no FIM do arquivo e vale para toda tela: título + [Filtrar] [+ Novo] · linha única · ícones · popup · paginação · sem texto.

@@ -1407,11 +1407,18 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
 .mv-leg{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-size:13px;color:#CBD5E1;align-items:center}.mv-leg span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .l-prod::before{background:#22C55E}.l-setup::before{background:#EAB308}.l-parada::before{background:#EF4444}.l-esp::before{background:#1D4ED8}.l-livre::before{background:#1E293B;border:1px solid #475569}.mv-upd{margin-left:auto}.mv-upd::before{display:none!important}
 .ap-b.set{background:#EAB308;color:#1C1600}.ap-card.setup{border-color:#EAB308}.ap-setmsg{background:#FEF3C7;color:#713F12}
-.ls-if{grid-template-columns:110px minmax(190px,1.7fr) minmax(140px,1.1fr) 70px 90px 90px 150px 84px;min-width:1000px}
-.if-mod{max-width:980px!important}
-.if-med td,.if-med th{padding:5px 8px}
+.ls-if{grid-template-columns:110px minmax(190px,1.7fr) minmax(140px,1.1fr) 70px 90px 90px 150px 112px;min-width:1030px}
+.if-mod{max-width:1240px!important;width:min(1240px,96vw)!important}
+.if-med td,.if-med th{padding:5px 6px}
 .if-med tr.if-nc td{background:#fbebeb}
 .if-med tr.if-c td{background:#eef8ee}
+.if-med input.if-v{width:64px;text-align:center;padding:4px 3px}
+.if-med input.if-v.nc{border-color:#C0262D;color:#C0262D;font-weight:700;background:#fff}
+.if-amo{display:flex;gap:12px;align-items:flex-end;margin:6px 0}.if-amo .f{max-width:150px}
+.if-h4{margin:14px 0 6px;font-size:14px}
+.if-cadd{justify-content:flex-start;gap:8px;margin-top:6px}.if-cadd label.btn{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.if-mod>*{flex-shrink:0}.if-mod{overflow:auto}
+.if-cadd select{width:auto;min-width:220px}
 </style>
 
 <div class="shell">
@@ -8792,12 +8799,14 @@ renderMon=function(box){
   clearInterval(MON.clk);MON.clk=setInterval(function(){var c=$("mv-clock");if(!c){clearInterval(MON.clk);return}c.textContent=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})},10000)};
 $("v-mx").addEventListener("click",function(e){if(S.tab!=="m-mon")return;var b=e.target.closest('[data-mon="emp"]');if(!b)return;e.stopPropagation();MON.emp=b.dataset.e;mxRender()},true);
 
-/* ===== v120: Qualidade › Inspeção final da OP (OP concluída → inspeção → item liberado para expedição; desfazer com motivo) ===== */
+/* ===== v120: Qualidade › Inspeção final da OP (OP concluída → inspeção → item liberado para expedição; desfazer com motivo)
+   v121: amostragem P1..Pn por cota, relatório dimensional final em PDF, certificados (material automático pelo lote; tratamentos anexados) e pacote de qualidade num PDF só ===== */
 ACOES.push(["qual.final","Qualidade","Gravar e desfazer inspeção final da OP"]);
-USR_ACAO.push(["qual.final",'[data-if="insp"],[data-if="desfaz"],[data-ifx="y"]']);
+USR_ACAO.push(["qual.final",'[data-if="insp"],[data-if="desfaz"],[data-ifx="y"],[data-ifx="crm"],#if-cert']);
 if(PERM_DEF.qualidade.acoes.indexOf("qual.final")<0)PERM_DEF.qualidade.acoes.push("qual.final");
 var IF_CHK=[["dim","Dimensional conforme desenho"],["visual","Visual, rebarbas e acabamento"],["trat","Tratamento / revestimento"],["qtd","Quantidade conferida"],["ident","Identificação e embalagem"]];
-var IF={aba:"pend",ed:null};
+var IF_CTIPO=["Tratamento térmico","Tratamento superficial","Material","Outro"];
+var IF={aba:"pend",ed:null,nmax:10};
 function ifUlt(o){var r=(o.roteiro||[]).filter(function(x){return x.status==="concluida"});return r[r.length-1]||null}
 function ifProd(o){var u=ifUlt(o);return u&&u.boas!=null?+u.boas:+o.qtd||0}
 function ifFim(o){var u=ifUlt(o);return u&&u.fimEm||o.atualizado||0}
@@ -8806,57 +8815,87 @@ function ifOps(a){return(PP.ops||[]).filter(function(o){if(o.status!=="concluida
 function ifPlano(o){var c=normTxt(o.codigo||"");if(!c||!QI.list)return null;var L=QI.list.filter(function(p){return normTxt(p.codigo||"")===c&&(p.itens||[]).length&&p.status!=="erro"&&p.status!=="gerando"});return L.filter(function(p){return p.status==="validado"})[0]||L[0]||null}
 function ifChip(o){var s=ifSt(o);return s==="aprovado"?'<span class="stp g">aprovado</span>':s==="concessao"?'<span class="stp g">concessão</span>':s==="reprovado"?'<span class="stp b">reprovado</span>':'<span class="stp w">a inspecionar</span>'}
 function ifLim(it){if(it.min!==""&&it.min!=null&&it.max!==""&&it.max!=null)return{min:it.min,max:it.max};return qiLim(it.nominal,it.tol)}
-function ifAvalia(it,v){var l=ifLim(it),n=qiNum(v);if(!l||!isFinite(n))return"";var a=qiNum(l.min),b=qiNum(l.max);if(!isFinite(a)||!isFinite(b))return"";return n>=Math.min(a,b)-1e-9&&n<=Math.max(a,b)+1e-9?"C":"NC"}
+function ifAvalia(it,v){var l=ifLim(it),n=qiNum(v);if(!l||!isFinite(n)||String(v).trim()==="")return"";var a=qiNum(l.min),b=qiNum(l.max);if(!isFinite(a)||!isFinite(b))return"";return n>=Math.min(a,b)-1e-9&&n<=Math.max(a,b)+1e-9?"C":"NC"}
+function ifTemLim(it){var l=ifLim(it);return!!(l&&isFinite(qiNum(l.min))&&isFinite(qiNum(l.max)))}
+/* situação da cota pelas medidas: NC se alguma fora; C se todas dentro */
+function ifResRow(r,n){if(!ifTemLim(r))return r.res||"";var v=(r.vals||[]).slice(0,n),f=v.filter(function(x){return String(x||"").trim()!==""});if(f.some(function(x){return ifAvalia(r,x)==="NC"}))return"NC";return f.length===n?"C":""}
+/* lotes de material usados na OP (empenho e baixa) com corrida e certificado */
+function ifMatLotes(o){var vis={},out=[];(o.materiais||[]).forEach(function(m){(m.empenhos||[]).concat(m.baixas||[]).forEach(function(e){var id=e.loteId||("l:"+e.lote);if(vis[id])return;vis[id]=1;var l=e.loteId&&CM.lotes?CM.lotes.filter(function(x){return x.id===e.loteId})[0]:null;
+  out.push({loteId:e.loteId||"",lote:e.lote||(l&&l.lote)||"",corrida:e.corrida||(l&&l.corrida)||"",nf:e.nf||(l&&l.nf)||"",material:(l&&l.material)||m.desc||"",cert:(l&&l.cert)||(e.cert&&typeof e.cert==="object"?e.cert:null)})})});return out}
 
 function renderInspFin(box){
-  ppSub();qiSub();var P=ifOps("pend").sort(function(a,b){return ifFim(a)-ifFim(b)}),F=ifOps("feito").sort(function(a,b){return(b.inspFinal.em||0)-(a.inspFinal.em||0)}),L=IF.aba==="pend"?P:F,pg=pgSlice("m-inspfin:"+IF.aba,L);
+  ppSub();qiSub();cmSub();var P=ifOps("pend").sort(function(a,b){return ifFim(a)-ifFim(b)}),F=ifOps("feito").sort(function(a,b){return(b.inspFinal.em||0)-(a.inspFinal.em||0)}),L=IF.aba==="pend"?P:F,pg=pgSlice("m-inspfin:"+IF.aba,L);
   box.innerHTML='<div class="mh"><div><h2>Inspeção final</h2></div></div>'+
    '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-if="aba" data-a="pend" aria-selected="'+(IF.aba==="pend")+'">A inspecionar ('+P.length+')</button><button type="button" role="tab" data-if="aba" data-a="feito" aria-selected="'+(IF.aba==="feito")+'">Inspecionadas ('+F.length+')</button></div>'+
    '<div class="tbx"><div class="ls-if fh"><span>OP</span><span>Peça</span><span>Cliente · pedido</span><span class="r">Qtd</span><span>Concluída</span><span>Plano</span><span>Situação</span><span></span></div>'+
-   (pg.rows.length?pg.rows.map(function(o){var i=o.inspFinal||{},pl=ifPlano(o),pend=IF.aba==="pend";
+   (pg.rows.length?pg.rows.map(function(o){var i=o.inspFinal||{},pl=i.plano||ifPlano(o),pend=IF.aba==="pend";
      return'<div class="ls-if ls-row" data-if="'+(pend?"insp":"ver")+'" data-id="'+esc(o.id)+'"><span class="idtag">'+esc(o.num)+'</span><span><b>'+esc(o.codigo||"")+(o.rev?" R"+esc(o.rev):"")+'</b><small>'+esc(o.descricao||"")+'</small></span><span>'+esc(o.cliente||"–")+'<small>'+esc(o.pedidoNum||"")+' · '+esc(o.emp||"")+'</small></span>'+
-      '<span class="r mono">'+(pend?ifProd(o):(+i.aprovadas||0)+'/'+(+i.produzidas||0))+'</span><span>'+esc(dStr(new Date(ifFim(o)).toISOString().slice(0,10)))+'</span><span>'+(pl?'<span class="idtag">'+esc(cnIdTxt("planos_inspecao",pl))+'</span>':'<span class="stp n">sem plano</span>')+'</span>'+
+      '<span class="r mono">'+(pend?ifProd(o):(+i.aprovadas||0)+'/'+(+i.produzidas||0))+'</span><span>'+esc(dStr(new Date(ifFim(o)).toISOString().slice(0,10)))+'</span><span>'+(pl?'<span class="idtag">'+esc(pl.txt||cnIdTxt("planos_inspecao",pl))+'</span>':'<span class="stp n">sem plano</span>')+'</span>'+
       '<span>'+ifChip(o)+(i.em&&!pend?'<small>'+esc(nowStr(i.em).slice(0,8)+" · "+(i.nome||usrNome(i.por)||""))+'</small>':'')+'</span>'+
-      '<span class="pc-ic">'+(pend?ibtn("clip","Inspecionar",'data-if="insp" data-id="'+esc(o.id)+'"',"pri"):ibtn("eye","Ver registro da inspeção",'data-if="ver" data-id="'+esc(o.id)+'"')+ibtn("undo","Desfazer inspeção",'data-if="desfaz" data-id="'+esc(o.id)+'"'))+'</span></div>'}).join(""):'<div class="mx-empty">Nenhuma OP.</div>')+'</div>'+pg.bar}
+      '<span class="pc-ic">'+(pend?ibtn("clip","Inspecionar",'data-if="insp" data-id="'+esc(o.id)+'"',"pri"):ibtn("eye","Ver registro da inspeção",'data-if="ver" data-id="'+esc(o.id)+'"')+ibtn("pdf","Pacote de qualidade (relatório dimensional + certificados)",'data-if="pac" data-id="'+esc(o.id)+'"')+ibtn("undo","Desfazer inspeção",'data-if="desfaz" data-id="'+esc(o.id)+'"'))+'</span></div>'}).join(""):'<div class="mx-empty">Nenhuma OP.</div>')+'</div>'+pg.bar}
 
-function ifAbrir(o,so){var i=o.inspFinal||{},pl=i.plano?null:ifPlano(o),ck={};IF_CHK.forEach(function(c){ck[c[0]]=(i.checklist&&i.checklist[c[0]])||""});
-  var med=i.medicoes?JSON.parse(JSON.stringify(i.medicoes)):(pl?(pl.itens||[]).map(function(it,k){var l=ifLim(it)||{};return{n:k+1,carac:it.carac||"",nominal:it.nominal||"",tol:it.tol||"",min:l.min||"",max:l.max||"",instr:it.instr||"",medido:"",res:""}}):[]);
-  var prod=i.produzidas!=null?+i.produzidas:ifProd(o);
-  IF.ed={id:o.id,so:!!so,ck:ck,med:med,plano:i.plano||(pl?{id:pl.id,txt:cnIdTxt("planos_inspecao",pl),rev:pl.rev||""}:null),produzidas:prod,aprovadas:i.aprovadas!=null?String(i.aprovadas):String(prod),reprovadas:i.reprovadas!=null?String(i.reprovadas):"0",amostra:i.amostra||"100%",instrumento:i.instrumento||"",res:i.status&&i.status!=="pendente"?i.status:"",obs:i.obs||"",em:i.em,nome:i.nome||usrNome(i.por)||""};ifHtml()}
+function ifAbrir(o,so){cmSub();var i=o.inspFinal||{},pl=i.plano?null:ifPlano(o),ck={};IF_CHK.forEach(function(c){ck[c[0]]=(i.checklist&&i.checklist[c[0]])||""});
+  var prod=i.produzidas!=null?+i.produzidas:ifProd(o),n=i.n||(i.medicoes&&i.medicoes.length&&!i.medicoes[0].vals?1:0)||Math.max(1,Math.min(IF.nmax,prod||1,parseInt(pl&&pl.pecas,10)||5));
+  var med=i.medicoes?JSON.parse(JSON.stringify(i.medicoes)).map(function(r){if(!r.vals)r.vals=[r.medido||""];return r}):(pl?(pl.itens||[]).map(function(it,k){var l=ifLim(it)||{};return{n:k+1,carac:it.carac||"",nominal:it.nominal||"",tol:it.tol||"",min:l.min||"",max:l.max||"",instr:it.instr||"",vals:[],res:""}}):[]);
+  IF.ed={id:o.id,so:!!so,ck:ck,med:med,n:n,plano:i.plano||(pl?{id:pl.id,txt:cnIdTxt("planos_inspecao",pl),rev:pl.rev||""}:null),produzidas:prod,aprovadas:i.aprovadas!=null?String(i.aprovadas):String(prod),reprovadas:i.reprovadas!=null?String(i.reprovadas):"0",amostra:i.amostra||"Amostra",instrumento:i.instrumento||"",res:i.status&&i.status!=="pendente"?i.status:"",obs:i.obs||"",em:i.em,nome:i.nome||usrNome(i.por)||"",certs:JSON.parse(JSON.stringify(i.certs||[])),ctipo:IF_CTIPO[0]};ifHtml()}
 function ifOp(){return(PP.ops||[]).filter(function(x){return IF.ed&&x.id===IF.ed.id})[0]}
-function ifHtml(){var e=IF.ed,o=ifOp(),m=$("mx-modal");if(!o)return;var dis=e.so?" disabled":"";
-  var h='<div class="card cm-mod if-mod" role="dialog" aria-modal="true" aria-label="Inspeção final"><div class="mx-bar"><h3 style="margin:0">Inspeção final · '+esc(o.num)+'</h3>'+(e.so?ifChip(o):'')+'<span class="sp"></span>'+(e.so?'<button class="btn sm" type="button" data-ifx="n">Fechar</button>':'')+'</div>'+
+function ifCertsHtml(o,e){var M=ifMatLotes(o);
+  return'<h4 class="if-h4">Certificados</h4><div class="tbx"><table class="itb if-cert"><thead><tr><th>Tipo</th><th>Documento</th><th>Origem</th><th></th></tr></thead><tbody>'+
+   M.map(function(l){return'<tr><td>Material</td><td>'+(l.cert?esc(l.cert.nome||"certificado"):'<span class="stp b">sem certificado</span>')+'</td><td>Lote '+esc(l.lote)+(l.corrida?' · corrida '+esc(l.corrida):'')+(l.nf?' · NF '+esc(l.nf):'')+'</td><td class="pc-ic">'+(l.cert?ibtn("down","Baixar",'data-ifx="cdl" data-k="m'+esc(l.loteId)+'"'):'')+'</td></tr>'}).join("")+
+   e.certs.map(function(c,k){return'<tr><td>'+esc(c.tipo)+'</td><td>'+esc(c.nome)+'</td><td>anexado'+(c.em?' · '+esc(nowStr(c.em).slice(0,8)):'')+'</td><td class="pc-ic">'+ibtn("down","Baixar",'data-ifx="cdl" data-k="'+k+'"')+ibtn("trash","Tirar",'data-ifx="crm" data-k="'+k+'"',"danger")+'</td></tr>'}).join("")+
+   (!M.length&&!e.certs.length?'<tr><td colspan="4" class="hint">Nenhum certificado.</td></tr>':'')+'</tbody></table></div>'+
+   '<div class="acts2 if-cadd"><select id="if-ctipo" aria-label="Tipo do certificado">'+IF_CTIPO.map(function(t){return'<option'+(e.ctipo===t?" selected":"")+'>'+t+'</option>'}).join("")+'</select><label class="btn sm">'+IC.clip+' Anexar certificado<input type="file" id="if-cert" accept=".pdf,image/*" hidden></label></div>'}
+function ifHtml(){var e=IF.ed,o=ifOp(),m=$("mx-modal");if(!o)return;var dis=e.so?" disabled":"",n=e.n,sc=m.querySelector(".if-mod");var top=sc?sc.scrollTop:0;
+  var h='<div class="card cm-mod if-mod" role="dialog" aria-modal="true" aria-label="Inspeção final"><div class="mx-bar"><h3 style="margin:0">Inspeção final · '+esc(o.num)+'</h3>'+(e.so?ifChip(o):'')+'<span class="sp"></span>'+(e.so?'<button class="btn sm" type="button" data-ifx="rdf">'+IC.pdf+' Relatório dimensional</button><button class="btn sm" type="button" data-ifx="pac">'+IC.pdf+' Pacote de qualidade</button><button class="btn sm" type="button" data-ifx="n">Fechar</button>':'')+'</div>'+
    '<dl class="cn-dl pv-dl"><dt>Peça</dt><dd><b>'+esc(o.codigo||"")+(o.rev?" R"+esc(o.rev):"")+'</b> '+esc(o.descricao||"")+'</dd><dt>Cliente</dt><dd>'+esc((o.cliente||"–")+" · "+(o.pedidoNum||"")+" · "+(o.emp||""))+'</dd><dt>Material</dt><dd>'+esc(o.material||"–")+'</dd><dt>Plano</dt><dd>'+(e.plano?esc(e.plano.txt+(e.plano.rev?" R"+e.plano.rev:"")):'<span class="stp n">sem plano</span>')+'</dd>'+(e.so&&e.em?'<dt>Inspeção</dt><dd>'+esc(nowStr(e.em)+" · "+e.nome)+'</dd>':'')+'</dl>';
-  if(e.med.length)h+='<div class="tbx"><table class="itb if-med"><thead><tr><th>Nº</th><th>Característica</th><th>Nominal</th><th>Mín.</th><th>Máx.</th><th>Instrumento</th><th>Medido</th><th class="c">C</th><th class="c">NC</th></tr></thead><tbody>'+
-   e.med.map(function(r,k){return'<tr class="'+(r.res==="NC"?"if-nc":r.res==="C"?"if-c":"")+'"><td>'+r.n+'</td><td>'+esc(r.carac)+'</td><td class="mono">'+esc(r.nominal)+(r.tol?' <small>'+esc(r.tol)+'</small>':'')+'</td><td class="mono">'+esc(r.min)+'</td><td class="mono">'+esc(r.max)+'</td><td>'+esc(r.instr)+'</td><td><input class="mono" data-ifm="'+k+'" value="'+esc(r.medido)+'" style="width:90px"'+dis+' aria-label="Medido '+r.n+'"></td>'+
-    ["C","NC"].map(function(v){return'<td class="c"><input type="radio" name="ifr-'+k+'" data-ifr="'+k+'" value="'+v+'"'+(r.res===v?" checked":"")+dis+' aria-label="'+r.n+': '+v+'"></td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div>';
+  if(e.med.length){h+='<div class="if-amo"><label class="f"><span class="lb">Peças medidas</span><input type="number" min="1" max="'+IF.nmax+'" data-ife="n" value="'+n+'"'+dis+'></label></div>';
+   h+='<div class="tbx"><table class="itb if-med"><thead><tr><th>Nº</th><th>Característica</th><th>Nominal</th><th>Mín.</th><th>Máx.</th><th>Instrumento</th>';for(var j=0;j<n;j++)h+='<th class="c">P'+(j+1)+'</th>';h+='<th class="c">C</th><th class="c">NC</th></tr></thead><tbody>'+
+   e.med.map(function(r,k){var lim=ifTemLim(r),res=ifResRow(r,n);r.res=res||r.res;var cells="";for(var j=0;j<n;j++){var v=(r.vals||[])[j]||"",a=ifAvalia(r,v);cells+='<td class="c"><input class="mono if-v'+(a==="NC"?" nc":"")+'" data-ifv="'+k+':'+j+'" value="'+esc(v)+'"'+dis+' aria-label="Cota '+r.n+' peça '+(j+1)+'"></td>'}
+     return'<tr class="'+(r.res==="NC"?"if-nc":r.res==="C"?"if-c":"")+'"><td>'+r.n+'</td><td>'+esc(r.carac)+'</td><td class="mono">'+esc(r.nominal)+(r.tol?' <small>'+esc(r.tol)+'</small>':'')+'</td><td class="mono">'+esc(r.min)+'</td><td class="mono">'+esc(r.max)+'</td><td>'+esc(r.instr)+'</td>'+cells+
+      ["C","NC"].map(function(v){return'<td class="c"><input type="radio" name="ifr-'+k+'" data-ifr="'+k+'" value="'+v+'"'+(r.res===v?" checked":"")+(dis||(lim?" disabled":""))+' aria-label="'+r.n+': '+v+'"></td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div>'}
   h+='<table class="itb ir-ck"><thead><tr><th>Verificação</th><th class="c">C</th><th class="c">NC</th><th class="c">N/A</th></tr></thead><tbody>'+IF_CHK.map(function(c){return'<tr><td>'+esc(c[1])+'</td>'+["C","NC","NA"].map(function(v){return'<td class="c"><input type="radio" name="ifc-'+c[0]+'" data-ifc="'+c[0]+'" value="'+v+'"'+(e.ck[c[0]]===v?" checked":"")+dis+' aria-label="'+esc(c[1]+": "+v)+'"></td>'}).join("")+'</tr>'}).join("")+'</tbody></table>'+
    '<div class="fgrid"><label class="f"><span class="lb">Produzidas</span><input value="'+e.produzidas+'" disabled></label><label class="f"><span class="lb">Aprovadas</span><input type="number" min="0" data-ife="aprovadas" value="'+esc(e.aprovadas)+'"'+dis+'></label><label class="f"><span class="lb">Reprovadas</span><input type="number" min="0" data-ife="reprovadas" value="'+esc(e.reprovadas)+'"'+dis+'></label>'+
-   '<label class="f"><span class="lb">Amostragem</span><select data-ife="amostra"'+dis+'>'+["100%","Amostra (NBR 5426)","1ª e última peça","Visual somente"].map(function(x){return'<option'+(e.amostra===x?" selected":"")+'>'+x+'</option>'}).join("")+'</select></label>'+
+   '<label class="f"><span class="lb">Critério</span><select data-ife="amostra"'+dis+'>'+["Amostra","100%","Amostra (NBR 5426)","1ª e última peça","Visual somente"].map(function(x){return'<option'+(e.amostra===x?" selected":"")+'>'+x+'</option>'}).join("")+'</select></label>'+
    '<label class="f"><span class="lb">Resultado</span><select data-ife="res"'+dis+'><option value="">escolha…</option><option value="aprovado"'+(e.res==="aprovado"?" selected":"")+'>Aprovado</option><option value="concessao"'+(e.res==="concessao"?" selected":"")+'>Aprovado com concessão</option><option value="reprovado"'+(e.res==="reprovado"?" selected":"")+'>Reprovado</option></select></label>'+
    '<label class="f"><span class="lb">Instrumentos</span><input data-ife="instrumento" value="'+esc(e.instrumento)+'"'+dis+'></label>'+
-   '<label class="f" style="grid-column:1/-1"><span class="lb">Observação / disposição</span><input data-ife="obs" value="'+esc(e.obs)+'"'+dis+'></label></div>'+
+   '<label class="f" style="grid-column:1/-1"><span class="lb">Observação / disposição</span><input data-ife="obs" value="'+esc(e.obs)+'"'+dis+'></label></div>'+ifCertsHtml(o,e)+
    (e.so?'':'<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-ifx="n">Cancelar</button><button class="btn pri" type="button" data-ifx="y">Gravar inspeção</button></div>')+'</div>';
-  m.innerHTML=h;m.hidden=false}
-$("mx-modal").addEventListener("input",function(ev){var e=IF.ed;if(!e||e.so)return;var t=ev.target;if(t.dataset.ife){e[t.dataset.ife]=t.value;if(t.dataset.ife==="aprovadas"&&e.produzidas!=null){var a=+t.value;if(isFinite(a)&&a>=0&&a<=e.produzidas){e.reprovadas=String(e.produzidas-a);var r=$("mx-modal").querySelector('[data-ife="reprovadas"]');if(r)r.value=e.reprovadas}}}
-  if(t.dataset.ifm!=null){var k=+t.dataset.ifm,r2=e.med[k];r2.medido=t.value;var av=ifAvalia(r2,t.value);if(av){r2.res=av;var tr=t.closest("tr");Array.prototype.forEach.call(tr.querySelectorAll("[data-ifr]"),function(x){x.checked=x.value===av});tr.className=av==="NC"?"if-nc":"if-c"}}},true);
-$("mx-modal").addEventListener("change",function(ev){var e=IF.ed;if(!e||e.so)return;var t=ev.target;if(t.dataset.ife)e[t.dataset.ife]=t.value;if(t.dataset.ifc)e.ck[t.dataset.ifc]=t.value;if(t.dataset.ifr!=null){e.med[+t.dataset.ifr].res=t.value;var tr=t.closest("tr");if(tr)tr.className=t.value==="NC"?"if-nc":"if-c"}},true);
+  m.innerHTML=h;m.hidden=false;var sc2=m.querySelector(".if-mod");if(sc2&&top)sc2.scrollTop=top}
+function ifSetRow(tr,r){if(!tr)return;tr.className=r.res==="NC"?"if-nc":r.res==="C"?"if-c":"";Array.prototype.forEach.call(tr.querySelectorAll("[data-ifr]"),function(x){x.checked=x.value===r.res})}
+$("mx-modal").addEventListener("input",function(ev){var e=IF.ed;if(!e||e.so)return;var t=ev.target;
+  if(t.dataset.ife&&t.dataset.ife!=="n"){e[t.dataset.ife]=t.value;if(t.dataset.ife==="aprovadas"&&e.produzidas!=null){var a=+t.value;if(isFinite(a)&&a>=0&&a<=e.produzidas){e.reprovadas=String(e.produzidas-a);var r=$("mx-modal").querySelector('[data-ife="reprovadas"]');if(r)r.value=e.reprovadas}}}
+  if(t.dataset.ifv){var p=t.dataset.ifv.split(":"),k=+p[0],j=+p[1],r2=e.med[k];r2.vals=r2.vals||[];r2.vals[j]=t.value;t.classList.toggle("nc",ifAvalia(r2,t.value)==="NC");if(ifTemLim(r2)){r2.res=ifResRow(r2,e.n);ifSetRow(t.closest("tr"),r2)}}},true);
+$("mx-modal").addEventListener("change",function(ev){var e=IF.ed;if(!e)return;var t=ev.target;
+  if(t.id==="if-ctipo"){e.ctipo=t.value;return}
+  if(t.id==="if-cert"&&t.files&&t.files[0]){var f=t.files[0];if(!AG.assets||!AG.assets.upload){toast("Esta visualização não guarda arquivos.");return}toast("Guardando o certificado…");
+    AG.assets.upload(f).then(function(a){var c={tipo:e.ctipo,nome:f.name,id:a.id,url:a.url,em:Date.now(),uid:AG.uid||""};e.certs.push(c);
+      if(e.so){var o=ifOp();if(o&&o.inspFinal){var ins=JSON.parse(JSON.stringify(o.inspFinal));ins.certs=e.certs.slice();opSet(o,{inspFinal:ins},"Certificado anexado à inspeção final: "+c.tipo+" · "+c.nome+".")}}ifHtml()}).catch(function(){toast("Não consegui guardar o certificado.")});return}
+  if(e.so)return;
+  if(t.dataset.ife==="n"){var v=Math.max(1,Math.min(IF.nmax,parseInt(t.value,10)||1));e.n=v;e.med.forEach(function(r){if(ifTemLim(r))r.res=ifResRow(r,v)});setTimeout(ifHtml,0);return}
+  if(t.dataset.ife)e[t.dataset.ife]=t.value;if(t.dataset.ifc)e.ck[t.dataset.ifc]=t.value;if(t.dataset.ifr!=null){var r=e.med[+t.dataset.ifr];r.res=t.value;ifSetRow(t.closest("tr"),r)}},true);
 $("mx-modal").addEventListener("click",function(ev){var e=IF.ed;if(!e)return;var m=$("mx-modal"),b=ev.target.closest("[data-ifx]");
   if(ev.target===m||(b&&b.dataset.ifx==="n")){ev.stopImmediatePropagation();IF.ed=null;m.hidden=true;mxRender();return}if(!b)return;ev.stopImmediatePropagation();
-  var o=ifOp();if(!o)return;
-  var semMed=e.med.filter(function(r){return!r.res});if(semMed.length){toast("Marque C ou NC nas cotas do plano ("+semMed.length+" sem resposta).");return}
+  var o=ifOp();if(!o)return;var a=b.dataset.ifx;
+  if(a==="rdf"){ifPdfDl(o,false);return}if(a==="pac"){ifPdfDl(o,true);return}
+  if(a==="cdl"){var k=b.dataset.k,c=k.charAt(0)==="m"?(ifMatLotes(o).filter(function(l){return"m"+l.loteId===k})[0]||{}).cert:e.certs[+k];if(c)ifCertBlob(c).then(function(bl){cnSave(c.nome||"certificado.pdf",bl)}).catch(function(){toast("Não consegui abrir o certificado.")});return}
+  if(a==="crm"){var c2=e.certs[+b.dataset.k];if(!c2)return;askDel("Tirar o certificado "+c2.nome+"?","Ele deixa de sair no pacote de qualidade.",function(){e.certs.splice(+b.dataset.k,1);
+      if(e.so&&o.inspFinal){var ins=JSON.parse(JSON.stringify(o.inspFinal));ins.certs=e.certs.slice();opSet(o,{inspFinal:ins},"Certificado retirado da inspeção final: "+c2.nome+".")}ifHtml()});return}
+  if(a!=="y")return;
+  var n=e.n,semMed=e.med.filter(function(r){if(ifTemLim(r)){var v=(r.vals||[]).slice(0,n).filter(function(x){return String(x||"").trim()!==""});return v.length<n}return!r.res});
+  if(semMed.length){toast("Faltam medidas em "+semMed.length+" cota(s): "+n+" peça(s) por cota.");return}
   var falta=IF_CHK.filter(function(c){return!e.ck[c[0]]});if(falta.length){toast("Marque todas as verificações ("+falta.length+" sem resposta).");return}
   if(!e.res){toast("Escolha o resultado.");return}
   var ap=+e.aprovadas,rp=+e.reprovadas;if(!(ap>=0)||!(rp>=0)||Math.round(ap)!==ap||Math.round(rp)!==rp){toast("Quantidades inválidas.");return}
   if(ap+rp!==e.produzidas){toast("Aprovadas + reprovadas tem que dar "+e.produzidas+" (produzidas).");return}
   if(e.res==="reprovado"&&ap>0){toast("Reprovado: aprovadas tem que ser 0.");return}
   if(e.res!=="reprovado"&&ap<=0){toast("Nenhuma peça aprovada: use \"reprovado\".");return}
+  e.med.forEach(function(r){r.vals=(r.vals||[]).slice(0,n);if(ifTemLim(r))r.res=ifResRow(r,n)});
   var nc=IF_CHK.filter(function(c){return e.ck[c[0]]==="NC"}).length+e.med.filter(function(r){return r.res==="NC"}).length;
   if(e.res==="aprovado"&&nc){toast("Há item não conforme: use \"aprovado com concessão\" ou \"reprovado\".");return}
   if((e.res!=="aprovado"||rp>0)&&!String(e.obs).trim()){toast("Descreva a não conformidade e a disposição na observação.");return}
   askDel("Gravar a inspeção final da "+o.num+"?",(e.res==="reprovado"?"OP reprovada.":ap+" peça(s) liberada(s) para expedição.")+(rp?" "+rp+" reprovada(s).":""),function(){
-    var t=Date.now(),eu=usrReal(),ins={status:e.res,checklist:e.ck,medicoes:e.med,plano:e.plano,produzidas:e.produzidas,aprovadas:ap,reprovadas:rp,amostra:e.amostra,instrumento:e.instrumento,obs:e.obs,em:t,por:AG.uid||"",nome:eu?eu.nome:(MSM.nome||"")};
-    var txt="Inspeção final: "+(e.res==="reprovado"?"reprovada":e.res==="concessao"?"aprovada com concessão":"aprovada")+" ("+ap+" aprovadas, "+rp+" reprovadas)"+(e.obs?" · "+e.obs:"")+".";
+    var t=Date.now(),eu=usrReal(),ins={status:e.res,checklist:e.ck,medicoes:e.med,n:n,plano:e.plano,produzidas:e.produzidas,aprovadas:ap,reprovadas:rp,amostra:e.amostra,instrumento:e.instrumento,obs:e.obs,certs:e.certs,lotes:ifMatLotes(o).map(function(l){return{loteId:l.loteId,lote:l.lote,corrida:l.corrida,nf:l.nf,material:l.material,cert:l.cert||null}}),em:t,por:AG.uid||"",nome:eu?eu.nome:(MSM.nome||"")};
+    var txt="Inspeção final: "+(e.res==="reprovado"?"reprovada":e.res==="concessao"?"aprovada com concessão":"aprovada")+" ("+ap+" aprovadas, "+rp+" reprovadas, "+n+" peça(s) medida(s))"+(e.obs?" · "+e.obs:"")+".";
     opSet(o,{inspFinal:ins},txt).then(function(){return ifPedido(o,e.res==="reprovado"?"reprovado":"liberado",txt)}).then(function(){IF.ed=null;m.hidden=true;toast(o.num+(e.res==="reprovado"?" reprovada.":" liberada para expedição."));mxRender()})})},true);
 /* pedido: item liberado → etapa Expedição quando todos liberados; desfazer volta a "produzido" e a etapa a Qualidade */
 function ifPedido(o,sit,txt){var p=(PD.list||[]).filter(function(x){return x.id===o.pedidoId})[0];if(!p)return Promise.resolve();var its=JSON.parse(JSON.stringify(p.itens||[])),x=its[o.itemIdx];if(!x||x.opId!==o.id)return Promise.resolve();
@@ -8867,10 +8906,60 @@ function ifPedido(o,sit,txt){var p=(PD.list||[]).filter(function(x){return x.id=
 function ifDesfazer(o){if(!pode("qual.final")){usrNega("qual.final");return}if(o.expedido||(o.inspFinal&&o.inspFinal.expedido)){toast("Não dá para desfazer: a "+o.num+" já foi expedida. Estorne a expedição antes.");return}
   revMotivo("Desfazer a inspeção final da "+o.num+"?","A OP volta para \"a inspecionar\" e o item do pedido volta para \"produzido\".",function(mot){var t=Date.now(),ant=JSON.parse(JSON.stringify(o.inspFinal||{}));delete ant.anterior;
     var txt="Inspeção final desfeita: "+mot+".";
-    opSet(o,{inspFinal:{status:"pendente",anterior:ant,desfeitaEm:t,desfeitaPor:AG.uid||"",motivoDesfazer:mot}},txt).then(function(){return ifPedido(o,"produzido",txt)}).then(function(){IF.aba="pend";toast("Inspeção desfeita. A "+o.num+" voltou para a fila.");mxRender()})})}
+    opSet(o,{inspFinal:{status:"pendente",anterior:ant,certs:ant.certs||[],desfeitaEm:t,desfeitaPor:AG.uid||"",motivoDesfazer:mot}},txt).then(function(){return ifPedido(o,"produzido",txt)}).then(function(){IF.aba="pend";toast("Inspeção desfeita. A "+o.num+" voltou para a fila.");mxRender()})})}
 $("v-mx").addEventListener("click",function(ev){if(S.tab!=="m-inspfin")return;var b=ev.target.closest("[data-if]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.if;
   if(a==="aba"){IF.aba=b.dataset.a;mxRender();return}var o=(PP.ops||[]).filter(function(x){return x.id===b.dataset.id})[0];if(!o)return;
-  if(a==="insp"){if(!pode("qual.final")){usrNega("qual.final");return}ifAbrir(o,false);return}if(a==="ver"){ifAbrir(o,true);return}if(a==="desfaz")ifDesfazer(o)},true);
+  if(a==="insp"){if(!pode("qual.final")){usrNega("qual.final");return}ifAbrir(o,false);return}if(a==="ver"){ifAbrir(o,true);return}if(a==="desfaz"){ifDesfazer(o);return}if(a==="pac")ifPdfDl(o,true)},true);
+
+/* ---------- relatório dimensional final (PDF A4 paisagem) e pacote de qualidade ---------- */
+function ifCertBlob(c){return fetch(c.url||("/_blob/"+c.id)).then(function(r){if(!r.ok)throw 0;return r.blob()})}
+function ifRdfSvgs(o){var i=o.inspFinal||{},E=empData(o.emp==="STAR"?"STAR":"MIX"),cor=QI_COR[o.emp]||QI_COR.MIX,med=i.medicoes||[],n=Math.max(1,Math.min(IF.nmax,i.n||1)),RPP=12,tabPgs=Math.max(1,Math.ceil(med.length/RPP)),tot=tabPgs,out=[];
+  var resTxt=i.status==="aprovado"?"APROVADO":i.status==="concessao"?"APROVADO COM CONCESSÃO":i.status==="reprovado"?"REPROVADO":"PENDENTE",resCor=i.status==="reprovado"?"#C0262D":"#1E7A4A";
+  var lotes=i.lotes||ifMatLotes(o),ped=(PD.list||[]).filter(function(x){return x.id===o.pedidoId})[0]||{};
+  function head(pag){return'<rect x="10" y="8" width="277" height="20" fill="none" stroke="#9AA0B4" stroke-width="0.2"/><image x="12" y="10" width="40" height="16" preserveAspectRatio="xMinYMid meet" href="'+fx(E.logoPng)+'"/>'+
+    qiT(148.5,17,"RELATÓRIO DIMENSIONAL FINAL",14,{bold:true,c:cor.a,a:"middle"})+qiT(148.5,23,E.razao+" · CNPJ "+E.cnpj,7,{c:"#555A70",a:"middle"})+
+    qiT(285,15,o.num,11,{bold:true,c:cor.a,a:"end"})+qiT(285,20,"Folha "+pag+" de "+tot,7.5,{c:"#555A70",a:"end"})+qiT(285,25,resTxt,7.5,{bold:true,c:resCor,a:"end"})+'<rect x="10" y="28" width="277" height="0.8" fill="'+cor.p+'"/>'}
+  var cols=[["Nº",9],["Característica",50],["Nominal",20],["Tolerância",20],["Mín.",15],["Máx.",15],["Instrumento",32]],fixo=161,okw=14,pw=(277-fixo-okw)/n;for(var j=0;j<n;j++)cols.push(["P"+(j+1),pw]);cols.push(["Result.",okw]);
+  for(var tp=0;tp<tabPgs;tp++){var s=head(tp+1),y=32;
+    var idf=[["Cliente",o.cliente],["Pedido do cliente / OC",ped.pedidoCliente||ped.oc||"–"],["Pedido interno / OP",(o.pedidoNum||"")+" / "+o.num],["Peça / desenho",(o.codigo||"")+(o.rev?" R"+o.rev:"")],["Descrição",o.descricao],["Material / corrida",(o.material||"")+(lotes.length?" · "+lotes.map(function(l){return l.corrida||l.lote}).join(", "):"")],["Lote / aprovadas",(+i.produzidas||0)+" pç / "+(+i.aprovadas||0)+" aprovadas"],["Amostra · data",n+" pç ("+(i.amostra||"")+") · "+(i.em?new Date(i.em).toLocaleDateString("pt-BR"):"")]];
+    idf.forEach(function(f,k){var cx=10+(k%4)*69.25,cy=y+Math.floor(k/4)*9;s+='<rect x="'+cx.toFixed(2)+'" y="'+cy+'" width="69.25" height="9" fill="'+(k%2?"#fff":"#F6F7FA")+'" stroke="#C9CDDA" stroke-width="0.15"/>'+qiT(cx+1.5,cy+3.4,f[0],6,{c:"#555A70"})+qiT(cx+1.5,cy+7.4,qiCut(f[1]||"–",66,8),8,{bold:true})});
+    y+=21;var x=10;s+='<rect x="10" y="'+y+'" width="277" height="7" fill="'+cor.a+'"/>';cols.forEach(function(c){s+=qiT(x+c[1]/2,y+4.8,c[0],7,{bold:true,c:"#fff",a:"middle"});x+=c[1]});y+=7;
+    var part=med.slice(tp*RPP,tp*RPP+RPP),last=tp===tabPgs-1;
+    part.forEach(function(r,k){x=10;s+='<rect x="10" y="'+y+'" width="277" height="7.4" fill="'+(k%2?"#F6F7FA":"#fff")+'"/>';var row=[String(r.n),r.carac,r.nominal,r.tol,r.min,r.max,r.instr];for(var j=0;j<n;j++)row.push((r.vals||[])[j]||"");row.push(r.res==="NC"?"NC":r.res==="C"?"C":"");
+      cols.forEach(function(c,ci){var v=row[ci]||"",bad=ci>=7&&ci<7+n&&ifAvalia(r,v)==="NC"||ci===cols.length-1&&v==="NC";s+='<rect x="'+x.toFixed(2)+'" y="'+y+'" width="'+c[1].toFixed(2)+'" height="7.4" fill="'+(bad?"#FBEBEB":"none")+'" stroke="#C9CDDA" stroke-width="0.15"/>';
+        if(v)s+=ci===0?'<circle cx="'+(x+c[1]/2).toFixed(2)+'" cy="'+(y+3.7)+'" r="2.6" fill="#fff" stroke="'+cor.p+'" stroke-width="0.35"/>'+qiT(x+c[1]/2,y+4.9,v,7,{bold:true,c:cor.p,a:"middle"}):qiT(ci===1||ci===6?x+1.2:x+c[1]/2,y+4.9,qiCut(v,c[1]-2,7.5),7.5,{a:ci===1||ci===6?null:"middle",bold:ci===2||ci===cols.length-1,c:bad?"#C0262D":ci===cols.length-1?"#1E7A4A":"#111"});x+=c[1]});y+=7.4});
+    if(!med.length){s+=qiT(148.5,y+8,"Sem plano de inspeção: verificações gerais abaixo.",8,{c:"#555A70",a:"middle"});y+=12}
+    if(last){y+=3;var ck=i.checklist||{};s+=qiT(10,y+3,"Verificações:",7.5,{bold:true});var xx=32;IF_CHK.forEach(function(c){var v=ck[c[0]]||"–",t=c[1]+": "+(v==="NA"?"N/A":v);s+=qiT(xx,y+3,t,7,{c:v==="NC"?"#C0262D":"#111"});xx+=t.length*1.45+4});y+=7;
+      s+=qiT(10,y+3,"Observações:",7.5,{bold:true})+qiT(32,y+3,qiCut(i.obs||"–",250,7.5),7.5);y+=7;
+      var cl=lotes.map(function(l){return"Material "+(l.material||"")+" · lote "+l.lote+(l.corrida?" · corrida "+l.corrida:"")+(l.cert?"":" (sem certificado)")}).concat((i.certs||[]).map(function(c){return c.tipo+": "+c.nome}));
+      s+=qiT(10,y+3,"Certificados:",7.5,{bold:true})+qiT(32,y+3,qiCut(cl.length?cl.join("  ·  "):"–",250,7),7);y+=7;
+      s+=qiT(10,y+3,"Resultado:",7.5,{bold:true})+["APROVADO","APROVADO COM CONCESSÃO","REPROVADO"].map(function(t,k){var x2=32+k*50,on=t===resTxt;return'<rect x="'+x2+'" y="'+(y+0.5)+'" width="3.2" height="3.2" fill="'+(on?resCor:"none")+'" stroke="#333" stroke-width="0.25"/>'+qiT(x2+5,y+3.2,t,7.5,{bold:on})}).join("");y+=9;
+      s+='<line x1="10" y1="'+(y+6)+'" x2="130" y2="'+(y+6)+'" stroke="#333" stroke-width="0.25"/>'+qiT(10,y+4.6,(i.nome||"")+"   "+(i.em?nowStr(i.em):""),8,{bold:true})+qiT(10,y+9.5,"Inspetor da Qualidade",7,{c:"#555A70"})+
+        '<line x1="150" y1="'+(y+6)+'" x2="287" y2="'+(y+6)+'" stroke="#333" stroke-width="0.25"/>'+qiT(150,y+9.5,"Aprovação da Qualidade   Data: ____/____/______",7,{c:"#555A70"})}
+    s+=qiT(10,207,E.razao+" · "+E.end+" · "+E.tel,6.5,{c:"#555A70"});out.push(s)}
+  return out}
+/* PDF com páginas A4 de orientação livre; cada página = uma imagem JPEG ajustada à folha */
+function ifPdfMix(pgs,title){var objs=[],raw={},kids=[],first=4;pgs.forEach(function(g,k){kids.push((first+k*3)+" 0 R")});
+  objs[1]="<< /Type /Catalog /Pages 2 0 R >>";objs[2]="<< /Type /Pages /Kids ["+kids.join(" ")+"] /Count "+pgs.length+" >>";objs[3]="<< /Producer (MISTA) /Title ("+String(title||"").replace(/[()\\]/g,"").replace(/[^\x20-\x7e]/g,"")+") >>";
+  pgs.forEach(function(g,k){var land=g.w>g.h,W=land?841.89:595.28,H=land?595.28:841.89,full=!!g.full,mg=full?0:18,sc=Math.min((W-2*mg)/g.w,(H-2*mg)/g.h),dw=full?W:g.w*sc,dh=full?H:g.h*sc,x=(W-dw)/2,y=(H-dh)/2;
+    var pid=first+k*3,iid=pid+1,cid=pid+2,st="q "+dw.toFixed(2)+" 0 0 "+dh.toFixed(2)+" "+x.toFixed(2)+" "+y.toFixed(2)+" cm /Im0 Do Q";
+    objs[pid]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+W+" "+H+"] /Resources << /XObject << /Im0 "+iid+" 0 R >> >> /Contents "+cid+" 0 R >>";
+    raw[iid]=g.b;objs[iid]="<< /Type /XObject /Subtype /Image /Width "+g.w+" /Height "+g.h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+g.b.length+" >>";
+    objs[cid]="<< /Length "+st.length+" >>\nstream\n"+st+"\nendstream"});
+  var out="%PDF-1.4\n%\xE2\xE3\xCF\xD3\n",offs=[];for(var n=1;n<objs.length;n++){offs[n]=out.length;out+=raw[n]!=null?n+" 0 obj\n"+objs[n]+"\nstream\n"+raw[n]+"\nendstream\nendobj\n":n+" 0 obj\n"+objs[n]+"\nendobj\n"}
+  var xr=out.length;out+="xref\n0 "+objs.length+"\n0000000000 65535 f \n";for(var m=1;m<objs.length;m++)out+=("0000000000"+offs[m]).slice(-10)+" 00000 n \n";
+  out+="trailer\n<< /Size "+objs.length+" /Root 1 0 R /Info 3 0 R >>\nstartxref\n"+xr+"\n%%EOF";var u=new Uint8Array(out.length);for(var i=0;i<out.length;i++)u[i]=out.charCodeAt(i)&255;return new Blob([u],{type:"application/pdf"})}
+/* imagem (data URL) → JPEG binário para o PDF */
+function ifImgJpeg(url){return new Promise(function(ok,no){var im=new Image();im.onload=function(){var w=im.naturalWidth,h=im.naturalHeight,f=Math.min(1,2200/Math.max(w,h)),cv=document.createElement("canvas");cv.width=Math.round(w*f);cv.height=Math.round(h*f);var cx=cv.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(im,0,0,cv.width,cv.height);try{ok({b:atob(cv.toDataURL("image/jpeg",0.88).split(",")[1]),w:cv.width,h:cv.height})}catch(e){no(e)}};im.onerror=function(){no(new Error("img"))};im.src=url})}
+function ifPdf(o,pac){var i=o.inspFinal||{},pgs=[],falhou=[],pr=Promise.resolve();
+  ifRdfSvgs(o).forEach(function(s){pr=pr.then(function(){return qiSvgJpeg(s,2480)}).then(function(j){j.full=true;pgs.push(j)})});
+  if(pac){var C=(i.lotes||ifMatLotes(o)).filter(function(l){return l.cert}).map(function(l){return{nome:l.cert.nome||("certificado lote "+l.lote),c:l.cert}}).concat((i.certs||[]).map(function(c){return{nome:c.nome,c:c}}));
+    C.forEach(function(x){pr=pr.then(function(){return ifCertBlob(x.c).then(function(bl){var f=new File([bl],x.nome||"certificado",{type:bl.type||(/\.pdf$/i.test(x.nome||"")?"application/pdf":"image/jpeg")});return cnPreview(f,30,1700)})
+      .then(function(us){var q=Promise.resolve();us.forEach(function(u){q=q.then(function(){return ifImgJpeg(u)}).then(function(j){pgs.push(j)})});return q}).catch(function(){falhou.push(x.nome)})})})}
+  return pr.then(function(){return{blob:ifPdfMix(pgs,o.num+" - Relatorio dimensional final"),falhou:falhou}})}
+function ifPdfDl(o,pac){if(!o.inspFinal||ifSt(o)==="pendente"){toast("A inspeção final ainda não foi gravada.");return}toast(pac?"Montando o pacote de qualidade…":"Montando o relatório dimensional…");
+  ifPdf(o,pac).then(function(r){var nm=((pac?"PACOTE-QUALIDADE_":"RELATORIO-DIMENSIONAL_")+o.num+"_"+(o.codigo||"")).toUpperCase().replace(/[^A-Z0-9.\-_]+/g,"-")+".pdf";cnSave(nm,r.blob);
+    if(r.falhou.length)toast("Não consegui juntar: "+r.falhou.join(", ")+". Baixe e anexe à parte.")}).catch(function(){toast("Não consegui montar o PDF.")})}
 
 /* ---------- menu ---------- */
 MODS.inspfin={n:"Inspeção final",fase:"",et:[],txt:"",plan:[]};MX_TABS.push("m-inspfin");

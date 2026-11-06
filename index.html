@@ -3318,10 +3318,15 @@ $("inbox").addEventListener("click",function(e){
   var p=ibPedido(d);if(!p.items.length){toast("Este pedido não tem itens.");return}
   S.tab="itens";applyPedido(p,"replace");S.inboxId=id;S.origem="E-mail";S.sol=ibSol(d);if(d.proposta&&!S.prop){S.prop=d.proposta}fullRender();ibMark(id,"aberto");toast("Nova proposta aberta com "+p.items.length+(p.items.length===1?" item.":" itens."))
 });
+/* v131: o banco entrega documentos congelados (somente leitura); get() passa a devolver cópias editáveis, como nos testes */
+function dbCl(v){return v===undefined?undefined:JSON.parse(JSON.stringify(v))}
+function dbSnap(s){if(!s||typeof s!=="object")return s;if(Array.isArray(s.docs)){var ds=s.docs.map(dbSnap);return{docs:ds,size:ds.length,empty:!ds.length,metadata:s.metadata,version:s.version,forEach:function(f){ds.forEach(f)}}}
+  if(typeof s.data!=="function")return s;return{id:s.id,exists:s.exists,metadata:s.metadata,version:s.version,ref:s.ref,data:function(){return dbCl(s.data())}}}
+function dbCopia(t){if(!t||typeof t!=="object"&&typeof t!=="function")return t;return new Proxy({},{get:function(_,k){var v=t[k];if(typeof v!=="function")return v;return function(){var a=[].slice.call(arguments);if(k==="onSnapshot"&&typeof a[0]==="function"){var f0=a[0];a[0]=function(sn){return f0(dbSnap(sn))}}var r=v.apply(t,a);if(k==="get"&&r&&typeof r.then==="function")return r.then(dbSnap);if(r&&typeof r==="object"&&typeof r.then!=="function"&&/^(doc|collection|where|orderBy|limit|startAfter)$/.test(k))return dbCopia(r);return r}},has:function(_,k){return k in t}})}
 if(window.claude&&claude.use){
   claude.use("db").then(function(db){
     if(!db)return;
-    PR.db=db;pSub();
+    PR.db=dbCopia(db);pSub();
     var hAt=0;
     db.collection("historico").onSnapshot(function(snap){
       var m=null,parts={};
@@ -7626,11 +7631,11 @@ function cmAutoEmp(opIds,quieto){
     return ch.then(function(){if(msgs.length&&!quieto)toast(msgs.slice(0,3).join(" "))})};
   CM_AUTO=CM_AUTO.then(run,run);return CM_AUTO}
 function opAutoEmp1(id){
-  return PR.db.doc("ordens/"+id).get().then(function(sn){if(!sn||!sn.exists)return"";var o=sn.data()||{};o.id=id;if(o.status==="cancelada"||o.status==="concluida")return"";
+  return PR.db.doc("ordens/"+id).get().then(function(sn){if(!sn||!sn.exists)return"";var o=dbCl(sn.data())||{};o.id=id;if(o.status==="cancelada"||o.status==="concluida")return"";
     var mats=JSON.parse(JSON.stringify(o.materiais||[]));var cand={};
     mats.forEach(function(m){if(m.tipo!=="mp"||m.cliente||mFalta(m)<=0)return;CM.lotes.forEach(function(l){if(ltServe(l,m))cand[l.id]=1})});
     var ids=Object.keys(cand);
-    return Promise.all(ids.map(function(lid){return PR.db.doc("lotes/"+lid).get().then(function(x){if(!x||!x.exists)return null;var l=x.data()||{};l.id=lid;return l}).catch(function(){return null})})).then(function(fr){
+    return Promise.all(ids.map(function(lid){return PR.db.doc("lotes/"+lid).get().then(function(x){if(!x||!x.exists)return null;var l=dbCl(x.data())||{};l.id=lid;return l})})).then(function(fr){
       var lts=fr.filter(Boolean),delta={},txt=[],novas=[],t=Date.now();
       mats.forEach(function(m,i){if(m.tipo!=="mp"||m.cliente)return;var f=mFalta(m);if(f<=0){if(m.req&&(m.req.status==="aberta"||m.req.status==="em compra")){m.req.status="atendida";m.req.atendidaEm=t}return}
         lts.filter(function(l){return ltServe(l,m)}).sort(function(a,b){return(a.pcId&&a.pcId===m.pcId?0:1)-(b.pcId&&b.pcId===m.pcId?0:1)||(a.recebidoEm||0)-(b.recebidoEm||0)}).forEach(function(l){
@@ -7642,7 +7647,7 @@ function opAutoEmp1(id){
       var pReq=novas.length?cnNextIdN("requisicoes",novas.length).then(function(n0){var yy=pad(new Date().getFullYear()%100,2);novas.forEach(function(r,k){var m=mats[r.i];m.req={num:"RC-"+pad(n0+k,4)+"/"+yy,idSeq:n0+k,qtd:r.qtd,un:m.un,status:"aberta",at:t,uid:AG.uid||"",opId:id,opNum:o.num};txt.push("falta matéria-prima: requisição "+m.req.num+" enviada a Compras")})}):Promise.resolve();
       return pReq.then(function(){return Promise.all(Object.keys(delta).map(function(lid){var l=lts.filter(function(x){return x.id===lid})[0];return PR.db.doc("lotes/"+lid).update({empenhado:Math.round((ltEmp(l)+delta[lid])*1000)/1000})}))})
        .then(function(){var h=(o.hist||[]).slice(-199);if(txt.length)h.push({at:t,uid:AG.uid||"",txt:"Material: "+txt.join("; ")+"."});return PR.db.doc("ordens/"+id).update({materiais:mats,atualizado:t,hist:h})})
-       .then(function(){return txt.length?o.num+": "+txt.join("; ")+".":""})})}).catch(function(){return""});
+       .then(function(){return txt.length?o.num+": "+txt.join("; ")+".":""})})}).catch(function(e){console.error("empenho",id,e);EMP_AUTO.err=(e&&(e.code||e.message))||String(e);return""});
 }
 
 /* ---------- pedido de compra (v109: qualquer item — matéria-prima, ferramenta, consumível, serviço, ativo… — com dados fiscais) ---------- */
@@ -7963,8 +7968,8 @@ $("mx-modal").addEventListener("click",function(e){if(!PP.open)return;var b=e.ta
   if(a==="nfcli"){var v=String((document.querySelector('[data-opnf="'+i+'"]')||{}).value||"").trim();if(!v){toast("Informe a NF de remessa.");return}var mats=JSON.parse(JSON.stringify(o.materiais));mats[i].nfCliente=v;CM.focoOp=0;opSet(o,{materiais:mats},"Material do cliente: NF de remessa "+v+".");return}
   if(a==="empenhar"){var sel=document.querySelector('[data-oplt="'+i+'"]'),qi=document.querySelector('[data-opq="'+i+'"]');var l0=CM.lotes.filter(function(x){return x.id===(sel&&sel.value)})[0],q=Math.round((+parse(qi&&qi.value)||0)*1000)/1000;
     if(!l0){toast("Escolha o lote.");return}if(!(q>0)){toast("Informe a quantidade.");return}b.disabled=true;
-    PR.db.doc("lotes/"+l0.id).get().then(function(x){var l=x.data()||{};l.id=l0.id;if(q>ltDisp(l)+0.0005){toast("O lote "+l.lote+" só tem "+cmUn(ltDisp(l),l.un)+" livre.");b.disabled=false;return}
-      return PR.db.doc("lotes/"+l.id).update({empenhado:Math.round((ltEmp(l)+q)*1000)/1000}).then(function(){CM.focoOp=0;return opMatUpd(o.id,function(ms){var mm=ms[i];(mm.empenhos=mm.empenhos||[]).push({loteId:l.id,lote:l.lote,corrida:l.corrida||"",nf:l.nf||"",cert:!!l.cert,qtd:q,at:Date.now(),uid:AG.uid||"",baixado:false});if(mFalta(mm)<=0.0005&&mm.req&&mm.req.status==="aberta")mm.req.status="atendida"},"Empenhado "+cmUn(q,l.un)+" do lote "+l.lote+(l.corrida?" (corrida "+l.corrida+")":"")+".")}).then(function(){toast("Lote "+l.lote+" empenhado.")})}).catch(function(){b.disabled=false;toast("Não consegui empenhar.")});return}
+    PR.db.doc("lotes/"+l0.id).get().then(function(x){var l=dbCl(x.data())||{};l.id=l0.id;if(q>ltDisp(l)+0.0005){toast("O lote "+l.lote+" só tem "+cmUn(ltDisp(l),l.un)+" livre.");b.disabled=false;return}
+      return PR.db.doc("lotes/"+l.id).update({empenhado:Math.round((ltEmp(l)+q)*1000)/1000}).then(function(){CM.focoOp=0;return opMatUpd(o.id,function(ms){var mm=ms[i];(mm.empenhos=mm.empenhos||[]).push({loteId:l.id,lote:l.lote,corrida:l.corrida||"",nf:l.nf||"",cert:!!l.cert,qtd:q,at:Date.now(),uid:AG.uid||"",baixado:false});if(mFalta(mm)<=0.0005&&mm.req&&mm.req.status==="aberta")mm.req.status="atendida"},"Empenhado "+cmUn(q,l.un)+" do lote "+l.lote+(l.corrida?" (corrida "+l.corrida+")":"")+".")}).then(function(){toast("Lote "+l.lote+" empenhado.")})}).catch(function(e){console.error("empenhar",e);b.disabled=false;toast("Não consegui empenhar: "+((e&&(e.code||e.message))||e)+".")});return}
   if(a==="estorno"){var es=mEmps(m),em=es[+b.dataset.k];if(!em||em.baixado)return;askDel("Estornar o empenho do lote "+em.lote+"?",cmUn(em.qtd,m.un)+" voltam a ficar livres no lote.",function(){
     ltAdd(em.loteId,{empenhado:-em.qtd}).then(function(){return opMatUpd(o.id,function(ms){var arr=ms[i].empenhos||[];for(var k=0;k<arr.length;k++){if(arr[k].loteId===em.loteId&&!arr[k].baixado&&arr[k].at===em.at){arr.splice(k,1);return}}return false},"Empenho do lote "+em.lote+" estornado ("+cmUn(em.qtd,m.un)+").")}).then(function(){toast("Empenho estornado.")})});return}
   if(a==="baixar"){var pend=(m.empenhos||[]).filter(function(x){return!x.baixado});if(!pend.length)return;b.disabled=true;var t=Date.now();

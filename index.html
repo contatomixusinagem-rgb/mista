@@ -7258,7 +7258,7 @@ function ppSub(){
     PR.db.doc("config/pcp-seq").get().then(function(s){PP.seq=s&&s.exists?(s.data().ordem||[]):[];ppRefresh()}).catch(function(){});
 }
 (function wpp(){if(typeof PR!=="undefined"&&PR&&PR.db){ppSub();return}setTimeout(wpp,700)})();
-function ppRefresh(){if(S.tab==="m-prod"||S.tab==="m-eng")mxRender()}
+function ppRefresh(){if(S.tab==="m-prod"||S.tab==="m-eng"||S.tab==="m-prog"||S.tab==="m-mon"||(S.tab==="m-apt"&&$("mx-modal").hidden))mxRender()}
 function ppDemanda(){
   var rows=[];
   (PD.list||[]).forEach(function(p){if(p.cancelado||p.etapa==="concluido")return;
@@ -7487,13 +7487,13 @@ function renderProg(box){
 }
 function pgTarefa(k){return mqTarefas().filter(function(t){return t.k===k})[0]}
 function pgPoe(t,maqId){var f=mqFila(maqId),max=0;f.forEach(function(x){if((x.fila||0)>max)max=x.fila});var m=mqById(maqId);return opPatchRot(t.op,t.j,{maq:maqId,fila:max+10},"Operação "+t.r.seq+" "+t.r.op+" programada no posto "+(m?m.nome:maqId)+".")}
-$("v-mx").addEventListener("change",function(ev){if(S.tab!=="m-prog")return;var k=ev.target.dataset.pgsel;if(!k||!ev.target.value)return;ev.stopPropagation();var t=pgTarefa(k);if(t)pgPoe(t,ev.target.value).then(function(){toast("Programado.")})},true);
+$("v-mx").addEventListener("change",function(ev){if(S.tab!=="m-prog")return;var k=ev.target.dataset.pgsel;if(!k||!ev.target.value)return;ev.stopPropagation();var t=pgTarefa(k);if(t)pgPoe(t,ev.target.value).then(function(){toast("Programado.");mxRender()}).catch(function(er){toast("Não consegui programar: "+((er&&(er.code||er.message))||er))})},true);
 $("v-mx").addEventListener("click",function(ev){
   if(S.tab!=="m-prog")return;var b=ev.target.closest("[data-pg]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.pg;
   if(a==="auto"){var ts=mqTarefas().filter(function(t){return!t.maq&&t.st!=="concluida"&&mqTipoDe(t.r.rec)!=="Terceiro"}),carga={},n=0,pr=Promise.resolve();MQ.list.forEach(function(m){carga[m.id]=mqCarga(m.id)});
     ts.sort(function(x,y){return(x.op.prio||0)-(y.op.prio||0)||x.j-y.j}).forEach(function(t){var tipo=mqTipoDe(t.r.rec),c=MQ.list.filter(function(m){return m.tipo===tipo&&m.status==="ativa"}).sort(function(x,y){return(x.emp===t.op.emp?0:1)-(y.emp===t.op.emp?0:1)||carga[x.id]-carga[y.id]})[0];if(!c)return;carga[c.id]+=(+t.r.min||0)/60;n++;
       pr=pr.then(function(){var tt=pgTarefa(t.k);return tt?pgPoe(tt,c.id):null})});
-    pr.then(function(){toast(n?n+" operações distribuídas.":"Nenhum posto ativo do tipo das operações.")});return}
+    pr.then(function(){toast(n?n+" operações distribuídas.":"Nenhum posto ativo do tipo das operações.");mxRender()});return}
   var t=pgTarefa(b.dataset.k);if(!t)return;
   if(a==="tirar"){opPatchRot(t.op,t.j,{maq:undefined,fila:undefined},"Operação "+t.r.seq+" voltou para programar.");return}
   if(a==="up"||a==="down"){var f=mqFila(b.dataset.m),i=f.map(function(x){return x.k}).indexOf(t.k),j=a==="up"?i-1:i+1,o=f[j];if(!o)return;

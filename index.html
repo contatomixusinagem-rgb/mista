@@ -1298,6 +1298,7 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .gen-mod .rt-tab input:not(.r){width:100%;min-width:110px}.gen-mod .rt-tab select{min-width:150px}
 .ap-esc{margin-left:auto}.op-falta{color:var(--bad,#b42318)!important;font-weight:600}.ap-msg.ap-mat{background:#fdecea;color:#8a1c12;border-color:#f3b4ab}.ap-ent{margin:0 0 10px;font-size:15px}
 .ls-qv{display:grid;grid-template-columns:minmax(200px,1.5fr) minmax(150px,1fr) minmax(130px,1fr) minmax(150px,1fr) 84px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;min-width:820px}.ls-qv.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;cursor:default}.ls-qv small{display:block;color:var(--muted);font-size:11.5px}
+.qi-dem{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;padding:8px 10px;margin-bottom:8px;border-radius:8px;background:var(--surface2)}.qi-dem span{font-size:12px;color:var(--muted);width:100%}.qi-dem b{flex:1}
 .qi-vinc{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:10px}.qi-vinc .lb{display:inline!important;margin:0!important}.qi-vinc select{width:auto!important;flex:0 1 520px;min-width:260px;max-width:100%;min-height:34px}
 .ls-tc{display:grid;grid-template-columns:110px minmax(160px,1.3fr) minmax(120px,1fr) minmax(140px,1fr) 60px 170px 84px;gap:10px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);font-size:13px;min-width:900px}.ls-tc.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}.ls-tc small{display:block;color:var(--muted);font-size:11.5px}
 #mx-modal .card.cm-mod.apo-mod{max-width:min(760px,96vw)!important;width:min(760px,96vw)!important}#mx-modal .apo-mod>*{flex-shrink:0}
@@ -9867,13 +9868,20 @@ function qiVincula(p,itemId){var it=itById(itemId),h=(p.hist||[]).slice(-199);h.
   return PR.db.doc("planos_inspecao/"+p.id).update({itemId:it?it.id:"",itemCod:it?it.codigo:"",hist:h,atualizado:Date.now()}).then(function(){toast(it?"Plano vinculado ao item "+it.codigo+".":"Vínculo retirado.")}).catch(function(){toast("Não consegui gravar o vínculo.")})}
 /* campo no envio ao agente */
 var _qiSide=qiSideHtml;qiSideHtml=function(){itSub();var h=_qiSide.apply(this,arguments),it=itById(QI.draft.itemId);
-  return h.replace('<label class="f cn-fld" data-req="emp"','<label class="f cn-fld"><span class="lb">Item do cadastro <small>(vincula o plano à peça)</small></span><select id="qi-item">'+qiItemOpts(QI.draft.itemId)+'</select></label><label class="f cn-fld" data-req="emp"')};
+  return it?h.replace('<label class="f cn-fld" data-req="emp"','<div class="qi-dem"><span>Plano para o item</span><b>'+esc(qiItemTxt(it))+'</b>'+ibtn("trash","Não vincular a este item",'data-qv="semitem"',"danger")+'</div><label class="f cn-fld" data-req="emp"'):h};
 var _qiGer=qiGerar;qiGerar=function(f){var r=_qiGer.apply(this,arguments);QI.draft.itemId="";return r};
 var _qiDet=qiDetail;qiDetail=function(box,p){_qiDet.apply(this,arguments);var dh=box.querySelector(".dh2");if(!dh)return;var it=itById(p.itemId),sug=it?[]:qiItemSug(p);
-  dh.parentNode.insertBefore(document.createRange().createContextualFragment('<div class="qi-vinc"><span class="lb">Item do cadastro</span><select id="qi-vinc">'+qiItemOpts(p.itemId||"")+'</select>'+(it?'<span class="stp g">vinculado</span>':sug.length?'<button class="btn sm pri" type="button" data-qv="sug" data-it="'+esc(sug[0].id)+'">Vincular a '+esc(sug[0].codigo)+' (sugerido)</button>':'<span class="stp w">sem vínculo</span>')+'</div>'),dh.nextSibling)};
+  if(p.status==="gerando")return;
+  dh.parentNode.insertBefore(document.createRange().createContextualFragment(it?'<div class="qi-vinc"><span class="lb">Item</span><b>'+esc(qiItemTxt(it))+'</b>'+(QI.troca===p.id?'<select id="qi-vinc">'+qiItemOpts(p.itemId)+'</select>':ibtn("edit","Trocar o item",'data-qv="troca"'))+'</div>':
+    '<div class="qi-vinc"><span class="lb">Item</span><span class="stp w">sem vínculo</span><select id="qi-vinc">'+qiItemOpts("")+'</select>'+(sug.length?'<button class="btn sm pri" type="button" data-qv="sug" data-it="'+esc(sug[0].id)+'">'+esc(sug[0].codigo)+'</button>':'')+'</div>'),dh.nextSibling)};
 $("v-mx").addEventListener("change",function(e){if(S.tab!=="m-qpi")return;var t=e.target;
   if(t.id==="qi-item"){e.stopPropagation();QI.draft.itemId=t.value;var it=itById(t.value);if(it){if(!QI.draft.cli)QI.draft.cli=it.cliente||"";if(!QI.draft.mat)QI.draft.mat=it.material||"";if(it.emp)QI.draft.emp=it.emp}setTimeout(mxRender,0);return}
-  if(t.id==="qi-vinc"){e.stopPropagation();var p=qiP(QI.open);if(!p)return;if(!pode("qual.inspecao")&&!usrLivre()){usrNega("qual.inspecao");t.value=p.itemId||"";return}qiVincula(p,t.value)}},true);
+  if(t.id==="qi-vinc"){e.stopPropagation();var p=qiP(QI.open);if(!p)return;if(!pode("qual.inspecao")&&!usrLivre()){usrNega("qual.inspecao");t.value=p.itemId||"";return}QI.troca="";qiVincula(p,t.value)}},true);
+/* "+ Novo" sem demanda: quando o plano fica pronto, o MISTA vincula sozinho se o código do desenho apontar para um único item (retirar o vínculo à mão não volta) */
+var QIA={feito:{}};
+function qiAutoVinc(){if(!PR.db||!(QI.list||[]).length||!(IT.list||[]).length)return;(QI.list||[]).forEach(function(p){if(p.itemId!==undefined||p.status==="gerando"||p.status==="erro"||QIA.feito[p.id])return;var sg=qiItemSug(p);QIA.feito[p.id]=1;if(sg.length!==1)return;
+  var h=(p.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"Vinculado automaticamente ao item "+sg[0].codigo+" pelo código do desenho."});PR.db.doc("planos_inspecao/"+p.id).update({itemId:sg[0].id,itemCod:sg[0].codigo,hist:h,atualizado:Date.now()}).catch(function(){QIA.feito[p.id]=0})})}
+setInterval(qiAutoVinc,5000);
 /* aba A fazer */
 function qiFazer(){itSub();ppSub();var M={};function add(it,txt){if(!it)return;var o=M[it.id]||(M[it.id]={it:it,org:[]});if(o.org.indexOf(txt)<0)o.org.push(txt)}
   (PP.ops||[]).forEach(function(o){if(o.status==="cancelada"||(o.status==="concluida"&&o.inspFinal))return;add(itById(o.itemId),o.num)});
@@ -9888,13 +9896,15 @@ var _rQiV=renderQpi;renderQpi=function(box){_rQiV.apply(this,arguments);if(QI.op
 $("v-mx").addEventListener("click",function(e){if(S.tab!=="m-qpi")return;var b=e.target.closest("[data-qv]");if(!b)return;e.stopPropagation();e.preventDefault();var a=b.dataset.qv;
   if(a==="aba"){QI.aba=b.dataset.a;mxRender();return}
   if(a==="sug"){var p=qiP(QI.open);if(p)qiVincula(p,b.dataset.it);return}
+  if(a==="troca"){QI.troca=QI.open;mxRender();return}
+  if(a==="semitem"){QI.draft.itemId="";mxRender();return}
   var it=itById(b.dataset.it);if(!it)return;
   if(a==="gerar"){QI.draft.itemId=it.id;QI.draft.cli=it.cliente||QI.draft.cli||"";QI.draft.mat=it.material||"";if(it.emp)QI.draft.emp=it.emp;QI.aba="planos";PAD.novo.qpi=true;mxRender();toast("Arraste o desenho do "+it.codigo+": o plano já sai vinculado ao item.");return}
   if(a==="vinc"){var L=(QI.list||[]).filter(function(p){return p.status!=="erro"}).sort(function(x,y){var sx=qiItemSug(x).some(function(i){return i.id===it.id})?0:1,sy=qiItemSug(y).some(function(i){return i.id===it.id})?0:1;return sx-sy||(x.itemId?1:0)-(y.itemId?1:0)});if(!L.length){toast("Nenhum plano cadastrado.");return}
     var m=$("mx-modal");m.innerHTML='<div class="card cm-mod qv-mod" role="dialog" aria-modal="true" aria-label="Vincular plano"><h3>Vincular plano ao item '+esc(it.codigo)+'</h3><label class="f"><span class="lb">Plano de inspeção</span><select id="qv-pl">'+L.map(function(p){var it2=itById(p.itemId);return'<option value="'+esc(p.id)+'">'+esc(cnIdTxt("planos_inspecao",p)+" · "+(p.codigo||"")+(it2?" (hoje no item "+it2.codigo+")":""))+'</option>'}).join("")+'</select></label><div class="acts2" style="justify-content:flex-end;margin-top:12px"><button class="btn" type="button" data-qvx="n">Cancelar</button><button class="btn pri" type="button" data-qvx="y" data-it="'+esc(it.id)+'">Vincular</button></div></div>';m.hidden=false}},true);
 $("mx-modal").addEventListener("click",function(e){var m=$("mx-modal");if(!m.querySelector(".qv-mod"))return;var b=e.target.closest("[data-qvx]");if(e.target===m||(b&&b.dataset.qvx==="n")){e.stopImmediatePropagation();m.hidden=true;return}if(!b)return;e.stopImmediatePropagation();
   var p=qiP($("qv-pl").value);m.hidden=true;if(p)qiVincula(p,b.dataset.it).then(function(){mxRender()})},true);
-USR_ACAO.push(["qual.inspecao",'#qi-vinc,[data-qv="sug"],[data-qv="vinc"],[data-qvx="y"]']);
+USR_ACAO.push(["qual.inspecao",'#qi-vinc,[data-qv="sug"],[data-qv="vinc"],[data-qv="troca"],[data-qvx="y"]']);
 
 /* ===== v122: PADRÃO DEFINITIVO de tela (gestor, 05/11/2026: "padronizar as páginas definitivamente").
    Fica no FIM do arquivo e vale para toda tela: título + [Filtrar] [+ Novo] · linha única · ícones · popup · paginação · sem texto.

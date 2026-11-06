@@ -1296,7 +1296,13 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .gen-mod .rt-tab input,.gen-mod .rt-tab select{min-height:32px;padding:4px 6px;font-size:13px}
 #mx-modal .card.cm-mod{width:min(1000px,96vw)!important;max-width:min(1000px,96vw)!important;max-height:92vh;overflow:auto}
 .gen-mod .rt-tab input:not(.r){width:100%;min-width:110px}.gen-mod .rt-tab select{min-width:150px}
-.ap-scan{display:flex;flex-direction:column;gap:2px;margin-left:auto;font-size:11px;color:var(--muted)}.ap-scan input{width:190px;min-height:34px;padding:4px 8px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.ap-esc{margin-left:auto}.ap-ent{margin:0 0 10px;font-size:15px}
+.ls-tc{display:grid;grid-template-columns:110px minmax(160px,1.3fr) minmax(120px,1fr) minmax(140px,1fr) 60px 170px 84px;gap:10px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);font-size:13px;min-width:900px}.ls-tc.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}.ls-tc small{display:block;color:var(--muted);font-size:11.5px}
+#mx-modal .card.cm-mod.apo-mod{max-width:min(760px,96vw)!important;width:min(760px,96vw)!important}#mx-modal .apo-mod>*{flex-shrink:0}
+.apo-q{width:100%;min-height:52px;font-size:18px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin:6px 0 10px}
+.apo-l{display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow:auto}.apo-r{display:grid;grid-template-columns:120px 120px 1fr auto;gap:12px;align-items:center;text-align:left;min-height:56px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
+.apo-r.aqui{border-color:var(--acc,#1e3a8a);background:var(--surface2)}.apo-r small{color:var(--muted)}
+.ap-scan{margin-left:12px!important;display:flex;flex-direction:column;gap:2px;margin-left:auto;font-size:11px;color:var(--muted)}.ap-scan input{width:190px;min-height:34px;padding:4px 8px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 
 /* v108 usuários */
 .us-r{display:grid;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:13px;grid-template-columns:minmax(170px,1.2fr) minmax(200px,1.5fr) minmax(160px,1fr) 150px 190px;min-width:900px}
@@ -7469,7 +7475,7 @@ function mqTarefas(){
   var out=[],now=Date.now();
   (PP.ops||[]).forEach(function(op){if(op.status==="cancelada"||op.status==="concluida")return;
     (op.roteiro||[]).forEach(function(r,j){var ant=j?op.roteiro[j-1]:null;
-      out.push({op:op,j:j,r:r,k:op.id+":"+j,maq:r.maq||"",fila:r.fila||0,st:r.status||"aguardando",liberada:!ant||ant.status==="concluida"||mqTipoDe(ant.rec)==="Terceiro"&&ant.status!=="aguardando",real:apMinReal(r,now)})})});
+      out.push({op:op,j:j,r:r,k:op.id+":"+j,maq:r.maq||"",fila:r.fila||0,st:r.status||"aguardando",liberada:!ant||ant.status==="concluida",real:apMinReal(r,now)})})});
   return out;
 }
 function mqFila(id){return mqTarefas().filter(function(t){return t.maq===id&&t.st!=="concluida"}).sort(function(a,b){var ea=a.st==="execucao"||a.st==="pausa"?0:1,eb=b.st==="execucao"||b.st==="pausa"?0:1;if(ea!==eb)return ea-eb;return(a.fila||1e9)-(b.fila||1e9)||(a.op.prio||0)-(b.op.prio||0)})}
@@ -7587,7 +7593,7 @@ function renderApt(box){
   if(!at){box.innerHTML=h+'<div class="ap-vazio">Sem operações na fila desta máquina.<br><small>O PCP programa em Programação de máquinas.</small></div>';return}
   var r=at.r,real=at.real,prev=+r.min||0,pct=prev?Math.min(100,Math.round(real/prev*100)):0;
   h+='<div class="ap-card '+at.st+'"><div class="ap-op"><span class="idtag big">'+esc(at.op.num)+'</span><b>'+esc(at.op.codigo)+'</b><span>'+esc(at.op.descricao||"")+'</span></div>'+
-    '<div class="ap-grid"><div><small>Operação</small><b>'+esc(r.seq+" · "+r.op)+'</b></div><div><small>Quantidade</small><b>'+esc(at.op.qtd)+' pç</b></div><div><small>Previsto</small><b>'+fmtH(prev/60)+'</b></div><div><small>Realizado</small><b id="ap-real">'+fmtH(real/60)+'</b></div></div>'+
+    '<div class="ap-grid"><div><small>Operação</small><b>'+esc(r.seq+" · "+r.op)+'</b></div><div><small>Quantidade</small><b>'+apEntrada(at)+' pç</b>'+(apEntrada(at)!==+at.op.qtd?'<small>OP '+esc(at.op.qtd)+' pç</small>':'')+'</div><div><small>Previsto</small><b>'+fmtH(prev/60)+'</b></div><div><small>Realizado</small><b id="ap-real">'+fmtH(real/60)+'</b></div></div>'+
     (r.obs?'<div class="ap-obs">'+esc(r.obs)+'</div>':'')+'<div class="ap-bar"><i style="width:'+pct+'%"></i></div>'+
     (r.status==="pausa"?'<div class="ap-msg">Pausada: '+esc(r.motivo||"")+'</div>':'')+(!at.liberada&&r.status==="aguardando"?'<div class="ap-msg">Espera a operação anterior terminar.</div>':'')+
     '<div class="ap-btns">'+(r.status==="execucao"?'<button type="button" class="ap-b pausa" data-ap="pausar">Pausar</button><button type="button" class="ap-b fim" data-ap="terminar">Terminar</button>':
@@ -7596,6 +7602,8 @@ function renderApt(box){
     (prox.length?'<div class="ap-prox"><small>Próximas na fila</small>'+prox.map(function(t){return'<div><span class="idtag">'+esc(t.op.num)+'</span> '+esc(t.op.codigo+" · "+t.r.seq+" "+t.r.op+" · "+t.op.qtd+" pç")+'</div>'}).join("")+'</div>':'');
   box.innerHTML=h;
 }
+/* peças que entram na operação = boas da operação anterior apontada (ou a quantidade da OP) */
+function apEntrada(t){var rot=t.op.roteiro||[],q=+t.op.qtd||0;for(var k=0;k<t.j;k++){var x=rot[k];if(x&&x.status==="concluida"&&x.boas!=null)q=+x.boas}return q}
 function apEvento(t,tipo,extra){var d={opId:t.op.id,opNum:t.op.num,seq:t.r.seq,maq:MQ.posto,tipo:tipo,at:Date.now(),uid:AG.uid||""};for(var k in extra||{})d[k]=extra[k];return PR.db.doc("apontamentos/a-"+Date.now().toString(36)+"-"+rid().slice(0,4)).set(d).catch(function(){})}
 function apModal(html,onOk){var m=$("mx-modal");m.innerHTML='<div class="card ap-mod" id="ap-modal" role="dialog" aria-modal="true">'+html+'</div>';m.hidden=false;
   m.onclick=function(e){var b=e.target.closest("[data-apm]");if(e.target===m||(b&&b.dataset.apm==="n")){m.hidden=true;m.onclick=null;m.innerHTML="";return}if(b&&b.dataset.apm==="y"){var r=onOk(m);if(r!==false){m.hidden=true;m.onclick=null;m.innerHTML=""}}}}
@@ -7608,10 +7616,12 @@ $("v-mx").addEventListener("click",function(ev){
   if(a==="pausar"){apModal('<h3>Pausar a operação</h3><p class="hint">Motivo da parada:</p><div class="ap-mots">'+AP_MOT.map(function(x,i){return'<label class="ap-mot"><input type="radio" name="apmot" value="'+esc(x)+'"'+(i?'':' checked')+'> '+esc(x)+'</label>'}).join("")+'</div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y">Pausar</button></div>',function(m){
       var mot=(m.querySelector('input[name="apmot"]:checked')||{}).value||"Outro",acc=(+r.minReal||0)+(r.ultIni?(Date.now()-r.ultIni)/60000:0);
       opPatchRot(t.op,t.j,{status:"pausa",minReal:Math.round(acc*10)/10,ultIni:undefined,motivo:mot},"Pausa na operação "+r.seq+": "+mot+".");apEvento(t,"pausa",{motivo:mot})});return}
-  if(a==="terminar"){apModal('<h3>Terminar a operação '+esc(r.seq+" "+r.op)+'</h3><div class="fgrid"><label class="f"><span class="lb">Peças boas</span><input id="ap-boas" type="number" min="0" value="'+esc(t.op.qtd)+'" inputmode="numeric"></label><label class="f"><span class="lb">Refugo</span><input id="ap-ref" type="number" min="0" value="0" inputmode="numeric"></label></div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y">Terminar</button></div>',function(m){
-      var boas=Math.max(0,+m.querySelector("#ap-boas").value||0),ref=Math.max(0,+m.querySelector("#ap-ref").value||0),acc=(+r.minReal||0)+(r.status==="execucao"&&r.ultIni?(Date.now()-r.ultIni)/60000:0);
-      opPatchRot(t.op,t.j,{status:"concluida",minReal:Math.round(acc*10)/10,ultIni:undefined,fimEm:Date.now(),boas:boas,refugo:ref,motivo:undefined},"Operação "+r.seq+" "+r.op+" terminada: "+boas+" boas, "+ref+" refugo, "+fmtH(acc/60)+" realizadas (previsto "+fmtH((+r.min||0)/60)+").");
-      apEvento(t,"fim",{boas:boas,refugo:ref,min:Math.round(acc*10)/10});if(ref)toast("Refugo registrado: "+ref+" pç. Avise o PCP para repor a quantidade.")});return}
+  if(a==="terminar"){var ent=apEntrada(t),conf=false;apModal('<h3>Terminar a operação '+esc(r.seq+" "+r.op)+'</h3><p class="ap-ent">Entraram <b>'+ent+' pç</b> nesta operação</p><div class="fgrid"><label class="f"><span class="lb">Refugo</span><input id="ap-ref" type="number" min="0" value="0" inputmode="numeric"></label><label class="f"><span class="lb">Peças boas</span><input id="ap-boas" type="number" min="0" value="'+ent+'" inputmode="numeric"></label></div><div class="ap-msg" id="ap-aviso" hidden></div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y" id="ap-fim-y">Terminar</button></div>',function(m){
+      var boas=Math.max(0,Math.floor(+m.querySelector("#ap-boas").value||0)),ref=Math.max(0,Math.floor(+m.querySelector("#ap-ref").value||0)),acc=(+r.minReal||0)+(r.status==="execucao"&&r.ultIni?(Date.now()-r.ultIni)/60000:0);
+      if(boas+ref!==ent&&!conf){conf=true;var av=m.querySelector("#ap-aviso");av.hidden=false;av.textContent=boas+ref>ent?"Boas + refugo = "+(boas+ref)+" pç, mais que as "+ent+" que entraram. Confirma?":"Boas + refugo = "+(boas+ref)+" pç: faltam "+(ent-boas-ref)+" das "+ent+" que entraram. Confirma?";m.querySelector("#ap-fim-y").textContent="Confirmar";return false}
+      opPatchRot(t.op,t.j,{status:"concluida",minReal:Math.round(acc*10)/10,ultIni:undefined,fimEm:Date.now(),entrada:ent,boas:boas,refugo:ref,motivo:undefined},"Operação "+r.seq+" "+r.op+" terminada: entraram "+ent+", "+boas+" boas, "+ref+" refugo"+(boas+ref!==ent?" (diferença confirmada)":"")+", "+fmtH(acc/60)+" realizadas (previsto "+fmtH((+r.min||0)/60)+").");
+      apEvento(t,"fim",{boas:boas,refugo:ref,entrada:ent,min:Math.round(acc*10)/10});if(ref)toast("Refugo: "+ref+" pç. Seguem "+boas+" boas para a próxima operação.")});
+    var mm=$("mx-modal"),ir=mm.querySelector("#ap-ref"),ib=mm.querySelector("#ap-boas");if(ir&&ib){ir.addEventListener("input",function(){ib.value=Math.max(0,ent-Math.max(0,Math.floor(+ir.value||0)));conf=false;mm.querySelector("#ap-aviso").hidden=true;mm.querySelector("#ap-fim-y").textContent="Terminar"});ib.addEventListener("input",function(){conf=false;mm.querySelector("#ap-aviso").hidden=true;mm.querySelector("#ap-fim-y").textContent="Terminar"});setTimeout(function(){try{ir.focus();ir.select()}catch(e){}},30)}return}
 },true);
 
 /* ---------- PCP › Monitor de produção ---------- */
@@ -7633,7 +7643,7 @@ setInterval(function(){if(S.tab==="m-mon"||(S.tab==="m-apt"&&!$("mx-modal").inne
 
 /* ---------- OP: mostra o posto e o realizado de cada operação ---------- */
 var _opDetMq=opDetHtml;opDetHtml=function(o){var h=_opDetMq.apply(this,arguments),now=Date.now();
-  var rows=(o.roteiro||[]).map(function(r){var m=mqById(r.maq);return'<tr><td class="mono">'+r.seq+'</td><td>'+esc(r.op)+'</td><td>'+esc(m?m.nome:"a programar")+'</td><td>'+esc(({aguardando:"Aguardando",execucao:"Produzindo",pausa:"Pausada",concluida:"Concluída"})[r.status||"aguardando"])+'</td><td class="r">'+fmtH((+r.min||0)/60)+'</td><td class="r">'+fmtH(apMinReal(r,now)/60)+'</td><td class="r">'+(r.boas!=null?r.boas+(r.refugo?" (+"+r.refugo+" ref.)":""):"–")+'</td></tr>'}).join("");
+  var rows=(o.roteiro||[]).map(function(r){var m=mqById(r.maq);return'<tr><td class="mono">'+r.seq+'</td><td>'+esc(r.op)+'</td><td>'+esc(m?m.nome:"a programar")+'</td><td>'+esc(({aguardando:"Aguardando",execucao:"Produzindo",pausa:"Pausada",setup:"Em setup",terceiro:"No terceiro",concluida:"Concluída"})[r.status||"aguardando"])+'</td><td class="r">'+fmtH((+r.min||0)/60)+'</td><td class="r">'+fmtH(apMinReal(r,now)/60)+'</td><td class="r">'+(r.boas!=null?r.boas+(r.refugo?" (+"+r.refugo+" ref.)":""):"–")+'</td></tr>'}).join("");
   return h.replace('<h3>Material','<h3>Execução</h3><table class="itb"><thead><tr><th>Seq.</th><th>Operação</th><th>Posto</th><th>Situação</th><th class="r">Previsto</th><th class="r">Realizado</th><th class="r">Peças boas</th></tr></thead><tbody>'+rows+'</tbody></table><h3>Material')};
 
 /* ---------- menu ---------- */
@@ -8513,10 +8523,11 @@ function opPorCod(c){c=String(c||"").replace(/\D/g,"");if(c.length!==8)return nu
 /* ---------- apontamento: leitor de código de barras (USB/Bluetooth funciona como teclado) ---------- */
 function apFila(id){var f=mqFila(id);if(MQ.apSel){var k=-1;f.forEach(function(t,i){if(t.k===MQ.apSel)k=i});if(k>0){var t=f.splice(k,1)[0];f.unshift(t)}else if(k<0)MQ.apSel=""}return f}
 var _rApt7=renderApt;renderApt=function(box){_rApt7.apply(this,arguments);var top=box.querySelector(".ap-top");if(!top)return;
-  top.insertAdjacentHTML("beforeend",'<label class="ap-scan"><span>Ler código da ficha</span><input id="ap-scan" inputmode="none" autocomplete="off" placeholder="aponte o leitor"></label>');
+  top.insertAdjacentHTML("beforeend",'<button type="button" class="btn sm ap-esc" data-apo="1">Escolher OP</button><label class="ap-scan"><span>Ler código da ficha</span><input id="ap-scan" inputmode="none" autocomplete="off" placeholder="aponte o leitor"></label>');
   setTimeout(function(){var i=$("ap-scan"),a=document.activeElement;if(i&&$("mx-modal").hidden&&(!a||a===document.body||a.id==="ap-scan"))try{i.focus({preventScroll:true})}catch(e){}},50)};
 $("v-mx").addEventListener("keydown",function(e){if(S.tab!=="m-apt"||e.target.id!=="ap-scan"||e.key!=="Enter")return;e.preventDefault();var v=e.target.value;e.target.value="";apLer(v)},true);
-function apLer(v){var r=opPorCod(v);if(!r){toast("Código não reconhecido: "+v);return}var o=r.o,j=r.j,rot=o.roteiro||[];
+function apLer(v){var r=opPorCod(v);if(!r){toast("Código não reconhecido: "+v);return}apPega(r.o,r.j)}
+function apPega(o,j){var rot=o.roteiro||[];
   if(j==null){j=-1;rot.forEach(function(x,k){if(j<0&&x.status!=="concluida")j=k})}
   var x=rot[j];if(!x){toast(o.num+": operação não encontrada.");return}if(x.status==="concluida"){toast(o.num+" · "+x.seq+" "+x.op+" já foi concluída.");return}
   if(o.status==="cancelada"||o.status==="concluida"){toast(o.num+" está "+(OP_ST[o.status]||o.status)+".");return}
@@ -8525,6 +8536,37 @@ function apLer(v){var r=opPorCod(v);if(!r){toast("Código não reconhecido: "+v)
   var ma=mqById(x.maq),pt=mqById(MQ.posto);
   askDel("Trazer a operação para este posto?",o.num+" · "+x.seq+" "+x.op+(ma?" está programada para "+ma.nome:" ainda não foi programada")+". Passar para "+(pt?pt.nome:"este posto")+"?",function(){
     opPatchRot(o,j,{maq:MQ.posto,fila:0},"Operação "+x.seq+" "+x.op+" passada para "+(pt?pt.nome:"o posto")+" pela leitura da ficha.").then(function(){MQ.apSel=k;mxRender()})})}
+
+/* v138: escolher a OP sem o leitor (busca por OP, código ou operação) */
+var APO={q:""};
+function apoLista(){var q=normTxt(APO.q),out=[];(PP.ops||[]).forEach(function(o){if(o.status==="cancelada"||o.status==="concluida")return;(o.roteiro||[]).forEach(function(x,j){if(x.status==="concluida"||rtTerc(x))return;
+    var txt=normTxt(o.num+" "+o.codigo+" "+(o.descricao||"")+" "+x.seq+" "+x.op+" "+x.rec);if(q&&txt.indexOf(q)<0)return;out.push({o:o,j:j,x:x,aqui:x.maq===MQ.posto})})});
+  return out.sort(function(a,b){return(b.aqui?1:0)-(a.aqui?1:0)||(a.o.prio||0)-(b.o.prio||0)||a.j-b.j}).slice(0,40)}
+function apoHtml(){var L=apoLista(),m=$("mx-modal");
+  m.innerHTML='<div class="card cm-mod apo-mod" role="dialog" aria-modal="true" aria-label="Escolher OP"><div class="mx-bar"><h3>Escolher OP</h3><button class="btn sm" type="button" data-apox="n">Fechar</button></div><input id="apo-q" class="apo-q" value="'+esc(APO.q)+'" placeholder="Nº da OP, código da peça ou operação" autocomplete="off">'+
+   '<div class="apo-l">'+(L.length?L.map(function(r){var mq=mqById(r.x.maq);return'<button type="button" class="apo-r'+(r.aqui?' aqui':'')+'" data-apok="'+esc(r.o.id)+'" data-j="'+r.j+'"><span class="idtag">'+esc(r.o.num)+'</span><b>'+esc(r.o.codigo)+'</b><span>'+esc(r.x.seq+" "+r.x.op)+'</span><small>'+(r.aqui?"neste posto":mq?esc(mq.nome):"a programar")+' · '+esc(r.o.qtd)+' pç</small></button>'}).join(""):'<div class="mx-empty">Nenhuma operação aberta.</div>')+'</div></div>';m.hidden=false;
+  setTimeout(function(){var i=$("apo-q");if(i){i.focus();i.selectionStart=i.selectionEnd=i.value.length}},20)}
+$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-apt")return;var b=e.target.closest("[data-apo]");if(!b)return;e.stopPropagation();e.preventDefault();APO.q="";apoHtml()},true);
+$("mx-modal").addEventListener("input",function(e){if(e.target.id!=="apo-q")return;APO.q=e.target.value;var p=e.target.selectionStart;apoHtml();var i=$("apo-q");if(i)i.selectionStart=i.selectionEnd=p},true);
+$("mx-modal").addEventListener("click",function(e){var m=$("mx-modal");if(!m.querySelector(".apo-mod"))return;var b=e.target.closest("[data-apok],[data-apox]");if(e.target===m||(b&&b.dataset.apox)){e.stopImmediatePropagation();m.hidden=true;mxRender();return}if(!b)return;e.stopImmediatePropagation();
+  var o=(PP.ops||[]).filter(function(x){return x.id===b.dataset.apok})[0];m.hidden=true;if(o)apPega(o,+b.dataset.j)},true);
+
+/* v138: operações em terceiro — enviar e registrar o retorno (a próxima operação só libera com o retorno) */
+function tcLista(){var out=[];(PP.ops||[]).forEach(function(o){if(o.status==="cancelada")return;(o.roteiro||[]).forEach(function(x,j){if(rtTerc(x)&&x.status!=="concluida")out.push({op:o,j:j,r:x,k:o.id+":"+j})})});return out}
+var _rProgTc=renderProg;renderProg=function(box){_rProgTc.apply(this,arguments);var L=tcLista(),old=null;Array.prototype.forEach.call(box.querySelectorAll(".card h3"),function(h){if(/^Operações em terceiros/.test(h.textContent))old=h.parentNode});if(old)old.remove();if(!L.length)return;
+  box.insertAdjacentHTML("beforeend",'<div class="card"><h3>Operações em terceiros ('+L.length+')</h3><div class="tbx"><div class="ls-tc fh"><span>OP</span><span>Item</span><span>Serviço</span><span>Fornecedor</span><span class="r">Qtd</span><span>Situação</span><span></span></div>'+L.map(function(t){var x=t.r,env=x.status==="terceiro",lib=!t.j||(t.op.roteiro[t.j-1]||{}).status==="concluida";
+    return'<div class="ls-tc"><span class="idtag">'+esc(t.op.num)+'</span><span><b>'+esc(t.op.codigo)+'</b><small>'+esc(t.op.descricao||"")+'</small></span><span>'+esc(x.seq+" "+x.op)+'</span><span>'+esc(x.forn||"–")+(+x.prazo?'<small>prazo '+x.prazo+' d</small>':'')+'</span><span class="r mono">'+apEntrada(t)+'</span>'+
+     '<span>'+(env?'<span class="stp i">no terceiro</span><small>desde '+dStr(new Date(x.enviadoEm).toISOString().slice(0,10))+(+x.prazo?" · volta "+dStr(new Date(x.enviadoEm+x.prazo*864e5).toISOString().slice(0,10)):"")+'</small>':lib?'<span class="stp w">a enviar</span>':'<span class="stp n">aguarda operação anterior</span>')+'</span>'+
+     '<span class="pc-ic">'+(env?ibtn("check","Registrar retorno",'data-tc="ret" data-k="'+esc(t.k)+'"',"pri")+ibtn("undo","Desfazer envio",'data-tc="desf" data-k="'+esc(t.k)+'"'):(lib?ibtn("go","Enviar ao terceiro",'data-tc="env" data-k="'+esc(t.k)+'"',"pri"):''))+'</span></div>'}).join("")+'</div></div>')};
+$("v-mx").addEventListener("click",function(ev){if(S.tab!=="m-prog")return;var b=ev.target.closest("[data-tc]");if(!b)return;ev.stopPropagation();ev.preventDefault();if(!pode("pcp.op")){usrNega("pcp.op");return}
+  var t=tcLista().filter(function(x){return x.k===b.dataset.k})[0];if(!t)return;var x=t.r,a=b.dataset.tc;
+  if(a==="env"){askDel("Enviar ao terceiro?",t.op.num+" · "+x.seq+" "+x.op+" · "+apEntrada(t)+" pç"+(x.forn?" para "+x.forn:"")+".",function(){opPatchRot(t.op,t.j,{status:"terceiro",enviadoEm:Date.now(),qtdEnv:apEntrada(t)},"Operação "+x.seq+" "+x.op+" enviada ao terceiro"+(x.forn?" ("+x.forn+")":"")+": "+apEntrada(t)+" pç.").then(function(){mxRender()})});return}
+  if(a==="desf"){revMotivo("Desfazer o envio ao terceiro?",t.op.num+" · "+x.seq+" "+x.op+" volta para a enviar.",function(mot){opPatchRot(t.op,t.j,{status:"aguardando",enviadoEm:undefined,qtdEnv:undefined},"Envio ao terceiro desfeito ("+mot+").").then(function(){mxRender()})});return}
+  if(a==="ret"){var ent=+x.qtdEnv||apEntrada(t),conf=false;apModal('<h3>Retorno do terceiro · '+esc(x.seq+" "+x.op)+'</h3><p class="ap-ent">Enviadas <b>'+ent+' pç</b>'+(x.forn?" para "+esc(x.forn):"")+'</p><div class="fgrid"><label class="f"><span class="lb">Refugo / perda</span><input id="ap-ref" type="number" min="0" value="0"></label><label class="f"><span class="lb">Peças boas que voltaram</span><input id="ap-boas" type="number" min="0" value="'+ent+'"></label><label class="f"><span class="lb">NF de retorno</span><input id="tc-nf"></label></div><div class="ap-msg" id="ap-aviso" hidden></div><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-apm="n">Voltar</button><button class="btn pri" type="button" data-apm="y" id="ap-fim-y">Registrar retorno</button></div>',function(m){
+      var boas=Math.max(0,Math.floor(+m.querySelector("#ap-boas").value||0)),ref=Math.max(0,Math.floor(+m.querySelector("#ap-ref").value||0)),nf=String(m.querySelector("#tc-nf").value||"").trim();
+      if(boas+ref!==ent&&!conf){conf=true;var av=m.querySelector("#ap-aviso");av.hidden=false;av.textContent="Boas + refugo = "+(boas+ref)+" pç; foram enviadas "+ent+". Confirma?";m.querySelector("#ap-fim-y").textContent="Confirmar";return false}
+      opPatchRot(t.op,t.j,{status:"concluida",fimEm:Date.now(),entrada:ent,boas:boas,refugo:ref,nfRet:nf},"Retorno do terceiro na operação "+x.seq+" "+x.op+": "+boas+" boas, "+ref+" refugo"+(nf?" · NF "+nf:"")+".").then(function(){mxRender()})});
+    var mm=$("mx-modal"),ir=mm.querySelector("#ap-ref"),ib=mm.querySelector("#ap-boas");ir.addEventListener("input",function(){ib.value=Math.max(0,ent-Math.max(0,Math.floor(+ir.value||0)))});return}},true);
 
 /* v109: Administrativo › Fiscal (notas de entrada) */
 MODS.nfe={n:"Notas de entrada",fase:"",et:[],txt:"",plan:[]};MX_TABS.push("m-nfe");

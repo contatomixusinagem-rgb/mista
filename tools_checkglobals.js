@@ -22,3 +22,8 @@ Object.entries(seen).filter(([k,v])=>v.length>1).forEach(([k,v])=>{
 });
 if(bad){console.log(bad+' conflito(s). NÃO publicar.');process.exit(1)}
 console.log('ok: nenhum nome global em conflito');
+
+/* v130: também confere a sintaxe de cada <script> (um erro de aspas passou pelo verificador de nomes) */
+(function(){var fs=require("fs"),vm=require("vm"),f=process.argv[2]||"index.html",s=fs.readFileSync(f,"utf8"),re=/<script>([\s\S]*?)<\/script>/g,m,k=0,bad=0;
+  while((m=re.exec(s))){k++;try{new vm.Script(m[1],{filename:"script"+k+".js"})}catch(e){bad++;console.log("ERRO DE SINTAXE no script "+k+": "+e.message)}}
+  if(bad)process.exitCode=1;else console.log("ok: sintaxe dos "+k+" scripts")})();

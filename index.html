@@ -1488,6 +1488,7 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
 .cot-c.best{background:#eef8ee}.cot-c.win{background:#d9f0dc;box-shadow:inset 3px 0 0 #1E7A4A}
 .cot-tr td{background:#fafbfd}.cot-tr input{width:100%;height:34px}.cot-tot td{font-size:14px}.cot-tot small{display:block;color:#1E7A4A}
 .ls-canc{opacity:.6}.ls-canc .idtag{text-decoration:line-through}
+.cadtabs.ir-sub{margin-top:-4px;border-bottom:0}.cadtabs.ir-sub [role=tab]{font-size:13px;padding:6px 12px}
 </style>
 
 <div class="shell">
@@ -1614,7 +1615,7 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
 
     <section class="panel" id="closebox" hidden><div class="sec"><h3>Concluir proposta</h3>
       <div class="cb-sum" id="cb-sum"></div>
-      <label class="f" hidden style="max-width:300px"><span class="lb">Nº da proposta no Caprind (preencher depois de lançar no Caprind)</span><input id="prop-no" value="" autocomplete="off" placeholder="ex.: 547/26"></label>
+      <label class="f" hidden style="max-width:300px"><span class="lb">Nº da proposta</span><input id="prop-no" value="" autocomplete="off" placeholder="ex.: 547/26"></label>
       <div class="actions"><button class="btn pri" id="b-close" type="button">Concluir proposta</button><button class="btn pri" id="b-pdf" type="button" hidden>Gerar PDF</button><button class="btn" id="b-reopen" type="button" hidden>Reabrir para editar</button></div>
       <span class="hint" id="cb-hint"></span></div></section>
 
@@ -1624,7 +1625,7 @@ tr.nf-canc td{color:var(--muted);text-decoration:line-through}tr.nf-canc td .stp
     <section id="v-par" hidden><div class="hint" id="hist-status" style="margin-bottom:10px"></div><div class="pwrap" id="params"></div></section>
     <section id="v-mx" hidden><div class="mx" id="mx-box"></div></section>
   </main>
-  <p class="hint" id="foot" hidden>Proposta salva neste navegador. Os arquivos carregados são lidos aqui mesmo, no seu navegador, e não são enviados a lugar nenhum. Protótipo: ainda não grava no Caprind nem lê e-mails.</p>
+  <p class="hint" id="foot" hidden>Proposta salva neste navegador. Os arquivos carregados são lidos aqui mesmo, no seu navegador, e não são enviados a lugar nenhum.</p>
 </div>
 </div>
 <div class="cfm" id="cfm" hidden><div class="cfm-b" role="alertdialog" aria-modal="true"><h3 id="cfm-t">Excluir?</h3><p id="cfm-p"></p><div class="cfm-a"><button type="button" class="btn" id="cfm-n">Não</button><button type="button" class="btn pri" id="cfm-y">Sim</button></div></div></div>
@@ -2344,7 +2345,7 @@ function classify(name,rows){
   if(p&&p.items.length)return{name:name,kind:"pedido",data:p};
   var t=parseTabela(rows);
   if(t.items.length)return{name:name,kind:"pedido",data:t};
-  return{name:name,err:"Formato não reconhecido. Esperado: relatório de faturadas do Caprind, “Relação para Cotação” ou uma tabela com as colunas Produto, Descrição e Quantidade."};
+  return{name:name,err:"Formato não reconhecido. Esperado: relatório de faturadas do sistema anterior, “Relação para Cotação” ou uma tabela com as colunas Produto, Descrição e Quantidade."};
 }
 function readFile(f){
   return new Promise(function(res){
@@ -2700,7 +2701,7 @@ function renderHbox(it,c){
   if(trs){var u={};trs.forEach(function(x){u[x.toLowerCase()]=1});trTxt=Object.keys(u).join(", ")}
   if(!hi){
     box.setAttribute("data-st","");
-    box.innerHTML='<div class="hl">'+(S.hist?'Informe o código interno para ver o histórico.':'Carregue o relatório de faturadas do Caprind para ver o histórico.')+'</div>'+
+    box.innerHTML='<div class="hl">'+(S.hist?'Informe o código interno para ver o histórico.':'Carregue o relatório de faturadas para ver o histórico.')+'</div>'+
       (warns.length?'<div class="wl'+(bad?" bad":"")+'">'+warns.map(esc).join("<br>")+'</div>':"");
     return;
   }
@@ -2843,8 +2844,7 @@ function renderProposal(){
    '<div class="hint">Condições: '+esc(S.cond||"28 DDL")+' · validade 5 dias · prazo a partir de 10 a 15 dias · frete por conta da '+esc(empKey())+' · certificado de material incluso.</div>'+
    '<label class="f"><span class="lb">Texto pronto para o e-mail</span><textarea id="mail" readonly>'+esc(proposalText())+'</textarea></label>'+
    '<div class="actions"><button type="button" class="btn pri" id="copy">Copiar texto</button>'+
-   '<button type="button" class="btn" disabled title="Disponível quando a integração com o Caprind estiver pronta">Enviar ao Caprind</button></div>'+
-   '<span class="hint">“Enviar ao Caprind” depende da API do sistema. Hoje a proposta sai daqui como texto para você colar no e-mail.</span>';
+   '</div>';
 }
 
 /* ---------- parâmetros ---------- */
@@ -3544,7 +3544,7 @@ function pRender(){
     var dt=d.atualizado?new Date(d.atualizado).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
     var e=d.emp==="STAR"?"STAR":"MIX",sx=d.status||"";
     return'<div class="pl-row'+(d.id===S.pid?' cur':'')+'" data-rid="'+esc(d.id)+'" title="Clique para abrir"><span class="pl-n"><b>'+esc(d.num||d.id)+'</b> <span class="emp-tag" data-e="'+e+'">'+e+'</span></span>'+
-      '<span class="pl-c">'+esc(d.cliente||"Sem cliente")+'<small>'+(d.proposta?'Caprind '+esc(d.proposta):'sem nº Caprind')+'</small></span>'+
+      '<span class="pl-c">'+esc(d.cliente||"Sem cliente")+'</span>'+
       '<span>'+d.itens+'</span><span class="pl-v">'+brl(d.total||0)+'</span>'+
       '<span><span class="st-pill" data-s="'+esc(sx)+'">'+esc(stLabel(sx))+'</span></span><span class="pl-t">'+esc(dt)+'</span>'+
       '<span class="pl-a">'+ibtn("pdf","Gerar PDF",'data-pa="pdf" data-pid="'+esc(d.id)+'"')+ibtn("mail","Enviar por e-mail",'data-pa="mail" data-pid="'+esc(d.id)+'"')+ibtn("trash","Excluir",'data-pa="del" data-pid="'+esc(d.id)+'"',"danger")+'</span></div>';
@@ -3717,14 +3717,14 @@ function makePDF(){
   var l2=[E.cnpj?"CNPJ "+E.cnpj:"",E.ie?"I.E. "+E.ie:""].filter(Boolean).join("   ");if(l2)P.text(pdfClean(l2),M+39,y+10,{size:8,gray:0.3});
   if(E.end)P.text(pdfClean(E.end),M+39,y+14,{size:8,gray:0.3});
   var l4=[E.tel,E.email].filter(Boolean).join("   ");if(l4)P.text(pdfClean(l4),M+39,y+18,{size:8,gray:0.3});
-  P.text("RASCUNHO DE PROPOSTA",W-M,y+5,{size:14,bold:true,align:"right"});
+  P.text("PROPOSTA COMERCIAL",W-M,y+5,{size:14,bold:true,align:"right"});
   P.text(pdfClean(S.num||"sem número"),W-M,y+11,{size:12,bold:true,align:"right"});
   P.text("Emitido em "+new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}),W-M,y+16,{size:9,align:"right"});
   y=36;P.line(M,y,W-M,y);y+=7;
   P.text("Cliente:",M,y,{size:10,bold:true});P.text(pdfClean(S.cli)||"-",M+17,y,{size:10});
   P.text("Pagamento:",M+160,y,{size:10,bold:true});P.text(pdfClean(S.cond)||"-",M+160+23,y,{size:10});y+=6;
   if(S.sol){var sl=P.wrap(pdfClean(S.sol),W-2*M-46,10,false);P.text("Solicitação do cliente:",M,y,{size:10,bold:true});sl.forEach(function(l,i){P.text(l,M+46,y+i*4.5,{size:10})});y+=sl.length*4.5+1.5}
-  P.text("Nº no Caprind:",M,y,{size:10,bold:true});P.text(S.prop?pdfClean(S.prop):"______________________",M+29,y,{size:10});y+=9;
+  y+=3;
   var cols=[{t:"#",w:7,a:"l"},{t:"Solicitação",w:36,a:"l"},{t:"Código",w:40,a:"l"},{t:"Descrição / desenho",w:70,a:"l"},{t:"Tipo",w:28,a:"l"},{t:"Prazo",w:22,a:"l"},{t:"Qtd",w:14,a:"r"},{t:"Unitário",w:26,a:"r"},{t:"Total",w:26,a:"r"}];
   function head(){
     P.rect(M,y-4.5,W-2*M,7,0.91);var x=M;
@@ -3827,7 +3827,7 @@ function flowRows(){
   PD.list.forEach(function(p){if(p.propostaId)byProp[p.propostaId]=p;
     rows.push({tipo:"ped",id:p.id,num:p.num,cli:p.cliente,emp:p.emp,mod:p.modalidade,et:p.etapa||"pedido",val:p.total||0,prazo:p.prazo,at:p.atualizado||p.criado,enc:!!p.cancelado||p.etapa==="concluido",canc:!!p.cancelado,ref:p.pedidoCliente?("Ped. cliente "+p.pedidoCliente):(p.propostaNum?("Proposta "+p.propostaNum):"Pedido manual")})});
   (PR.list||[]).forEach(function(d){if(byProp[d.id])return;
-    rows.push({tipo:"prop",id:d.id,num:d.num||d.id,cli:d.cliente,emp:d.emp==="STAR"?"STAR":"MIX",mod:modPadrao(d.cliente),et:d.status==="Fechado"?"proposta":"orcamento",val:d.total||0,prazo:"",at:d.atualizado,enc:false,ref:(d.itens||0)+(d.itens===1?" item":" itens")+(d.proposta?" · Caprind "+d.proposta:"")})});
+    rows.push({tipo:"prop",id:d.id,num:d.num||d.id,cli:d.cliente,emp:d.emp==="STAR"?"STAR":"MIX",mod:modPadrao(d.cliente),et:d.status==="Fechado"?"proposta":"orcamento",val:d.total||0,prazo:"",at:d.atualizado,enc:false,ref:(d.itens||0)+(d.itens===1?" item":" itens")})});
   (IB.docs||[]).forEach(function(d){if(d.status==="descartado"||d.pid)return;
     var n=(d.itens||[]).length;rows.push({tipo:"in",id:d.id,num:"E-mail",cli:d.cliente,emp:"",mod:modPadrao(d.cliente),et:"entrada",val:0,prazo:"",at:d.recebido||d.criado||d.at||0,enc:false,ref:n+(n===1?" item":" itens")+(d.proposta?" · "+d.proposta:"")})});
   return rows;
@@ -5559,7 +5559,7 @@ window.__regOpen=function(m){msOpenMod(m)};
 })();
 
 /* ===== v81: estrutura de 7 módulos (config/modulos), menu novo, Início do usuário e perfis (26/10/2026) ===== */
-var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal", "tela": "#t-nfe"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Inspeção de recebimento", "tela": "#t-insprec"}, {"nome": "Primeira peça"}, {"nome": "Inspeção final", "tela": "#t-inspfin"}, {"nome": "Etiquetas", "tela": "#t-etq"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas", "tela": "#t-prog"}, {"nome": "Monitor de produção", "tela": "#t-mon"}, {"nome": "Apontamentos", "tela": "#t-apt"}, {"nome": "Máquinas", "tela": "#t-maq"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Recebimento", "tela": "#t-receb"}, {"nome": "Matéria-prima", "tela": "#t-estmp"}, {"nome": "Peças acabadas", "tela": "#t-estpa"}, {"nome": "Movimentações", "tela": "#t-estmv"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários", "tela": "#t-usr"}, {"nome": "Permissões", "tela": "#t-perm"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Outros", "areas": [{"nome": "Requisições", "tela": "#t-reqs"}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeção final", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
+var MODS_DEF={"modulos": [{"nome": "Vendas", "areas": [{"nome": "Dashboard de vendas", "tela": "#t-ini"}, {"nome": "Clientes", "tela": "#t-cli"}, {"nome": "Orçamentos e propostas", "tela": "#t-pc"}, {"nome": "Pedidos internos", "tela": "#t-ped"}]}, {"nome": "Administrativo", "areas": [{"nome": "Compras", "tela": "#t-mcomp"}, {"nome": "Fornecedores", "tela": "#t-forn"}, {"nome": "Financeiro", "tela": "#t-mfin"}, {"nome": "Contas a receber", "tela": "#t-mfin"}, {"nome": "Contas a pagar"}, {"nome": "Fiscal", "tela": "#t-nfe"}]}, {"nome": "Engenharia", "areas": [{"nome": "Cadastro de itens", "tela": "#t-itens"}, {"nome": "Roteiros e estruturas", "tela": "#t-meng"}, {"nome": "Desenhos"}, {"nome": "Programas CNC", "tela": "#t-cnc"}, {"nome": "Folhas de operação"}, {"nome": "Ferramentas"}, {"nome": "Dispositivos"}]}, {"nome": "Qualidade", "areas": [{"nome": "Planos de inspeção", "tela": "#t-qpi"}, {"nome": "Primeira peça"}, {"nome": "Inspeção final", "tela": "#t-inspfin"}, {"nome": "Etiquetas", "tela": "#t-etq"}, {"nome": "Certificados"}, {"nome": "Não conformidades"}, {"nome": "Instrumentos"}]}, {"nome": "PCP", "areas": [{"nome": "Ordens de produção", "tela": ".mod[data-m=\"prod\"]"}, {"nome": "Programação de máquinas", "tela": "#t-prog"}, {"nome": "Monitor de produção", "tela": "#t-mon"}, {"nome": "Apontamentos", "tela": "#t-apt"}, {"nome": "Máquinas", "tela": "#t-maq"}, {"nome": "Setup"}]}, {"nome": "Estoque", "areas": [{"nome": "Recebimento", "tela": "#t-receb"}, {"nome": "Matéria-prima", "tela": "#t-estmp"}, {"nome": "Peças acabadas", "tela": "#t-estpa"}, {"nome": "Movimentações", "tela": "#t-estmv"}, {"nome": "Inventário"}]}, {"nome": "Configurações", "areas": [{"nome": "Usuários", "tela": "#t-usr"}, {"nome": "Permissões", "tela": "#t-perm"}, {"nome": "Empresas", "tela": "#t-emp"}, {"nome": "Parâmetros de custo", "tela": "#t-par"}, {"nome": "Painel de implantação", "tela": ".mod[data-cap]", "gestor": true, "grafo": false}]}, {"nome": "Outros", "areas": [{"nome": "Requisições", "tela": "#t-reqs"}]}, {"nome": "Controladoria", "areas": [{"nome": "Custos"}, {"nome": "Margens"}, {"nome": "Indicadores"}, {"nome": "Relatórios"}]}], "ligacoes_modulos": [["Vendas", "Engenharia"], ["Vendas", "PCP"], ["Vendas", "Administrativo"], ["Vendas", "Controladoria"], ["Engenharia", "PCP"], ["PCP", "Qualidade"], ["PCP", "Estoque"], ["Administrativo", "Estoque"], ["Administrativo", "Controladoria"], ["Configurações", "Administrativo"], ["Engenharia", "Qualidade"]], "ligacoes_areas": [["Vendas", "Orçamentos e propostas", "Engenharia", "Desenhos"], ["Vendas", "Pedidos internos", "PCP", "Ordens de produção"], ["Vendas", "Pedidos internos", "Engenharia", "Cadastro de itens"], ["Engenharia", "Cadastro de itens", "Administrativo", "Fiscal"], ["Engenharia", "Roteiros e estruturas", "Estoque", "Matéria-prima"], ["Engenharia", "Roteiros e estruturas", "PCP", "Ordens de produção"], ["Engenharia", "Programas CNC", "PCP", "Máquinas"], ["Administrativo", "Compras", "Estoque", "Matéria-prima"], ["Qualidade", "Primeira peça", "Engenharia", "Programas CNC"], ["Qualidade", "Planos de inspeção", "Engenharia", "Cadastro de itens"], ["PCP", "Setup", "Engenharia", "Folhas de operação"], ["PCP", "Ordens de produção", "Estoque", "Matéria-prima"], ["Qualidade", "Inspeção final", "Estoque", "Peças acabadas"], ["Controladoria", "Custos", "Vendas", "Orçamentos e propostas"], ["Controladoria", "Indicadores", "Administrativo", "Financeiro"], ["Configurações", "Parâmetros de custo", "Controladoria", "Custos"], ["PCP", "Apontamentos", "Controladoria", "Custos"]]};
 var MSM={def:MODS_DEF,gestor:false,open:null,cur:"",user:null,nome:""};
 function msValid(d){return d&&Array.isArray(d.modulos)&&d.modulos.length&&d.modulos.every(function(m){return m&&m.nome&&Array.isArray(m.areas)})}
 function msAreas(m){return(m.areas||[]).filter(function(a){return!a.gestor||MSM.gestor})}
@@ -8454,7 +8454,7 @@ var PERM_DEF={
  pcp:{areas:["Outros|*","Vendas|Pedidos internos","Administrativo|Compras","Engenharia|Cadastro de itens","Engenharia|Roteiros e estruturas","Engenharia|Programas CNC","Qualidade|Planos de inspeção","PCP|*","Estoque|*"],acoes:["pcp.op","pcp.material","apont","cad.maquinas"]},
  programador:{areas:["Outros|*","Engenharia|*","PCP|Ordens de produção","PCP|Programação de máquinas","PCP|Monitor de produção","PCP|Apontamentos","PCP|Máquinas","Qualidade|Planos de inspeção","Estoque|Matéria-prima"],acoes:["eng.liberar","apont"]},
  administrativo:{areas:["Outros|*","Vendas|*","Administrativo|*","Estoque|*","PCP|Ordens de produção","PCP|Monitor de produção","Engenharia|Cadastro de itens"],acoes:["vendas.pedido","compras.pedido","compras.receber","estoque.ajuste"]},
- qualidade:{areas:["Outros|*","Qualidade|*","Engenharia|Cadastro de itens","Engenharia|Programas CNC","PCP|Ordens de produção","PCP|Monitor de produção","Estoque|Matéria-prima","Estoque|Movimentações","Vendas|Pedidos internos"],acoes:["qual.inspecao"]},
+ qualidade:{areas:["Outros|*","Qualidade|*","Estoque|Recebimento","Engenharia|Cadastro de itens","Engenharia|Programas CNC","PCP|Ordens de produção","PCP|Monitor de produção","Estoque|Matéria-prima","Estoque|Movimentações","Vendas|Pedidos internos"],acoes:["qual.inspecao"]},
  posto:{areas:["PCP|Apontamentos"],acoes:["apont"]}
 };
 function usrSub(){
@@ -8686,7 +8686,7 @@ $("mx-modal").addEventListener("click",function(ev){var e=IR.ed;if(!e)return;var
     var up={inspecao:ins,status:ok?"liberado":"reprovado",corrida:String(e.corrida||"").trim()};if(e.cert)up.cert=e.cert;
     PR.db.doc("lotes/"+l.id).update(up).then(function(){IR.ed=null;m.hidden=true;toast("Lote "+l.lote+(ok?" aprovado e liberado. Empenhando nas OPs…":" reprovado."));mxRender();if(ok)setTimeout(function(){cmAutoEmp()},900)}).catch(function(){b.disabled=false;toast("Não consegui gravar.")})};
   if(!e.cert&&e.res!=="reprovado"){askDel("Aprovar sem certificado anexado?","O lote fica sem o certificado do material na rastreabilidade.",go);return}go()},true);
-$("v-mx").addEventListener("click",function(ev){if(S.tab!=="m-insprec")return;var b=ev.target.closest("[data-ir]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.ir,l=CM.lotes.filter(function(x){return x.id===b.dataset.id})[0];
+$("v-mx").addEventListener("click",function(ev){if(!irAqui())return;var b=ev.target.closest("[data-ir]");if(!b)return;ev.stopPropagation();ev.preventDefault();var a=b.dataset.ir,l=CM.lotes.filter(function(x){return x.id===b.dataset.id})[0];
   if(a==="aba"){IR.aba=b.dataset.a;mxRender();return}if(!l)return;
   if(a==="insp"){irAbrir(l,false);return}
   if(a==="desfaz"){irDesfazer(l);return}if(a==="ver"){irAbrir(l,true);return}
@@ -8744,7 +8744,7 @@ renderInspRec=function(box){
    '<div class="tbx"><div class="ls-ir fh"><span>Lote</span><span>Material</span><span class="r">Qtd</span><span>Fornecedor · NF</span><span>Corrida</span><span>Cert.</span><span>Situação</span><span></span></div>'+
    (pg.rows.length?pg.rows.map(function(l){var i=l.inspecao||{};return'<div class="ls-ir ls-row" data-ls="'+(IR.aba==="pend"?"insp":"ver")+'" data-id="'+esc(l.id)+'"><span class="idtag">'+esc(l.lote)+'</span><span><b>'+esc(l.material)+'</b><small>'+esc((l.forma||"")+" "+(l.medida||""))+'</small></span><span class="r mono">'+cmUn(l.qtdRec,l.un)+'</span><span>'+esc(l.fornecedor||"–")+'<small>NF '+esc(l.nf||"–")+'</small></span><span>'+esc(l.corrida||"–")+'</span><span>'+lsCert(l)+'</span><span>'+lsChipLote(l)+(i.em&&IR.aba!=="pend"?'<small>'+esc(nowStr(i.em).slice(0,8)+" · "+(i.nome||usrNome(i.por)||""))+'</small>':'')+'</span>'+
      '<span class="pc-ic">'+(IR.aba==="pend"?ibtn("clip","Inspecionar",'data-ls="insp" data-id="'+esc(l.id)+'"',"pri"):ibtn("eye","Ver registro da inspeção",'data-ls="ver" data-id="'+esc(l.id)+'"')+ibtn("undo","Desfazer inspeção",'data-ir="desfaz" data-id="'+esc(l.id)+'"'))+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum lote.</div>')+'</div>'+pg.bar};
-$("v-mx").addEventListener("click",function(e){if(S.tab!=="m-insprec")return;if(e.target.closest('[data-ir="desfaz"]'))return;var b=e.target.closest("[data-ls]");if(!b)return;e.stopPropagation();e.preventDefault();var l=CM.lotes.filter(function(x){return x.id===b.dataset.id})[0];if(!l)return;
+$("v-mx").addEventListener("click",function(e){if(!irAqui())return;if(e.target.closest('[data-ir="desfaz"]'))return;var b=e.target.closest("[data-ls]");if(!b)return;e.stopPropagation();e.preventDefault();var l=CM.lotes.filter(function(x){return x.id===b.dataset.id})[0];if(!l)return;
   var a=b.dataset.ls;if(a==="cert"){lsBaixaCert(l);return}if(a==="insp"){if(!pode("qual.inspecao")){usrNega("qual.inspecao");return}irAbrir(l,false);return}if(a==="ver")irAbrir(l,true)},true);
 
 /* ---------- detalhe da NF de entrada em janela (Recebimento e Fiscal) ---------- */
@@ -9517,6 +9517,16 @@ function empAutoCheck(){if(!PR.db||!CM.lotes||!PP.ops)return;var ids={};(PP.ops|
     CM.lotes.forEach(function(l){if(ltServe(l,m)){var k=o.id+"|"+l.id+"|"+mFalta(m)+"|"+ltDisp(l);if((EMP_AUTO.tent[k]||0)<2){EMP_AUTO.tent[k]=(EMP_AUTO.tent[k]||0)+1;ids[o.id]=1}}})})});
   var L=Object.keys(ids);if(L.length)cmAutoEmp(L)}
 setInterval(function(){clearTimeout(EMP_AUTO.t);EMP_AUTO.t=setTimeout(empAutoCheck,300)},6000);
+
+/* ===== v130: inspeção de recebimento como aba do Recebimento (gestor, 06/11/2026); a área saiu da Qualidade ===== */
+function irAqui(){return S.tab==="m-insprec"||(S.tab==="m-receb"&&CM.rcAba==="i")}
+var _rRecIr=renderReceb;renderReceb=function(box){var ab=CM.rcAba;if(ab==="i")CM.rcAba="a";_rRecIr.apply(this,arguments);CM.rcAba=ab;
+  var tabs=box.querySelector(".cadtabs");if(!tabs)return;var nP=0;try{nP=irLotes("pend").length}catch(e){}
+  tabs.insertAdjacentHTML("beforeend",'<button type="button" role="tab" data-ls="rcaba" data-a="i" aria-selected="'+(ab==="i")+'">Inspeção'+(nP?' <span class="stp w">'+nP+'</span>':' (0)')+'</button>');
+  Array.prototype.forEach.call(tabs.querySelectorAll("[role=tab]"),function(x){x.setAttribute("aria-selected",String(x.dataset.a===ab))});
+  if(ab!=="i")return;var n=tabs.nextSibling;while(n){var nx=n.nextSibling;n.remove();n=nx}
+  var tmp=document.createElement("div");renderInspRec(tmp);var mh=tmp.querySelector(".mh");if(mh)mh.remove();tmp.querySelector(".cadtabs")&&tmp.querySelector(".cadtabs").classList.add("ir-sub");
+  while(tmp.firstChild)box.appendChild(tmp.firstChild)};
 
 /* ===== v122: PADRÃO DEFINITIVO de tela (gestor, 05/11/2026: "padronizar as páginas definitivamente").
    Fica no FIM do arquivo e vale para toda tela: título + [Filtrar] [+ Novo] · linha única · ícones · popup · paginação · sem texto.

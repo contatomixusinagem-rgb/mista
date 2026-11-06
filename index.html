@@ -1814,6 +1814,14 @@ function saveHist(){
 }
 
 /* ---------- números e datas ---------- */
+/* v136: tempo do roteiro aceita minutos (2 · 0,5), m:ss (0:45), segundos (45s) e horas (1h30) */
+function tMin(v){if(typeof v==="number")return v;var t=String(v==null?"":v).trim().toLowerCase().replace(/\s+/g,"");if(!t)return NaN;var m;
+  if((m=t.match(/^(\d+):(\d{1,2})$/)))return +m[1]+(+m[2])/60;
+  if((m=t.match(/^(\d+(?:[.,]\d+)?)(s|seg|segundos?)$/)))return parse(m[1])/60;
+  if((m=t.match(/^(\d+)m(?:in)?(\d+(?:[.,]\d+)?)s$/)))return +m[1]+parse(m[2])/60;
+  if((m=t.match(/^(\d+(?:[.,]\d+)?)h(?:(\d{1,2})(?:m|min)?)?$/)))return parse(m[1])*60+(+(m[2]||0));
+  if((m=t.match(/^(\d+(?:[.,]\d+)?)(m|min)$/)))return parse(m[1]);
+  return parse(t)}
 function parse(s){
   if(typeof s==="number")return s;
   s=String(s==null?"":s).trim();
@@ -7158,7 +7166,7 @@ function rtRecursos(){var r=[];try{(S.P.maq||[]).forEach(function(m){r.push(m.n)
 function rtOk(it){var r=it&&it.roteiro;return!!(r&&r.status==="liberado"&&(r.ops||[]).length)}
 function esOk(it){var e=it&&it.estrutura;return!!(e&&e.status==="liberado"&&(e.mats||[]).length)}
 function ppChip(ok,r,nome){if(ok)return'<span class="stp g">'+nome+' liberad'+(nome==="Estrutura"?"a":"o")+'</span>';var st=r&&(r.ops||r.mats||[]).length?"em elaboração":"pendente";return'<span class="stp '+(st==="pendente"?"b":"w")+'">'+nome+' '+st+'</span>'}
-function rtHoras(it,qtd){var r=it&&it.roteiro;if(!r)return 0;var m=0;(r.ops||[]).forEach(function(o){m+=(+parse(o.setup)||0)+(+parse(o.ciclo)||0)*(+qtd||0)});return m/60}
+function rtHoras(it,qtd){var r=it&&it.roteiro;if(!r)return 0;var m=0;(r.ops||[]).forEach(function(o){m+=(+tMin(o.setup)||0)+(+tMin(o.ciclo)||0)*(+qtd||0)});return m/60}
 function fmtH(h){if(!(h>0))return"–";var m=Math.round(h*60);return Math.floor(m/60)+"h"+("0"+m%60).slice(-2)}
 /* kg por peça pela forma e medida do bruto: "Ø55 x 32", "160 x 85 x 22", "sext 24 x 40", "tubo Ø50 x Ø40 x 30" */
 function esKg(mat,forma,med){
@@ -7176,12 +7184,12 @@ function esNec(m,qtd){var c=+parse(m.consumo)||0,p=+parse(m.perda)||0;return c*(
 /* ---------- cadastro do item: cartões Roteiro e Estrutura ---------- */
 function rtCardHtml(e){
   var r=e.roteiro||(e.roteiro={status:"rascunho",ops:[]}),rec=rtRecursos(),lib=r.status==="liberado";
-  var tm=0;(r.ops||[]).forEach(function(o){tm+=(+parse(o.ciclo)||0)});
+  var tm=0;(r.ops||[]).forEach(function(o){tm+=(+tMin(o.ciclo)||0)});
   return'<div class="card" id="it-rt"><div class="mx-bar"><h3 style="margin:0">Roteiro de fabricação</h3>'+(lib?'<span class="stp g">Liberado</span><span class="hint">'+esc(nowStr(r.liberadoEm))+'</span>':'<span class="stp '+((r.ops||[]).length?"w":"b")+'">'+((r.ops||[]).length?"Em elaboração":"Pendente")+'</span>')+'<span class="sp"></span><span class="hint">Ciclo total: '+(tm?nf(tm,1)+" min/peça":"–")+'</span></div>'+
    '<datalist id="rt-ops-l">'+RT_OPS.map(function(x){return'<option value="'+esc(x)+'">'}).join("")+'</datalist>'+
-   '<div class="tbx"><table class="itb rt-tab"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r">Setup (min)</th><th class="r">Ciclo (min/pç)</th><th>Instruções</th><th></th></tr></thead><tbody>'+
+   '<div class="tbx"><table class="itb rt-tab"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r" title="Tempo fixo por lote: preparação, inspeção, etc.">Por lote (min)</th><th class="r" title="Tempo de cada peça: minutos (2), m:ss (0:45) ou segundos (45s)">Por peça</th><th>Instruções</th><th></th></tr></thead><tbody>'+
    ((r.ops||[]).length?r.ops.map(function(o,i){return'<tr><td class="mono">'+((i+1)*10)+'</td><td><input data-rt="'+i+':op" list="rt-ops-l" value="'+esc(o.op||"")+'"></td><td><select data-rt="'+i+':rec"><option value="">escolha…</option>'+rec.map(function(x){return'<option'+(o.rec===x?" selected":"")+'>'+esc(x)+'</option>'}).join("")+'</select></td>'+
-     '<td><input data-rt="'+i+':setup" value="'+esc(o.setup||"")+'" inputmode="decimal" class="r" style="width:80px"></td><td><input data-rt="'+i+':ciclo" value="'+esc(o.ciclo||"")+'" inputmode="decimal" class="r" style="width:80px"></td><td><input data-rt="'+i+':obs" value="'+esc(o.obs||"")+'" placeholder="ex.: programa CNC-0008, 2 fixações"></td>'+
+     '<td><input data-rt="'+i+':setup" value="'+esc(o.setup||"")+'" class="r" style="width:80px" placeholder="ex.: 30"></td><td><input data-rt="'+i+':ciclo" value="'+esc(o.ciclo||"")+'" class="r" style="width:90px" placeholder="0:45 · 45s"></td><td><input data-rt="'+i+':obs" value="'+esc(o.obs||"")+'" placeholder="ex.: programa CNC-0008, 2 fixações"></td>'+
      '<td><span class="qi-mv"><button type="button" class="btn sm" data-rtb="up" data-i="'+i+'"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm" data-rtb="down" data-i="'+i+'"'+(i<r.ops.length-1?'':' disabled')+'>↓</button>'+ibtn("trash","Tirar operação",'data-rtb="rm" data-i="'+i+'"',"danger")+'</span></td></tr>'}).join(""):'<tr><td colspan="7" class="hint">Nenhuma operação. Use os botões abaixo.</td></tr>')+
    '</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-rtb="add">+ Operação</button><button class="btn sm" type="button" data-rtb="modelo">Modelo: serrar · usinar · rebarbar · inspecionar</button><span class="sp" style="flex:1"></span>'+
    (lib?'<button class="btn sm" type="button" data-rtb="reabrir">Reabrir roteiro</button>':'<button class="btn sm pri" type="button" data-rtb="liberar"'+((r.ops||[]).length?'':' disabled')+'>Liberar roteiro</button>')+'</div></div>';
@@ -7224,7 +7232,7 @@ $("v-mx").addEventListener("click",function(ev){
     if(a==="modelo"){if(r.ops.length){askDel("Trocar as operações pelo modelo?","As "+r.ops.length+" operações atuais saem.",function(){rtEdit(function(){rtDesliga(e,"roteiro");r.ops=rtModelo(e)})});return}rtEdit(function(){r.ops=rtModelo(e)});return}
     if(a==="rm"){rtEdit(function(){rtDesliga(e,"roteiro");r.ops.splice(i,1)});return}
     if(a==="up"||a==="down"){var j=a==="up"?i-1:i+1;rtEdit(function(){rtDesliga(e,"roteiro");var t=r.ops[i];r.ops[i]=r.ops[j];r.ops[j]=t});return}
-    if(a==="liberar"){var falta=r.ops.filter(function(o){return!o.op||!o.rec||!(+parse(o.ciclo)>0)&&o.rec!=="Terceiro"&&!/terceiro/i.test(o.rec)}).length;if(falta){toast(falta+(falta===1?" operação sem":" operações sem")+" nome, máquina ou ciclo.");return}
+    if(a==="liberar"){var falta=r.ops.filter(function(o){return!o.op||!o.rec||!(+tMin(o.ciclo)>0)&&!(+tMin(o.setup)>0)&&o.rec!=="Terceiro"&&!/terceiro/i.test(o.rec)}).length;if(falta){toast(falta+(falta===1?" operação sem":" operações sem")+" nome, máquina ou tempo.");return}
       rtEdit(function(){r.status="liberado";r.liberadoEm=Date.now();r.liberadoPor=AG.uid||""});toast("Roteiro liberado. Clique em Salvar para gravar.");return}
     if(a==="reabrir"){rtEdit(function(){r.status="rascunho";r.liberadoEm=0});return}
   }
@@ -7240,7 +7248,7 @@ $("v-mx").addEventListener("click",function(ev){
   }
 },true);
 function rtModelo(e){var tor=/torn|eixo|bucha|pino|anel|arruela|haste|parafuso|camisa|sede|embolo|êmbolo|obturador/i.test(e.descricao||"");
-  return[{op:"Serrar",rec:"Serra de fita",setup:"5",ciclo:"2",obs:""},{op:tor?"Tornear":"Fresar",rec:tor?"Torno CNC":"Centro de usinagem",setup:"30",ciclo:"",obs:""},{op:"Rebarbar",rec:"Bancada (rebarba/montagem)",setup:"0",ciclo:"2",obs:""},{op:"Inspecionar",rec:"Inspeção de qualidade",setup:"5",ciclo:"2",obs:"conforme plano de inspeção"}]}
+  return[{op:"Serrar",rec:"Serra de fita",setup:"5",ciclo:"2",obs:""},{op:tor?"Tornear":"Fresar",rec:tor?"Torno CNC":"Centro de usinagem",setup:"30",ciclo:"",obs:""},{op:"Rebarbar",rec:"Bancada (rebarba/montagem)",setup:"0",ciclo:"2",obs:""},{op:"Inspecionar",rec:"Inspeção de qualidade",setup:"30",ciclo:"",obs:"conforme plano de inspeção (por lote)"}]}
 $("v-mx").addEventListener("input",function(ev){
   if(S.tab!=="m-itens")return;var t=ev.target,k=t.dataset.rt||t.dataset.es;if(!k)return;ev.stopPropagation();
   var x=itById(IT.open);if(!x)return;var e=itEdOf(x),p=k.split(":"),i=+p[0],f=p[1],obj=t.dataset.rt?e.roteiro:e.estrutura,arr=t.dataset.rt?obj.ops:obj.mats;if(!arr[i])return;
@@ -7305,7 +7313,7 @@ function opGerar(rows){
   var ano=new Date().getFullYear(),t=Date.now();
   return cnNextIdN("ordens",rows.length).then(function(n0){
     var porPed={},docs=rows.map(function(r,k){var n=n0+k,id="op-"+t.toString(36)+"-"+k,it=r.it;
-      var ops=(it.roteiro.ops||[]).map(function(o,j){var s=+parse(o.setup)||0,c=+parse(o.ciclo)||0;return{seq:(j+1)*10,op:o.op,rec:o.rec,setup:s,ciclo:c,min:Math.round((s+c*r.qtd)*10)/10,obs:o.obs||"",status:"aguardando"}});
+      var ops=(it.roteiro.ops||[]).map(function(o,j){var s=+tMin(o.setup)||0,c=+tMin(o.ciclo)||0;return{seq:(j+1)*10,op:o.op,rec:o.rec,setup:s,ciclo:c,min:Math.round((s+c*r.qtd)*10)/10,obs:o.obs||"",status:"aguardando"}});
       var mats=(it.estrutura.mats||[]).map(function(m){return{tipo:m.tipo,desc:m.desc,forma:m.forma,medida:m.medida,consumo:+parse(m.consumo)||0,un:m.un,perda:+parse(m.perda)||0,cliente:!!m.cliente,nec:Math.round(esNec(m,r.qtd)*1000)/1000}});
       var d={num:"OP-"+pad(n,4)+"/"+pad(ano%100,2),idSeq:n,pedidoId:r.p.id,pedidoNum:r.p.num,itemIdx:r.i,itemId:it.id,codigo:r.x.cod||it.codigo,descricao:it.descricao||r.x.desc||"",desenho:it.desenho||"",rev:it.rev||"",material:it.material||"",
         cliente:r.p.cliente||"",emp:it.emp||r.p.emp||"MIX",qtd:r.qtd,entrega:r.ent,prio:k+1,status:"planejada",roteiro:ops,materiais:mats,horas:Math.round(rtHoras(it,r.qtd)*100)/100,criado:t,atualizado:t,
@@ -7322,7 +7330,7 @@ function opDetHtml(o){
   var tm=0;(o.roteiro||[]).forEach(function(x){tm+=x.min||0});
   return'<div class="card op-det" role="dialog" aria-modal="true" aria-label="Ordem de produção"><div class="mx-bar"><h3 style="margin:0">'+esc(o.num)+' · '+esc(o.codigo)+'</h3><span class="emp-tag" data-e="'+esc(o.emp)+'">'+esc(o.emp)+'</span><span class="sp"></span><button class="btn sm" type="button" data-op2="x">Fechar</button></div>'+
    '<dl class="cn-dl"><dt>Item</dt><dd>'+esc(o.descricao)+(o.desenho?' · DES. '+esc(o.desenho)+(o.rev?' R'+esc(o.rev):''):'')+'</dd><dt>Pedido</dt><dd>'+esc(o.pedidoNum)+' · '+esc(o.cliente)+'</dd><dt>Quantidade</dt><dd>'+esc(o.qtd)+' pç · entrega '+(o.entrega?dStr(o.entrega):"–")+'</dd><dt>Situação</dt><dd><select id="op-st">'+Object.keys(OP_ST).map(function(k){return'<option value="'+k+'"'+(o.status===k?" selected":"")+'>'+esc(OP_ST[k])+'</option>'}).join("")+'</select></dd></dl>'+
-   '<h3>Roteiro</h3><table class="itb"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r">Setup</th><th class="r">Ciclo/pç</th><th class="r">Total (min)</th><th>Instruções</th></tr></thead><tbody>'+(o.roteiro||[]).map(function(x){return'<tr><td class="mono">'+x.seq+'</td><td>'+esc(x.op)+'</td><td>'+esc(x.rec)+'</td><td class="r">'+nf(x.setup,0)+'</td><td class="r">'+nf(x.ciclo,1)+'</td><td class="r">'+nf(x.min,1)+'</td><td>'+esc(x.obs)+'</td></tr>'}).join("")+'</tbody><tfoot><tr><td colspan="5">Total</td><td class="r">'+fmtH(tm/60)+'</td><td></td></tr></tfoot></table>'+
+   '<h3>Roteiro</h3><table class="itb"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r">Por lote</th><th class="r">Por peça</th><th class="r">Total (min)</th><th>Instruções</th></tr></thead><tbody>'+(o.roteiro||[]).map(function(x){return'<tr><td class="mono">'+x.seq+'</td><td>'+esc(x.op)+'</td><td>'+esc(x.rec)+'</td><td class="r">'+nf(x.setup,0)+'</td><td class="r">'+nf(x.ciclo,1)+'</td><td class="r">'+nf(x.min,1)+'</td><td>'+esc(x.obs)+'</td></tr>'}).join("")+'</tbody><tfoot><tr><td colspan="5">Total</td><td class="r">'+fmtH(tm/60)+'</td><td></td></tr></tfoot></table>'+
    '<h3>Material (necessidade para '+esc(o.qtd)+' pç)</h3><table class="itb"><thead><tr><th>Tipo</th><th>Material</th><th>Forma</th><th>Bruto/pç</th><th class="r">Necessidade</th><th>Origem</th></tr></thead><tbody>'+(o.materiais||[]).map(function(m){return'<tr><td>'+esc(({mp:"Matéria-prima",terc:"Terceiro",comp:"Componente"})[m.tipo]||m.tipo)+'</td><td>'+esc(m.desc)+'</td><td>'+esc(m.forma)+'</td><td>'+esc(m.medida||"–")+'</td><td class="r">'+nf(m.nec,m.un==="kg"?3:m.un==="pç"?0:1)+' '+esc(m.un)+'</td><td>'+(m.cliente?"Cliente fornece":"Comprar / estoque")+'</td></tr>'}).join("")+'</tbody></table>'+
    '<p class="hint">O MRP (próxima etapa) soma estas necessidades com o estoque e gera as sugestões de compra.</p>'+
    '<div class="acts2"><span class="sp" style="flex:1"></span>'+(o.status!=="cancelada"&&o.status!=="concluida"?'<button class="btn sm danger" type="button" data-op2="cancel">Cancelar OP</button>':'')+'</div>'+
@@ -8354,7 +8362,7 @@ function genAbrir(r){if(!r||!r.ok){toast("O item ainda não tem roteiro e estrut
   GEN={r:r,qtd:String(r.qtd),rot:genRot(r.it.roteiro.ops),base:JSON.stringify(genRot(r.it.roteiro.ops))};genHtml()}
 function genEditar(o){var ini=(o.roteiro||[]).some(function(x){return x.status&&x.status!=="aguardando"});if(ini){toast("A OP já tem operação iniciada: só dá para mudar pelo apontamento.");return}
   PP.open="";GEN={edit:o.id,o:o,qtd:String(o.qtd),rot:genRot(o.roteiro),base:JSON.stringify(genRot(o.roteiro))};genHtml()}
-function genMin(){var q=+parse(GEN.qtd)||0,t=0;GEN.rot.forEach(function(o){t+=(+parse(o.setup)||0)+(+parse(o.ciclo)||0)*q});return t}
+function genMin(){var q=+parse(GEN.qtd)||0,t=0;GEN.rot.forEach(function(o){t+=(+tMin(o.setup)||0)+(+tMin(o.ciclo)||0)*q});return t}
 function genHtml(){
   var g=GEN,m=$("mx-modal"),rec=rtRecursos(),cab;
   if(g.edit)cab='<h3>Editar '+esc(g.o.num)+' · '+esc(g.o.codigo)+'</h3><p class="hint">Pedido '+esc(g.o.pedidoNum)+' · '+esc(g.o.cliente)+'. Vale só para esta OP; o roteiro padrão do item (Engenharia) não muda.</p>';
@@ -8364,9 +8372,9 @@ function genHtml(){
    '<div class="fgrid"><label class="f"><span class="lb">Quantidade desta OP (pç)</span><input id="gx-qtd" value="'+esc(g.qtd)+'" inputmode="numeric" style="max-width:140px"></label><div class="f"><span class="lb" style="display:block">Tempo previsto</span><b id="gx-min" style="display:block;padding-top:8px">'+fmtH(genMin()/60)+'</b></div></div>'+
    (g.edit?'':'<p class="hint">Se a quantidade for menor que a do pedido, o restante continua na demanda do PCP para outra OP. Se for maior, o excedente fica para estoque.</p>')+
    '<h3>Roteiro desta OP</h3><datalist id="gx-ops-l">'+RT_OPS.map(function(x){return'<option value="'+esc(x)+'">'}).join("")+'</datalist>'+
-   '<div class="tbx"><table class="itb rt-tab"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r">Setup (min)</th><th class="r">Ciclo (min/pç)</th><th>Instruções</th><th></th></tr></thead><tbody>'+
+   '<div class="tbx"><table class="itb rt-tab"><thead><tr><th>Seq.</th><th>Operação</th><th>Máquina / setor</th><th class="r" title="Tempo fixo por lote: preparação, inspeção, etc.">Por lote (min)</th><th class="r" title="Tempo de cada peça: minutos (2), m:ss (0:45) ou segundos (45s)">Por peça</th><th>Instruções</th><th></th></tr></thead><tbody>'+
    g.rot.map(function(o,i){return'<tr><td class="mono">'+((i+1)*10)+'</td><td><input data-gr="'+i+':op" list="gx-ops-l" value="'+esc(o.op)+'"></td><td><select data-gr="'+i+':rec"><option value="">escolha…</option>'+rec.map(function(x){return'<option'+(o.rec===x?" selected":"")+'>'+esc(x)+'</option>'}).join("")+'</select></td>'+
-     '<td><input data-gr="'+i+':setup" value="'+esc(o.setup)+'" class="r" style="width:70px" inputmode="decimal"></td><td><input data-gr="'+i+':ciclo" value="'+esc(o.ciclo)+'" class="r" style="width:70px" inputmode="decimal"></td><td><input data-gr="'+i+':obs" value="'+esc(o.obs)+'"></td>'+
+     '<td><input data-gr="'+i+':setup" value="'+esc(o.setup)+'" class="r" style="width:70px" inputmode="decimal"></td><td><input data-gr="'+i+':ciclo" value="'+esc(o.ciclo)+'" class="r" style="width:80px" placeholder="0:45 · 45s"></td><td><input data-gr="'+i+':obs" value="'+esc(o.obs)+'"></td>'+
      '<td><span class="qi-mv"><button type="button" class="btn sm" data-gx="up" data-i="'+i+'"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm" data-gx="down" data-i="'+i+'"'+(i<g.rot.length-1?'':' disabled')+'>↓</button>'+ibtn("trash","Tirar fase",'data-gx="rm" data-i="'+i+'"',"danger")+'</span></td></tr>'}).join("")+
    '</tbody></table></div><div class="acts2"><button class="btn sm" type="button" data-gx="add">+ Fase</button>'+(JSON.stringify(g.rot)!==g.base?'<button class="btn sm" type="button" data-gx="reset">Voltar ao roteiro '+(g.edit?"da OP":"do item")+'</button>':'')+'<span class="sp" style="flex:1"></span><button class="btn" type="button" data-gx="n">Cancelar</button><button class="btn pri" type="button" data-gx="y">'+(g.edit?"Gravar alterações":"Emitir OP")+'</button></div></div>';
   m.hidden=false}
@@ -8392,7 +8400,7 @@ function genEmitir(q){var g=GEN,r=g.r,it={};for(var k in r.it)it[k]=r.it[k];it.r
 function genGravarEdicao(q){var g=GEN,id=g.edit;
   PR.db.doc("ordens/"+id).get().then(function(sn){var o=sn.data()||{},old=o.roteiro||[];
     if(old.some(function(x){return x.status&&x.status!=="aguardando"})){toast("Uma operação foi iniciada enquanto você editava; nada foi gravado.");return}
-    var rot=g.rot.map(function(r,j){var b0=r.src>-1&&old[r.src]?JSON.parse(JSON.stringify(old[r.src])):{status:"aguardando"},s=+parse(r.setup)||0,c=+parse(r.ciclo)||0;
+    var rot=g.rot.map(function(r,j){var b0=r.src>-1&&old[r.src]?JSON.parse(JSON.stringify(old[r.src])):{status:"aguardando"},s=+tMin(r.setup)||0,c=+tMin(r.ciclo)||0;
       if(b0.rec!==r.rec){delete b0.maq;delete b0.fila}b0.seq=(j+1)*10;b0.op=r.op;b0.rec=r.rec;b0.setup=s;b0.ciclo=c;b0.obs=r.obs;b0.min=Math.round((s+c*q)*10)/10;b0.status=b0.status||"aguardando";return b0});
     var mats=JSON.parse(JSON.stringify(o.materiais||[]));mats.forEach(function(m){m.nec=Math.round(esNec(m,q)*1000)/1000});
     var hs=0;rot.forEach(function(x){hs+=x.min});var ch=[];if(q!==+o.qtd)ch.push("quantidade "+o.qtd+" → "+q+" pç");if(JSON.stringify(g.rot)!==g.base)ch.push("roteiro: "+rot.map(function(x){return x.seq+" "+x.op}).join(", "));

@@ -7604,7 +7604,7 @@ function cmBarra(m,qtd){var c=esComp(m);if(!isFinite(c)||!(qtd>0))return"";var t
 function ltServe(l,m){
   if(l.tipo&&l.tipo!=="mp")return false;
   if(!ltLib(l)||ltDisp(l)<=0||l.un!==m.un)return false;
-  if(m.pcId&&l.pcId===m.pcId)return true;
+  /* v129: o lote do mesmo pedido de compra NÃO dispensa conferir material e bitola (um pedido pode trazer materiais de várias OPs) */
   if(!cmPar(m.desc,l.material))return false;
   var a=esD1(m.medida),b=esD1(l.medida);if(isFinite(a)&&isFinite(b)&&Math.abs(a-b)>0.05)return false;
   if(m.forma&&l.forma&&l.forma!=="—"&&m.forma!==l.forma)return false;
@@ -9510,6 +9510,13 @@ pcNovoHtml=function(){
    '<div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-pcx="n">Cancelar</button><button class="btn pri" type="button" data-pcx="y">'+(p.edit?"Gravar alterações":"Gravar pedido de compra")+'</button></div></div>';
   m.hidden=false;var s2=m.querySelector(".cm-mod");if(s2)s2.scrollTop=st};
 /* cotação: o item escolhido no catálogo também alimenta a datalist do formulário */
+
+/* ===== v129: empenho automático garantido — sempre que um lote liberado puder atender uma OP (o material e a bitola conferem), empenha sozinho, sem depender da tela onde a inspeção foi feita ===== */
+var EMP_AUTO={t:null,tent:{}};
+function empAutoCheck(){if(!PR.db||!CM.lotes||!PP.ops)return;var ids={};(PP.ops||[]).forEach(function(o){if(o.status==="cancelada"||o.status==="concluida")return;(o.materiais||[]).forEach(function(m){if(m.tipo!=="mp"||m.cliente||mFalta(m)<=0.0005)return;
+    CM.lotes.forEach(function(l){if(ltServe(l,m)){var k=o.id+"|"+l.id+"|"+mFalta(m)+"|"+ltDisp(l);if((EMP_AUTO.tent[k]||0)<2){EMP_AUTO.tent[k]=(EMP_AUTO.tent[k]||0)+1;ids[o.id]=1}}})})});
+  var L=Object.keys(ids);if(L.length)cmAutoEmp(L)}
+setInterval(function(){clearTimeout(EMP_AUTO.t);EMP_AUTO.t=setTimeout(empAutoCheck,300)},6000);
 
 /* ===== v122: PADRÃO DEFINITIVO de tela (gestor, 05/11/2026: "padronizar as páginas definitivamente").
    Fica no FIM do arquivo e vale para toda tela: título + [Filtrar] [+ Novo] · linha única · ícones · popup · paginação · sem texto.

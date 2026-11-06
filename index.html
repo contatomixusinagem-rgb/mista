@@ -1296,7 +1296,7 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .gen-mod .rt-tab input,.gen-mod .rt-tab select{min-height:32px;padding:4px 6px;font-size:13px}
 #mx-modal .card.cm-mod{width:min(1000px,96vw)!important;max-width:min(1000px,96vw)!important;max-height:92vh;overflow:auto}
 .gen-mod .rt-tab input:not(.r){width:100%;min-width:110px}.gen-mod .rt-tab select{min-width:150px}
-.ap-esc{margin-left:auto}.ap-ent{margin:0 0 10px;font-size:15px}
+.ap-esc{margin-left:auto}.op-falta{color:var(--bad,#b42318)!important;font-weight:600}.ap-msg.ap-mat{background:#fdecea;color:#8a1c12;border-color:#f3b4ab}.ap-ent{margin:0 0 10px;font-size:15px}
 .ls-tc{display:grid;grid-template-columns:110px minmax(160px,1.3fr) minmax(120px,1fr) minmax(140px,1fr) 60px 170px 84px;gap:10px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);font-size:13px;min-width:900px}.ls-tc.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}.ls-tc small{display:block;color:var(--muted);font-size:11.5px}
 #mx-modal .card.cm-mod.apo-mod{max-width:min(760px,96vw)!important;width:min(760px,96vw)!important}#mx-modal .apo-mod>*{flex-shrink:0}
 .apo-q{width:100%;min-height:52px;font-size:18px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin:6px 0 10px}
@@ -7357,7 +7357,7 @@ function renderProd(box){
   var opsAb=PP.ops.filter(function(o){return o.status!=="concluida"&&o.status!=="cancelada"}),cargaOp=0;opsAb.forEach(function(o){cargaOp+=+o.horas||0});
   var h='<div class="mh"><div><h2>Ordens de produção</h2><p>A demanda chega sozinha dos pedidos internos. Defina a sequência (↑ ↓), e gere a OP quando a engenharia liberar o roteiro e a estrutura do item.</p></div><span class="fase">PCP</span></div>'+
    '<div class="pp-kpi"><div><b>'+dem.length+'</b><span>itens aguardando OP</span></div><div><b>'+prontos.length+'</b><span>prontos para OP</span></div><div><b>'+eng+'</b><span>esperando engenharia</span></div><div><b>'+fmtH(carga)+'</b><span>carga prevista da demanda</span></div><div><b>'+opsAb.length+'</b><span>OPs abertas · '+fmtH(cargaOp)+'</span></div></div>'+
-   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-pp="aba" data-a="dem" aria-selected="'+(PP.aba==="dem")+'">Demanda ('+dem.length+')</button><button type="button" role="tab" data-pp="aba" data-a="ops" aria-selected="'+(PP.aba==="ops")+'">Ordens de produção ('+opsAb.length+')</button></div>';
+   '<div class="cadtabs" role="tablist"><button type="button" role="tab" data-pp="aba" data-a="dem" aria-selected="'+(PP.aba==="dem")+'">Demanda ('+dem.length+')</button><button type="button" role="tab" data-pp="aba" data-a="ops" aria-selected="'+(PP.aba==="ops")+'">Em aberto ('+opsAb.length+')</button><button type="button" role="tab" data-pp="aba" data-a="fin" aria-selected="'+(PP.aba==="fin")+'">Concluídas ('+PP.ops.filter(function(o){return o.status==="concluida"}).length+')</button></div>';
   if(PP.aba==="dem"){
     h+='<div class="mx-bar"><button class="btn sm" type="button" data-pp="porent">Ordenar por entrega</button><span class="sp"></span>'+(prontos.length?'<button class="btn sm pri" type="button" data-pp="optodos">Gerar OP dos '+prontos.length+' prontos</button>':'')+'</div>'+
      '<div class="tbx"><div class="pp-r fh"><span>Seq.</span><span>Pedido</span><span>Item</span><span class="r">Qtd</span><span>Entrega</span><span>Engenharia</span><span class="r">Horas</span><span></span></div>'+
@@ -7367,13 +7367,19 @@ function renderProd(box){
        '<span class="pp-eng">'+(it?ppChip(rtOk(it),it.roteiro,"Roteiro")+ppChip(esOk(it),it.estrutura,"Estrutura"):'<span class="stp b">sem cadastro do item</span>')+'</span><span class="r mono">'+fmtH(rtHoras(it,r.qtd))+'</span>'+
        '<span class="ra2">'+(it?'<button type="button" class="btn sm" data-pp="item" data-it="'+esc(it.id)+'">'+(r.ok?"Ver item":"Abrir na engenharia")+'</button>':'')+(r.ok?'<button type="button" class="btn sm pri" data-pp="op" data-k="'+esc(r.k)+'">Gerar OP</button>':'')+'</span></div>'}).join(""):'<div class="mx-empty">Nenhum item aguardando OP. Quando uma proposta for aprovada, os itens do pedido interno aparecem aqui.</div>')+'</div>';
   }else{
-    var L=PP.ops.filter(function(o){return PP.q==="todas"||(o.status!=="concluida"&&o.status!=="cancelada")});
-    h+='<div class="mx-bar"><label class="mx-chk"><input type="checkbox" id="pp-todas"'+(PP.q==="todas"?" checked":"")+'> Mostrar concluídas e canceladas</label><span class="sp"></span></div>'+
+    var fin=PP.aba==="fin",L=PP.ops.filter(function(o){return fin?(o.status==="concluida"||(PP.q==="todas"&&o.status==="cancelada")):(o.status!=="concluida"&&o.status!=="cancelada")}).sort(function(a,b){return fin?(b.atualizado||0)-(a.atualizado||0):0});
+    h+=(fin?'<div class="mx-bar"><label class="mx-chk"><input type="checkbox" id="pp-todas"'+(PP.q==="todas"?" checked":"")+'> Mostrar canceladas</label><span class="sp"></span></div>':'')+
      '<div class="tbx"><div class="op-r fh"><span>OP</span><span>Item</span><span>Pedido</span><span class="r">Qtd</span><span>Entrega</span><span>Material</span><span class="r">Horas</span><span>Situação</span></div>'+
-     (L.length?L.map(function(o){return'<div class="op-r" data-pp="opopen" data-id="'+esc(o.id)+'" title="Abrir"><span class="idtag">'+esc(o.num||"")+'</span><span><b>'+esc(o.codigo||"")+'</b><small>'+esc(o.descricao||"")+'</small></span><span>'+esc(o.pedidoNum||"")+'<small>'+esc(o.cliente||"")+'</small></span><span class="r mono">'+esc(o.qtd)+'</span><span>'+ppEnt(o.entrega)+'</span><span><small>'+esc((o.materiais||[]).filter(function(m){return m.tipo==="mp"}).map(function(m){return m.desc+" "+nf(m.nec,m.un==="kg"?2:0)+" "+m.un+(m.cliente?" (cliente)":"")}).join(" · ")||"–")+'</small></span><span class="r mono">'+fmtH(+o.horas)+'</span><span><span class="stp '+({planejada:"i",liberada:"w",producao:"w",concluida:"g",cancelada:"b"}[o.status]||"i")+'">'+esc(OP_ST[o.status]||o.status)+'</span></span></div>'}).join(""):'<div class="mx-empty">Nenhuma ordem de produção ainda.</div>')+'</div>';
+     (L.length?L.map(function(o){return'<div class="op-r" data-pp="opopen" data-id="'+esc(o.id)+'" title="Abrir"><span class="idtag">'+esc(o.num||"")+'</span><span><b>'+esc(o.codigo||"")+'</b><small>'+esc(o.descricao||"")+'</small></span><span>'+esc(o.pedidoNum||"")+'<small>'+esc(o.cliente||"")+'</small></span><span class="r mono">'+esc(o.qtd)+'</span><span>'+ppEnt(o.entrega)+'</span><span><small>'+esc((o.materiais||[]).filter(function(m){return m.tipo==="mp"}).map(function(m){return m.desc+" "+nf(m.nec,m.un==="kg"?2:0)+" "+m.un+(m.cliente?" (cliente)":"")}).join(" · ")||"–")+'</small></span><span class="r mono">'+fmtH(+o.horas)+'</span><span><span class="stp '+({planejada:"i",liberada:"w",producao:"w",concluida:"g",cancelada:"b"}[o.status]||"i")+'">'+esc(OP_ST[o.status]||o.status)+'</span>'+opSitTxt(o)+'</span></div>'}).join(""):'<div class="mx-empty">Nenhuma ordem de produção ainda.</div>')+'</div>';
   }
   box.innerHTML=h;
 }
+/* linha da OP: boas da última operação apontada · falta baixar material */
+function opSitTxt(o){var rot=o.roteiro||[],b=null,ref=0;rot.forEach(function(x){if(x.status==="concluida"&&x.boas!=null)b=+x.boas;ref+=+x.refugo||0});
+  if(o.status==="concluida")return'<small>'+(b!=null?b+" boas":"")+(ref?" · "+ref+" refugo":"")+(o.inspFinal?" · inspecionada":"")+'</small>';
+  if(o.status==="cancelada")return"";var f=opMatFalta(o);return f.length?'<small class="op-falta">falta baixar material</small>':(b!=null?'<small>'+b+' boas até agora</small>':"")}
+/* matéria-prima da empresa precisa estar baixada (entregue à fábrica) antes de iniciar a produção */
+function opMatFalta(o){var out=[];(o.materiais||[]).forEach(function(m){if(m.tipo!=="mp"||m.cliente||!(+m.nec>0))return;var bx=0;(m.empenhos||[]).forEach(function(e){if(e.baixado)bx+=+e.qtd||0});if(bx<+m.nec-0.0005)out.push(m.desc+" "+cmUn(+m.nec-bx,m.un))});return out}
 var OP_ST={planejada:"Planejada",liberada:"Liberada para produção",producao:"Em produção",concluida:"Concluída",cancelada:"Cancelada"};
 function opGerar(rows){
   rows=rows.filter(function(r){return r.ok});if(!rows.length){toast("Nenhum item pronto para OP.");return Promise.resolve()}
@@ -8975,13 +8981,15 @@ mqFila=function(id){return mqTarefas().filter(function(t){return t.maq===id&&t.s
 function apMinSetup(r,now){var m=+r.minSetup||0;if(r.status==="setup"&&r.ultIni)m+=(now-r.ultIni)/60000;return m}
 /* botões do apontamento: aguardando → [Iniciar setup] [Iniciar produção]; setup → [Iniciar produção] [Pausar] */
 var _rAptMon=renderApt;renderApt=function(box){_rAptMon.apply(this,arguments);var m=mqById(MQ.posto);if(!m)return;var t=apFila(m.id)[0];if(!t)return;var r=t.r,bt=box.querySelector(".ap-btns"),card=box.querySelector(".ap-card");if(!bt)return;
-  if((r.status||"aguardando")==="aguardando")bt.innerHTML='<button type="button" class="ap-b set" data-ap="setup"'+(t.liberada?'':' disabled')+'>Iniciar setup</button><button type="button" class="ap-b ini" data-ap="producao"'+(t.liberada?'':' disabled')+'>Iniciar produção</button>';
+  if((r.status||"aguardando")==="aguardando"){var fm=opMatFalta(t.op),ok=t.liberada&&!fm.length;bt.innerHTML='<button type="button" class="ap-b set" data-ap="setup"'+(ok?'':' disabled')+'>Iniciar setup</button><button type="button" class="ap-b ini" data-ap="producao"'+(ok?'':' disabled')+'>Iniciar produção</button>';
+    if(fm.length&&card){var g0=card.querySelector(".ap-grid");if(g0)g0.insertAdjacentHTML("afterend",'<div class="ap-msg ap-mat">Material não entregue à fábrica: '+esc(fm.join(", "))+'. Peça a baixa ao almoxarifado/PCP (OP › Material › Baixar).</div>')}}
   else if(r.status==="setup"){bt.innerHTML='<button type="button" class="ap-b pausa" data-ap="pausar">Pausar</button><button type="button" class="ap-b ini" data-ap="producao">Iniciar produção</button>';if(card){card.classList.add("setup");var g=card.querySelector(".ap-grid");if(g)g.insertAdjacentHTML("afterend",'<div class="ap-msg ap-setmsg">Em setup há '+fmtH(apMinSetup(r,Date.now())/60)+(r.setup?' · previsto '+fmtH(r.setup/60):'')+'</div>')}}
   else if(r.status==="pausa"&&r.pausaDe==="setup"){var b1=bt.querySelector('[data-ap="iniciar"]');if(b1)b1.textContent="Retomar setup"}};
 function apAgora(){var t=apFila(MQ.posto)[0];return t}
 document.addEventListener("click",function(ev){if(S.tab!=="m-apt"||!ev.target.closest)return;var b=ev.target.closest('[data-ap="setup"],[data-ap="producao"],[data-ap="pausar"],[data-ap="iniciar"]');if(!b||b.disabled)return;
   if(typeof pode==="function"&&!usrLivre()&&!pode("apont")){ev.stopImmediatePropagation();ev.preventDefault();usrNega("apont");return}
   var t=apAgora();if(!t)return;var r=t.r,now=Date.now(),a=b.dataset.ap,nm=(mqById(MQ.posto)||{}).nome||"";ev.stopImmediatePropagation();ev.preventDefault();
+  if((a==="setup"||a==="producao")&&(r.status||"aguardando")==="aguardando"){var fm2=opMatFalta(t.op);if(fm2.length){toast("Não dá para iniciar: falta baixar o material ("+fm2.join(", ")+").");return}}
   if(a==="setup"){opPatchRot(t.op,t.j,{status:"setup",ultIni:now,iniciadoEm:r.iniciadoEm||now,setupIni:now,motivo:undefined},"Início do setup da operação "+r.seq+" "+r.op+" no posto "+nm+".");apEvento(t,"setup");return}
   if(a==="producao"){var p={status:"execucao",ultIni:now,iniciadoEm:r.iniciadoEm||now,motivo:undefined,pausaDe:undefined,pausaEm:undefined};if(r.status==="setup")p.minSetup=Math.round(apMinSetup(r,now)*10)/10;
     opPatchRot(t.op,t.j,p,(r.status==="setup"?"Fim do setup ("+fmtH(apMinSetup(r,now)/60)+") e i":"I")+"nício da produção da operação "+r.seq+" "+r.op+" no posto "+nm+".");apEvento(t,"inicio");return}
@@ -9190,7 +9198,7 @@ var _ppRIf=typeof ppRefresh==="function"?ppRefresh:null;if(_ppRIf)ppRefresh=func
 /* v114: paginação nas listas antigas (fica por último para valer em todas as telas) */
 var PG_DOM={"m-estmp":[".lt-r:not(.fh)"],"m-estmv":[".tbx tbody>tr"],"m-nfe":["tr.nf-r","tr.nf-d"],"m-itens":[".it-r:not(.fh)"],"m-insprec":[".ir-c"],"m-qpi":[".qi-r:not(.fh)"],"m-cnc":[".cn-r:not(.fh)"],"m-usr":[".us-r:not(.fh)"],"m-maq":[".mq-r"]};
 var _rmPg=renderMod;renderMod=function(box,k){var r=_rmPg.apply(this,arguments),t="m-"+k;
-  try{if(t==="m-prod")pgDom(box,"m-prod:"+PP.aba,PP.aba==="ops"?".op-r:not(.fh)":".pp-r:not(.fh)");else if(PG_DOM[t]&&!box.querySelector(".pg-bar"))pgDom(box,t+(t==="m-insprec"?":"+IR.aba:t==="m-estmp"?":"+(CM.ltTipo||"mp"):""),PG_DOM[t][0],PG_DOM[t][1])}catch(e){}
+  try{if(t==="m-prod")pgDom(box,"m-prod:"+PP.aba,PP.aba!=="dem"?".op-r:not(.fh)":".pp-r:not(.fh)");else if(PG_DOM[t]&&!box.querySelector(".pg-bar"))pgDom(box,t+(t==="m-insprec"?":"+IR.aba:t==="m-estmp"?":"+(CM.ltTipo||"mp"):""),PG_DOM[t][0],PG_DOM[t][1])}catch(e){}
   try{lsIcones(box)}catch(e){}
   try{ftBarra(box)}catch(e){}
   return r};

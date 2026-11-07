@@ -6699,7 +6699,7 @@ function askValidaQi(p){
   m.innerHTML='<div class="card" role="dialog" aria-modal="true"><h3>Validar o plano '+esc(p.codigo||"")+'?</h3><p>Confirme que os balões e a tabela foram conferidos com o desenho. A validação fica no histórico com seu nome e a data.</p><div class="acts2" style="justify-content:flex-end"><button class="btn" type="button" data-v="n">Não</button><button class="btn pri" type="button" data-v="y">Sim, validar</button></div></div>';
   m.hidden=false;setTimeout(function(){var n=m.querySelector('[data-v="n"]');if(n)n.focus()},40);
   m.onclick=function(ev){if(ev.target===m){m.hidden=true;return}var b=ev.target.closest("[data-v]");if(!b)return;m.hidden=true;
-    if(b.dataset.v==="y")qiSalvar(p,{status:"validado",validadoPor:AG.uid||"",validadoEm:Date.now()},"Plano validado").then(function(){toast("Plano validado.")}).catch(function(){})};
+    if(b.dataset.v==="y")qiSalvar(p,{status:"validado",validadoPor:AG.uid||"",validadoEm:Date.now()},"Plano validado").then(function(){toast("Plano validado.");QI.open="";QI.ed=null;QI.edId="";if(typeof PAD!=="undefined")PAD.novo.qpi=false;mxRender()}).catch(function(){})};
 }
 
 /* ---------- geração ---------- */
@@ -7667,6 +7667,11 @@ var _stMq=showTab;showTab=function(t){var r=_stMq.apply(this,arguments);var N={"
 /* ===== v102: navegação por abas (cada área aberta vira uma aba; o estado de cada tela continua onde parou) ===== */
 var AB={list:[],cur:""};
 try{var _ab=JSON.parse(localStorage.getItem("mista-abas")||"[]");if(Array.isArray(_ab))AB.list=_ab.filter(function(x){return x&&x.k}).slice(0,12)}catch(e){}
+/* v142: ao atualizar a página, volta para a área que estava aberta */
+var ABR={ok:false};
+(function abRestaura(n){var pronto=typeof MSM!=="undefined"&&MSM.def&&MSM.def.modulos&&typeof USR!=="undefined"&&USR.ok&&typeof PR!=="undefined"&&PR.db;
+  if(!pronto&&n<60){setTimeout(function(){abRestaura(n+1)},300);return}var k="";try{k=localStorage.getItem("mista-aba-atual")||""}catch(e){}ABR.ok=true;
+  if(k&&S.tab==="home"&&AB.list.some(function(x){return x.k===k}))try{abIr(k)}catch(e){}})(0);
 function abSave(){try{localStorage.setItem("mista-abas",JSON.stringify(AB.list))}catch(e){}}
 function abKey(){if(S.tab==="home")return"";if(S.tab==="wip"&&MSM.wip)return MSM.wip.m+"|"+MSM.wip.a;if(!MSM.cur){var k=msFind(S.tab);if(k){MSM.cur=k;MSM.open=k.split("|")[0]}}return MSM.cur||""}
 function abBar(){var b=$("abas");if(b)return b;var app=document.querySelector(".app");if(!app)return null;b=document.createElement("nav");b.id="abas";b.className="abas";b.setAttribute("aria-label","Abas abertas");app.insertBefore(b,app.firstChild);
@@ -7675,7 +7680,7 @@ function abBar(){var b=$("abas");if(b)return b;var app=document.querySelector(".
 function abRender(){var b=abBar();if(!b)return;b.hidden=S.tab==="home"||!AB.list.length;
   b.innerHTML=AB.list.map(function(x){var p=x.k.split("|"),on=x.k===AB.cur;return'<div class="aba'+(on?" on":"")+'" role="tab" aria-selected="'+on+'" tabindex="0" data-ab="'+esc(x.k)+'" title="'+esc(p[0]+" › "+p[1])+'"><span class="aba-t">'+esc(p[1]||p[0])+'</span><button type="button" class="aba-x" data-abx="'+esc(x.k)+'" aria-label="Fechar a aba '+esc(p[1]||p[0])+'">×</button></div>'}).join("");
   var on=b.querySelector(".aba.on");if(on)try{on.scrollIntoView({block:"nearest",inline:"nearest"})}catch(e){}}
-function abSync(){var k=abKey();AB.cur=k;if(k&&!AB.list.some(function(x){return x.k===k})){AB.list.push({k:k});while(AB.list.length>12){var i=0;while(i<AB.list.length&&AB.list[i].k===k)i++;AB.list.splice(i,1)}}abSave();abRender()}
+function abSync(){var k=abKey();AB.cur=k;if(ABR.ok)try{localStorage.setItem("mista-aba-atual",S.tab==="home"?"":(k||""))}catch(e){}if(k&&!AB.list.some(function(x){return x.k===k})){AB.list.push({k:k});while(AB.list.length>12){var i=0;while(i<AB.list.length&&AB.list[i].k===k)i++;AB.list.splice(i,1)}}abSave();abRender()}
 function abIr(k){if(k===AB.cur&&S.tab!=="home")return;var p=k.split("|"),mi=-1;MSM.def.modulos.forEach(function(m,i){if(m.nome===p[0])mi=i});
   if(mi<0||!(MSM.def.modulos[mi].areas||[]).some(function(a){return a.nome===p[1]})){AB.list=AB.list.filter(function(x){return x.k!==k});abSave();abRender();toast("Esta área não existe mais no menu.");return}
   msGo(mi,p[1]);abSync()}
@@ -9869,7 +9874,7 @@ function qiVincula(p,itemId){var it=itById(itemId),h=(p.hist||[]).slice(-199);h.
 /* campo no envio ao agente */
 var _qiSide=qiSideHtml;qiSideHtml=function(){itSub();var h=_qiSide.apply(this,arguments),it=itById(QI.draft.itemId);
   return it?h.replace('<label class="f cn-fld" data-req="emp"','<div class="qi-dem"><span>Plano para o item</span><b>'+esc(qiItemTxt(it))+'</b>'+ibtn("trash","Não vincular a este item",'data-qv="semitem"',"danger")+'</div><label class="f cn-fld" data-req="emp"'):h};
-var _qiGer=qiGerar;qiGerar=function(f){var r=_qiGer.apply(this,arguments);QI.draft.itemId="";return r};
+var _qiGer=qiGerar;qiGerar=function(f){var r=_qiGer.apply(this,arguments);QI.draft.itemId="";if(typeof PAD!=="undefined")PAD.novo.qpi=false;setTimeout(mxRender,0);return r};
 var _qiDet=qiDetail;qiDetail=function(box,p){_qiDet.apply(this,arguments);var dh=box.querySelector(".dh2");if(!dh)return;var it=itById(p.itemId),sug=it?[]:qiItemSug(p);
   if(p.status==="gerando")return;
   dh.parentNode.insertBefore(document.createRange().createContextualFragment(it?'<div class="qi-vinc"><span class="lb">Item</span><b>'+esc(qiItemTxt(it))+'</b>'+(QI.troca===p.id?'<select id="qi-vinc">'+qiItemOpts(p.itemId)+'</select>':ibtn("edit","Trocar o item",'data-qv="troca"'))+'</div>':

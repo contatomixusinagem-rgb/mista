@@ -8567,7 +8567,7 @@ function exeHtml(){var e=EXE,r=expById(e.id),m=$("mx-modal");if(!r){EXE=null;m.h
 function exeGerar(){var e=EXE,r=expById(e.id);if(!r)return;var regs=[],now=Date.now(),ped=(r.pedidoCliente?r.pedidoCliente+" · ":"")+(r.pedidoNum||"");
   r.itens.forEach(function(x,k){var cod=x.codigo,lot=x.lotes.map(function(l){return l.lote}).join(", "),loc=x.lotes.map(function(l){return l.local}).filter(Boolean).join(", "),i=exeIns(x)||{};
     function mk(tipo,n,dd){var dv=etqDivide(+x.qtd||0,n);for(var j=1;j<=n;j++){var d={};for(var q in dd)d[q]=dd[q];d.qtd=dv[j-1]+" pç";if(tipo==="expedicao")d.volume=j+"/"+n;regs.push({cod:String(9e9+Math.floor(Math.random()*1e9)).slice(0,10),tipo:tipo,dados:d,k:j,n:n,at:now,uid:AG.uid||"",ref:{col:"expedicoes",id:r.id},copias:1})}}
-    if(e.ap)mk("aprovado",e.it[k].pac,{codigo:cod,descricao:x.descricao,cliente:r.cliente,pedido:ped,lote:lot,local:loc,insp:i.em?new Date(i.em).toLocaleDateString("pt-BR")+" "+(i.nome||""):"",emp:r.emp});
+    if(e.ap)mk("aprovado",e.it[k].pac,{codigo:cod,descricao:x.descricao,cliente:r.cliente,pedido:ped,nf:r.nf||"",lote:lot,local:loc,insp:i.em?new Date(i.em).toLocaleDateString("pt-BR")+" "+(i.nome||""):"",emp:r.emp});
     if(e.ex)mk("expedicao",e.it[k].vol,{cliente:r.cliente,descricao:x.descricao,pedido:ped,nf:r.nf||"",codigo:cod,lote:lot,emp:r.emp})});
   if(!regs.length)return;var pgs=[],pr=Promise.resolve();regs.forEach(function(g){pr=pr.then(function(){return etqJpeg(etqSvg(g))}).then(function(j){pgs.push(j)})});toast("Gerando "+regs.length+" etiqueta(s)…");
   pr.then(function(){var nm="ETIQUETAS_"+String(r.num).replace(/[^A-Za-z0-9]+/g,"-")+".pdf";cnSave(nm,etqPdf(pgs,nm));var w=Promise.resolve();regs.forEach(function(g){w=w.then(function(){return PR.db.collection("etiquetas").doc("et-"+g.cod).set(g)})});
@@ -9387,7 +9387,7 @@ IC.tag='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="curr
 ACOES.push(["etiquetas","Qualidade","Imprimir etiquetas"]);
 ["pcp","qualidade","administrativo","programador"].forEach(function(p){if(PERM_DEF[p]&&PERM_DEF[p].acoes.indexOf("etiquetas")<0)PERM_DEF[p].acoes.push("etiquetas")});
 var ETQ_TIPOS={
-  aprovado:{n:"Aprovado / pacote",faixa:"APROVADO",inv:true,campos:[["codigo","Peça"],["descricao","Descrição"],["cliente","Cliente"],["pedido","Pedido / OC"],["lote","Lote (OP)"],["qtd","Qtd no pacote"],["local","Local"],["insp","Inspeção"]]},
+  aprovado:{n:"Aprovado / pacote",faixa:"APROVADO",inv:true,campos:[["codigo","Peça"],["descricao","Descrição"],["cliente","Cliente"],["pedido","Pedido / OC"],["lote","Lote (OP)"],["qtd","Qtd no pacote"],["local","Local"],["insp","Inspeção"],["nf","NF"]]},
   expedicao:{n:"Expedição (cliente)",faixa:"",inv:false,campos:[["cliente","Cliente"],["descricao","Descrição"],["pedido","Pedido do cliente / OC"],["nf","NF"],["codigo","Peça"],["qtd","Quantidade"],["lote","Lote"],["volume","Volume"]]},
   naoconforme:{n:"Não conforme / segregado",faixa:"NÃO CONFORME · SEGREGADO",inv:true,campos:[["codigo","Peça / material"],["motivo","Não conformidade"],["descricao","Descrição"],["lote","Lote"],["qtd","Quantidade"],["disp","Disposição"],["resp","Responsável"]]},
   material:{n:"Material recebido",faixa:"",inv:true,campos:[["material","Material"],["bitola","Bitola / forma"],["lote","Lote (PC)"],["corrida","Corrida"],["nf","NF"],["fornecedor","Fornecedor"],["qtd","Quantidade"],["situacao","Situação (faixa)","faixa"]]}};
@@ -9402,8 +9402,10 @@ function etqSvg(e){var T=ETQ_TIPOS[e.tipo],d=e.dados||{},emp=(d.emp||"MIX")==="S
   var faixa=T.faixa||(e.tipo==="material"?String(d.situacao||"").toUpperCase():"");
   if(faixa){s+='<rect x="0.6" y="0.6" width="98.8" height="8" fill="'+(T.inv?"#000":"#fff")+'"/>'+etqT(3,6.4,faixa,faixa.length>14?4:5.4,{b:true,c:T.inv?"#fff":"#000"})+etqT(97,6.2,emp,2.8,{b:true,a:"end",c:T.inv?"#fff":"#000"})}
   else s+=etqT(3,6.4,T.n.toUpperCase(),4.2,{b:true})+etqT(97,6.2,emp,2.8,{b:true,a:"end"})+'<line x1="0.6" y1="8.6" x2="99.4" y2="8.6" stroke="#000" stroke-width="0.4"/>';
-  var campos=T.campos,c0=campos[0],y=13.4;s+=etqT(3,y-1.8,c0[1],2.1)+etqT(3,y+3.6,etqCut(d[c0[0]],94,5.2),5.2,{b:true});y=20.4;
-  var fila=[],full={descricao:1,motivo:1};for(var i=1;i<campos.length;i++){var c=campos[i];if(c[2]==="faixa")continue;if(full[c[0]]&&!(e.tipo==="naoconforme"&&c[0]==="descricao"))fila.push([c]);else{var u=fila[fila.length-1];if(u&&u.length===1&&!u.full&&!u.fechada)u.push(c);else{var nv=[c];fila.push(nv)}}if(full[c[0]]&&!(e.tipo==="naoconforme"&&c[0]==="descricao"))fila[fila.length-1].fechada=true}
+  var campos=T.campos,c0=campos[0],y=13.4,nfB=e.tipo==="expedicao"||(e.tipo==="aprovado"&&String(d.nf||"").trim());
+  if(nfB){var nfv=String(d.nf||"").trim();s+='<rect x="66" y="10" width="31.4" height="10.2" rx="1" fill="#000"/>'+etqT(68,13.2,"NF",2.4,{b:true,c:"#fff"})+etqT(81.7,18.6,nfv?etqCut(nfv,28,nfv.length>8?3.6:5.4):"—",nfv.length>8?3.6:5.4,{b:true,a:"middle",c:"#fff"})}
+  s+=etqT(3,y-1.8,c0[1],2.1)+etqT(3,y+3.6,etqCut(d[c0[0]],nfB?60:94,5.2),5.2,{b:true});y=20.4;
+  var fila=[],full={descricao:1,motivo:1};for(var i=1;i<campos.length;i++){var c=campos[i];if(c[2]==="faixa"||(nfB&&c[0]==="nf")||(e.tipo==="expedicao"&&c[0]==="volume"))continue;if(full[c[0]]&&!(e.tipo==="naoconforme"&&c[0]==="descricao"))fila.push([c]);else{var u=fila[fila.length-1];if(u&&u.length===1&&!u.full&&!u.fechada)u.push(c);else{var nv=[c];fila.push(nv)}}if(full[c[0]]&&!(e.tipo==="naoconforme"&&c[0]==="descricao"))fila[fila.length-1].fechada=true}
   fila.slice(0,4).forEach(function(row){row.forEach(function(c,k){var cx=k?51:3,w=row.length===1&&row.fechada?94:46;s+=etqT(cx,y,c[1],1.8)+etqT(cx,y+3.0,etqCut(d[c[0]]||"–",w,2.8),2.8,{b:true})});y+=5.5});
   s+=etqBar(e.cod,3,40.4,58,5.6)+etqT(32,48.3,e.cod,2,{a:"middle"})+etqT(97,46,(e.k&&e.n>1?e.k+"/"+e.n:""),4,{b:true,a:"end"})+etqT(97,48.3,new Date(e.at||Date.now()).toLocaleDateString("pt-BR"),2.2,{a:"end"});
   return s}

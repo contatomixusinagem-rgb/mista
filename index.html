@@ -7140,7 +7140,7 @@ $("v-mx").addEventListener("click",function(ev){
     if(e.fiscal.ncm&&!itNcmOk(e.fiscal.ncm)){toast("NCM precisa ter 8 dígitos (0000.00.00).");return}
     var patch={atualizado:Date.now()};IT_ID.forEach(function(k){patch[k[0]]=e[k[0]]==null?"":e[k[0]]});["unidade","emp","modalidade","tipoSped"].forEach(function(k){patch[k]=e[k]||""});patch.fiscal=e.fiscal;if(e.roteiro)patch.roteiro=e.roteiro;if(e.estrutura)patch.estrutura=e.estrutura;
     var h=(x.hist||[]).slice(-199);h.push({at:Date.now(),uid:AG.uid||"",txt:"Cadastro alterado: "+ch.join("; ")+"."});patch.hist=h;
-    PR.db.doc("itens/"+x.id).update(patch).then(function(){IT.ed=null;IT.edId="";toast("Item salvo.")}).catch(function(){toast("Não consegui salvar.")});return}
+    PR.db.doc("itens/"+x.id).update(patch).then(function(){IT.ed=null;IT.edId="";return itPropaga(x,patch).then(function(n){toast("Item salvo."+(n?" Atualizado em "+n+".":""))})}).catch(function(){toast("Não consegui salvar.")});return}
   if(a==="padrao"){var f=e.fiscal,emp=e.emp||"MIX",pd={csosn:f.csosn||"",cstIpi:f.cstIpi||"",cstPis:f.cstPis||"",cstCofins:f.cstCofins||"",atualizado:Date.now()};
     askDel("Usar como padrão fiscal da "+emp+"?","CSOSN "+(pd.csosn||"–")+" · CST IPI "+(pd.cstIpi||"–")+" · CST PIS "+(pd.cstPis||"–")+" · CST COFINS "+(pd.cstCofins||"–")+". Vale para os itens que forem cadastrados daqui em diante.",function(){
       PR.db.doc("config/fiscal-"+emp).set(pd).then(function(){IT.pad[emp]=pd;toast("Padrão fiscal da "+emp+" gravado.")}).catch(function(){toast("Não consegui gravar o padrão.")})});return}
@@ -7292,6 +7292,15 @@ var _itDiffPcp=itDiff;itDiff=function(x,e){var ch=_itDiffPcp.apply(this,argument
 function esKgBtn(e,i){var m=e.estrutura&&e.estrutura.mats[i];if(!m)return;var inp=document.querySelector('[data-es="'+i+':consumo"]');if(!inp)return;var td=inp.parentNode,b=td.querySelector('[data-esb="kg"]'),kg=esKg(m.desc,m.forma,m.medida);
   if(isFinite(kg)&&m.tipo==="mp"&&m.un==="kg"){var kv=String(kg).replace(".",",");if(!String(m.consumo||"").trim()||inp.dataset.auto===String(m.consumo)){m.consumo=kv;inp.value=kv;inp.dataset.auto=kv}}   /* consumo em kg preenchido sozinho pela medida (enquanto o usuário não digitar outro) */
   if(isFinite(kg)&&m.tipo==="mp"){if(!b){b=document.createElement("button");b.type="button";b.className="btn sm es-kg";b.dataset.esb="kg";b.dataset.i=i;b.title="Usar o peso calculado pela medida";td.appendChild(b)}b.textContent="= "+nf(kg,3)+" kg"}else if(b)b.remove()}
+/* v145: mudança de código, revisão, descrição, desenho ou material do item vale para o que está em aberto:
+   pedidos internos (até a expedição), OPs não concluídas e lotes com saldo no estoque de peças acabadas.
+   Documentos já fechados (OP concluída, romaneio, NF, proposta enviada) guardam o que foi emitido. */
+function itPropaga(x,patch){var F=["codigo","rev","descricao","desenho","material"],mud=F.filter(function(k){return k in patch&&String(x[k]||"")!==String(patch[k]||"")});if(!mud.length)return Promise.resolve("");
+  var nv={};F.forEach(function(k){nv[k]=k in patch?patch[k]:x[k]});var txt="Cadastro do item "+(nv.codigo||"")+" atualizado ("+mud.join(", ")+").",ch=Promise.resolve(),np=0,no=0,nl=0,ops={};
+  (PD.list||[]).forEach(function(p){if(p.cancelado||etIdx(p.etapa)>etIdx("expedicao"))return;var its=JSON.parse(JSON.stringify(p.itens||[])),m=false;its.forEach(function(y){if(y.itemId===x.id){if(y.cod!==nv.codigo||y.desc!==nv.descricao){y.cod=nv.codigo;y.desc=nv.descricao;m=true}}});if(m){np++;ch=ch.then(function(){return pdSet(p,{itens:its},txt)})}});
+  (PP.ops||[]).forEach(function(o){if(o.itemId!==x.id)return;ops[o.id]=1;if(o.status==="concluida"||o.status==="cancelada")return;var pt={};["codigo","rev","descricao","desenho","material"].forEach(function(k){if(String(o[k]||"")!==String(nv[k]||""))pt[k]=nv[k]||""});if(Object.keys(pt).length){no++;ch=ch.then(function(){return opSet(o,pt,txt)})}});
+  if(typeof PAE!=="undefined")PAE.list.forEach(function(l){if(l.status==="cancelado"||!(+l.saldo>0)||!(ops[l.opId]||(l.itemId&&l.itemId===x.id)))return;var pt={};["codigo","rev","descricao"].forEach(function(k){if(String(l[k]||"")!==String(nv[k]||""))pt[k]=nv[k]||""});if(Object.keys(pt).length){nl++;ch=ch.then(function(){return paSet(l,pt,txt)})}});
+  return ch.then(function(){return[np?np+(np>1?" pedidos":" pedido"):"",no?no+(no>1?" OPs":" OP"):"",nl?nl+(nl>1?" lotes":" lote")+" do estoque":""].filter(Boolean).join(", ")})}
 function rtEdit(fn){var x=itById(IT.open);if(!x)return;var e=itEdOf(x);fn(e);itMark(e);mxRender()}
 function rtDesliga(e,k){var o=e[k];if(o&&o.status==="liberado"){o.status="rascunho";o.liberadoEm=0;toast((k==="roteiro"?"Roteiro":"Estrutura")+" voltou para elaboração por causa da mudança. Libere de novo depois de conferir.")}}
 $("v-mx").addEventListener("click",function(ev){

@@ -1307,6 +1307,11 @@ body.sd-min .side:not(.peek) .mk{margin-bottom:6px}
 .ls-fp{display:grid;grid-template-columns:120px 170px 140px;gap:10px;align-items:center;padding:6px 12px;border-top:1px solid var(--line);font-size:13px}.ls-fp input{width:130px}.ls-fp input[data-ftp$="valor"]{text-align:right}
 #mx-modal .card.cm-mod.fat-mod{max-width:min(1000px,96vw)!important;width:min(1000px,96vw)!important}#mx-modal .fat-mod>*,#mx-modal .rcb-mod>*,#mx-modal .pde-mod>*{flex-shrink:0}#mx-modal .fgrid.fat-g{grid-template-columns:repeat(4,1fr);margin-top:12px}#mx-modal .fat-cond{grid-column:span 2}
 #mx-modal .card.cm-mod.rcb-mod,#mx-modal .card.cm-mod.pde-mod{max-width:min(820px,96vw)!important;width:min(820px,96vw)!important}.pd-enc{color:var(--muted)}
+body.terminal .side,body.terminal #abas,body.terminal .crumbbar,body.terminal #fb-btn,body.terminal .nacc{display:none!important}
+body.terminal .shell{grid-template-columns:minmax(0,1fr)!important;max-width:none!important}body.terminal .app{margin-left:0!important;padding-left:0!important;max-width:none!important;grid-column:1/-1}body.terminal .app>main{padding:10px 18px!important}
+body.terminal .ap-top{flex-wrap:wrap}body.terminal .term-h{display:flex;gap:16px;align-items:center;width:100%;padding:6px 0 10px;border-bottom:1px solid var(--line);margin-bottom:8px}body.terminal .term-h b{font-size:16px}body.terminal .term-h span{font-size:20px;font-weight:700;font-family:var(--mono,monospace)}body.terminal .term-h .btn{margin-left:auto}
+body.terminal .ap-card{font-size:1.1em}body.terminal .ap-b{min-height:84px!important;font-size:26px!important}body.terminal .ap-esc{min-height:48px;font-size:17px}body.terminal .ap-big{min-height:120px}
+.term-on{margin-left:8px}
 .ls-tc{display:grid;grid-template-columns:110px minmax(160px,1.3fr) minmax(120px,1fr) minmax(140px,1fr) 60px 170px 84px;gap:10px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);font-size:13px;min-width:900px}.ls-tc.fh{border-top:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}.ls-tc small{display:block;color:var(--muted);font-size:11.5px}
 #mx-modal .card.cm-mod.apo-mod{max-width:min(760px,96vw)!important;width:min(760px,96vw)!important}#mx-modal .apo-mod>*{flex-shrink:0}
 .apo-q{width:100%;min-height:52px;font-size:18px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin:6px 0 10px}
@@ -10093,6 +10098,22 @@ ACOES.push(["faturamento","Estoque","Faturar e cancelar faturamento"],["financei
 USR_ACAO.push(["faturamento",'[data-ex="fat"],[data-ex="fatc"],[data-ftx="y"]'],["financeiro",'[data-rcn],[data-rc="baixa"],[data-rc="estb"],[data-rc="canc1"],[data-rcx="y"],[data-rcx="novo"]'],["vendas.pedido",'[data-pde]']);
 ["administrativo"].forEach(function(p){if(PERM_DEF[p]){["faturamento","financeiro"].forEach(function(a){if(PERM_DEF[p].acoes.indexOf(a)<0)PERM_DEF[p].acoes.push(a)})}});
 var _stRcb=showTab;showTab=function(t){var r=_stRcb.apply(this,arguments);if(t==="m-exped"){$("crumb").innerHTML="Estoque › <b>Expedição e faturamento</b>";$("crumb-t").textContent="Expedição e faturamento"}return r};
+
+/* ===== v147: Terminal de apontamento (spin-off): o aparelho do posto ou o usuário com perfil só "posto" vê apenas o apontamento, em tela cheia, sem menu ===== */
+function termDev(){try{return localStorage.getItem("mista-terminal")==="1"}catch(e){return false}}
+function termPerfil(){if(usrLivre())return false;var e=usrEu();return!!(e&&(e.perfis||[]).length&&(e.perfis||[]).every(function(p){return p==="posto"}))}
+function termOn(){return termDev()||termPerfil()}
+function termAplica(){var on=termOn();document.body.classList.toggle("terminal",on);if(on&&S.tab!=="m-apt")showTab("m-apt")}
+var _stTerm=showTab;showTab=function(t){if(termOn()&&t!=="m-apt")t="m-apt";return _stTerm.call(this,t)};
+var _uaTerm=usrAplica;usrAplica=function(){var r=_uaTerm.apply(this,arguments);setTimeout(termAplica,0);return r};
+setTimeout(termAplica,300);setInterval(function(){if(termOn()!==document.body.classList.contains("terminal"))termAplica()},2000);
+/* barra do terminal: relógio, posto e saída (só quem não é perfil posto, com confirmação) */
+var _rAptTerm=renderApt;renderApt=function(box){_rAptTerm.apply(this,arguments);var top=box.querySelector(".ap-top")||box.querySelector(".mh");if(!top)return;
+  if(termOn()){top.insertAdjacentHTML("afterbegin",'<div class="term-h"><b>MISTA · Terminal</b><span>'+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+'</span>'+(termPerfil()?'':'<button type="button" class="btn sm" data-term="sair">Sair do modo terminal</button>')+'</div>')}
+  else if(pode("pcp.op")||usrDir())top.insertAdjacentHTML("beforeend",'<button type="button" class="btn sm term-on" data-term="ligar" title="Este aparelho passa a mostrar só o apontamento (para o tablet ou computador da fábrica)">Usar como terminal</button>')};
+$("v-mx").addEventListener("click",function(e){var b=e.target.closest("[data-term]");if(!b)return;e.stopPropagation();e.preventDefault();
+  if(b.dataset.term==="ligar"){askDel("Usar este aparelho como terminal de apontamento?","Ele passa a mostrar só o apontamento, em tela cheia, sem menu. Para voltar, um gestor usa \"Sair do modo terminal\". Operadores com perfil Posto já entram assim em qualquer aparelho.",function(){try{localStorage.setItem("mista-terminal","1")}catch(er){}termAplica();mxRender();try{document.documentElement.requestFullscreen()}catch(er){}});return}
+  if(b.dataset.term==="sair"){if(!usrDir()&&!pode("pcp.op")){toast("Só um gestor ou o PCP tira o aparelho do modo terminal.");return}askDel("Sair do modo terminal?","O aparelho volta a mostrar o MISTA completo.",function(){try{localStorage.removeItem("mista-terminal")}catch(er){}termAplica();try{if(document.fullscreenElement)document.exitFullscreen()}catch(er){}showTab("home")})}},true);
 
 /* ===== v122: PADRÃO DEFINITIVO de tela (gestor, 05/11/2026: "padronizar as páginas definitivamente").
    Fica no FIM do arquivo e vale para toda tela: título + [Filtrar] [+ Novo] · linha única · ícones · popup · paginação · sem texto.
